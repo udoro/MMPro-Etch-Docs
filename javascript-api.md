@@ -557,8 +557,8 @@ Safe to call directly without knowledge of the internals.
 
 | Export | Description |
 |---|---|
-| `updateMobileClass` | Adds/removes `dwc-mobile` on `<html>` and manages `dwc-offcanvas-mobile`. Call after manual breakpoint or offcanvas state changes. |
-| `getPositioningReferenceElement` | Resolves the positioning reference element for a dropdown (returns `.dwc-nest-header` when narrower than the header, otherwise `#dwc-header`). |
+| `updateMobileClass(minWidth?)` | Adds/removes `dwc-mobile` on `<html>` and manages `dwc-offcanvas-mobile`. `minWidth` is optional — defaults to the current `MegaMenuCONFIG.minWidth`. Call after manual breakpoint or offcanvas state changes. |
+| `getPositioningReferenceElement(headerSelector)` | Resolves the positioning reference element for a dropdown. Pass the header CSS selector (e.g. `'#dwc-header'`). Returns `.dwc-nest-header` when narrower than the header, otherwise the header itself. |
 | `clearPositioningReferenceCache` | Clears the cached positioning reference. Call after DOM changes that alter the header structure. |
 | `ViewportDetector` | Reads viewport dimensions and resolves the current breakpoint. Methods: `getWidth()`, `getHeight()`, `isDesktop()`, `isMobile()`, `isEffectiveDesktop()`, `isEffectiveMobile()`, `isEtch()`. |
 | `RTLDetector` | Watches `<html dir>` via MutationObserver and dispatches `dwc:rtlchange`. Static method: `RTLDetector.isRTL()` for a one-off check without instantiation. |
