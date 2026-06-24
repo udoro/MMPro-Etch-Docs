@@ -549,17 +549,31 @@ If `window.DWCHeadroom` is present, the menu automatically pauses it when the mo
 
 ## Exported Utilities (`window.DWCMegaMenuUtils`)
 
-Internal classes exposed for advanced subclassing and extension. These are building blocks — no support is provided for direct usage.
+`window.DWCMegaMenuUtils` exposes the script's internal building blocks for three purposes: calling standalone utility functions for edge cases not covered by the main API, reading viewport/RTL/dropdown state before or outside of a menu instance, and subclassing or replacing individual subsystems without forking the script. The utility functions and detection helpers listed below are safe to call directly. The system classes expose only what is listed here — their internal methods are not part of the public API and may change between versions.
+
+### Utility functions & detection helpers
+
+Safe to call directly without knowledge of the internals.
 
 | Export | Description |
 |---|---|
-| `RTLDetector` | Watches `<html dir>` via MutationObserver and dispatches `dwc:rtlchange`. |
-| `DropdownDetector` | Determines whether a nav item is a mega menu or standard dropdown. |
-| `ViewportDetector` | Reads and caches viewport width/height; provides breakpoint resolution. |
-| `Utils` | General DOM utilities used internally. |
+| `updateMobileClass` | Adds/removes `dwc-mobile` on `<html>` and manages `dwc-offcanvas-mobile`. Call after manual breakpoint or offcanvas state changes. |
+| `getPositioningReferenceElement` | Resolves the positioning reference element for a dropdown (returns `.dwc-nest-header` when narrower than the header, otherwise `#dwc-header`). |
+| `clearPositioningReferenceCache` | Clears the cached positioning reference. Call after DOM changes that alter the header structure. |
+| `ViewportDetector` | Reads viewport dimensions and resolves the current breakpoint. Methods: `getWidth()`, `getHeight()`, `isDesktop()`, `isMobile()`, `isEffectiveDesktop()`, `isEffectiveMobile()`, `isEtch()`. |
+| `RTLDetector` | Watches `<html dir>` via MutationObserver and dispatches `dwc:rtlchange`. Static method: `RTLDetector.isRTL()` for a one-off check without instantiation. |
+| `DropdownDetector` | Determines dropdown type from a `<li.dwce-dropdown>` element. Methods: `isMegaMenu(el)`, `isNestedDropdown(el)`, `isTopLevelDropdown(el)`, `getType(el)`. |
+
+### System classes
+
+For subclassing or replacing a specific subsystem. Internal methods on these objects are not supported and may change.
+
+| Export | Description |
+|---|---|
+| `Utils` | General DOM utilities (`debounce`, `throttle`) used internally. |
 | `WidthSystem` | Calculates and applies dropdown panel widths. |
 | `PositioningSystem` | Handles viewport-aware dropdown positioning and overflow correction. |
-| `InteractionSystem` | Manages click/hover/keyboard interaction. Accepts `onDropdownOpen`, `onDropdownClose`, `onMobileMenuOpen`, `onMobileMenuClose` callbacks at construction time. |
+| `InteractionSystem` | Manages click/hover/keyboard interaction. Accepts `onDropdownOpen`, `onDropdownClose`, `onMobileMenuOpen`, `onMobileMenuClose` callbacks via `initialize(nestMenu, options)`. |
 | `AccessibilitySystem` | Keyboard navigation, ARIA state management, focus trapping. |
 | `ResponsiveRelocationSystem` | Implements `data-breakout`, `data-breakin`, and `data-breakinto` DOM relocation. |
 | `SwipeGestureHandler` | Touch `touchstart`/`touchend` swipe detection. |
@@ -572,6 +586,3 @@ Internal classes exposed for advanced subclassing and extension. These are build
 | `ToggleLabelController` | Equalises open/close toggle label widths via MutationObserver. |
 | `PageExclusion` | Reads `data-no-sticky` / `data-no-overlay` and conditionally disables features per page. |
 | `SkipLinkController` | Builds and injects skip link elements from `data-skip-link`. |
-| `updateMobileClass` | Utility function — adds/removes `dwc-mobile` on `<body>`. |
-| `getPositioningReferenceElement` | Utility function — resolves the positioning reference element for a dropdown. |
-| `clearPositioningReferenceCache` | Utility function — clears the cached reference element (call after DOM changes). |
