@@ -23,7 +23,7 @@ window.DwcConfig.MegaMenu = {
 
 | Key | Type | Default | Description |
 |---|---|---|---|
-| `minWidth` | `number` | `1201` | Viewport width (px) at which desktop mode begins. Below this value is mobile. Overridden per-nav by `data-mobile-breakpoint`. |
+| `minWidth` | `number` | `1201` | Viewport width (px) at which desktop mode begins. Below this value is mobile. Overridden per-nav by `data-mobile-breakpoint`. Changing `minWidth` after page load has no effect on the stylesheet's media queries — use `data-mobile-breakpoint` and reset the stylesheet guard instead (see `destroy()` example). |
 | `headerSelector` | `string` | `'#dwc-header'` | CSS selector for the header element. |
 | `nestMenuSelector` | `string` | `'.dwc-nest-menu'` | CSS selector for the nav wrapper. |
 | `menuAutoExpansion` | `boolean` | `true` | Auto-expand the first level on mobile open. |
@@ -74,16 +74,25 @@ document.querySelector('.dwc-nest-menu ul').appendChild(newItem);
 window.dwcMegaMenu.reinitialize();
 ```
 
+> **Note:** `reinitialize()` does not reset the stylesheet guard. If you are changing `data-mobile-breakpoint` at runtime and need the stylesheet's media queries updated, use the full `destroy()` pattern below instead of `reinitialize()`.
+
 #### `destroy()`
 Removes all event listeners and observers. Use this before replacing the instance with a new configuration.
 
 ```js
 window.dwcMegaMenu.destroy();
 
-// Remove data-mobile-breakpoint first — it takes priority over minWidth.
-document.querySelector('.dwc-nest-menu').removeAttribute('data-mobile-breakpoint');
+// Set the new breakpoint on the nav.
+// data-mobile-breakpoint takes priority over minWidth; the value is the last
+// mobile px (desktop starts at value + 1). _resolveDataAttributes() derives
+// minWidth from this automatically on reinitialise.
+document.querySelector('.dwc-nest-menu').setAttribute('data-mobile-breakpoint', '1024');
 
-window.DwcConfig.MegaMenu.minWidth = 1025;
+// Reset the stylesheet guard so the media queries are rewritten on reinitialise.
+// Without this, the one-time guard in _updateMobileStylesBreakpoint() prevents
+// the stylesheet from being updated again.
+const styleTag = document.querySelector('style[id^="etch-dwc-mega-menu"]');
+if (styleTag) delete styleTag.dataset.breakpointModified;
 
 window.dwcMegaMenu = new window.DWCMegaMenuPro().initialize();
 ```
@@ -433,7 +442,7 @@ These attributes are read from HTML elements at runtime. Place them directly on 
 
 | Attribute | Element | Value | Description |
 |---|---|---|---|
-| `data-mobile-breakpoint` | DWC Nav | `number` e.g. `1024` | Override the global `minWidth` for this nav. Desktop starts at value + 1. |
+| `data-mobile-breakpoint` | DWC Nav | `number` e.g. `1024` | Override the global `minWidth` for this nav. Desktop starts at value + 1. Also rewrites the stylesheet media queries to match on first initialisation (one-time; see `destroy()` example for how to re-trigger). |
 | `data-offcanvas` | DWC Nav | `"true"` | Enable offcanvas/sidebar mode. |
 | `data-offcanvas-hover` | DWC Nav | `"true"` | Enable hover interaction in offcanvas mode (desktop only). |
 
