@@ -70,7 +70,7 @@ Tears down event listeners and re-runs setup without a page reload. Use this aft
 
 ```js
 // After injecting new nav items via JS
-document.querySelector('.dwc-nest-menu ul').appendChild(newItem);
+document.querySelector('.dwc-nav-nested-items').appendChild(newItem);
 window.dwcMegaMenu.reinitialize();
 ```
 
@@ -125,12 +125,12 @@ if (window.dwcMegaMenu.isRTL()) {
 
 ### Dropdown Control
 
-The `dropdown` argument is the nav `<li>` element that wraps both the toggle and its dropdown panel (i.e. a `<li>` inside `.dwc-nest-menu`).
+The `dropdown` argument is the nav `<li>` element that wraps both the toggle and its dropdown panel (i.e. a `<li.dwce-dropdown>` inside `.dwc-nav-nested-items`).
 
 #### `openDropdown(dropdown, manual?)`
 
 ```js
-const item = document.querySelector('.dwc-nest-menu > ul > li:first-child');
+const item = document.querySelector('.dwc-nav-nested-items > .dwce-dropdown:first-child');
 window.dwcMegaMenu.openDropdown(item);
 ```
 
@@ -145,9 +145,10 @@ window.dwcMegaMenu.closeDropdown(item);
 #### `toggleDropdown(dropdown, manual?)`
 
 ```js
-// Wire a custom button to toggle a specific nav item
+// Wire a custom button to toggle a specific nav item.
+// Target the <li.dwce-dropdown> by the text on its toggle button's data-text attribute.
 document.querySelector('#my-trigger').addEventListener('click', () => {
-  const item = document.querySelector('[data-menu-id="products"]');
+  const item = document.querySelector('.dwce-dropdown:has(button[data-text="Products"])');
   window.dwcMegaMenu.toggleDropdown(item);
 });
 ```
@@ -199,10 +200,10 @@ document.querySelector('#cookie-bar .accept').addEventListener('click', () => {
 ```
 
 #### `updateDropdownPosition(contentEl)`
-Recalculates position for a single dropdown panel. `contentEl` is the dropdown content container (`.dwce-dropdown__content` or similar), not the `<li>`.
+Recalculates position for a single dropdown panel. `contentEl` is the dropdown content container (`.dwc-dropdown-content`), not the `<li>`.
 
 ```js
-const panel = document.querySelector('.dwce-dropdown__content');
+const panel = document.querySelector('.dwc-dropdown-content');
 window.dwcMegaMenu.updateDropdownPosition(panel);
 ```
 
@@ -268,13 +269,13 @@ No custom events are dispatched for dropdown open/close. The menu communicates s
 
 ### Reacting to dropdown open/close
 
-Watch for the `open` class on `<li>` elements inside the nav:
+Watch for the `open` class on `.dwce-dropdown` elements inside the nav:
 
 ```js
 const nav = document.querySelector('.dwc-nest-menu');
 
 const observer = new MutationObserver(() => {
-  const openItems = nav.querySelectorAll('li.open');
+  const openItems = nav.querySelectorAll('.dwce-dropdown.open');
 
   if (openItems.length > 0) {
     console.log('Dropdown opened:', openItems[0]);
@@ -294,7 +295,7 @@ observer.observe(nav, {
 React to a specific dropdown only:
 
 ```js
-const productsItem = document.querySelector('#menu-item-products');
+const productsItem = document.querySelector('.dwce-dropdown:has(button[data-text="Products"])');
 
 new MutationObserver(() => {
   if (productsItem.classList.contains('open')) {
@@ -384,7 +385,7 @@ document.querySelector('#open-modal').addEventListener('click', () => {
 const nav = document.querySelector('.dwc-nest-menu');
 
 new MutationObserver(() => {
-  const anyOpen = !!nav.querySelector('li.open');
+  const anyOpen = !!nav.querySelector('.dwce-dropdown.open');
   const video = document.querySelector('#hero-video');
 
   if (anyOpen) {
@@ -400,7 +401,7 @@ new MutationObserver(() => {
 ### Run code once a specific dropdown finishes closing
 
 ```js
-const item = document.querySelector('#menu-item-services');
+const item = document.querySelector('.dwce-dropdown:has(button[data-text="Services"])');
 
 new MutationObserver(() => {
   // dwc-closing is added during exit animation, removed when done
@@ -419,8 +420,8 @@ const nav = document.querySelector('.dwc-nest-menu');
 let lastOpenLabel = null;
 
 new MutationObserver(() => {
-  const openItem = nav.querySelector('li.open');
-  const label = openItem?.querySelector('a, button')?.textContent?.trim() ?? null;
+  const openItem = nav.querySelector('.dwce-dropdown.open');
+  const label = openItem?.querySelector('button[data-text]')?.getAttribute('data-text') ?? null;
 
   if (label && label !== lastOpenLabel) {
     lastOpenLabel = label;
