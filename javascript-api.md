@@ -23,14 +23,14 @@ window.DwcConfig.MegaMenu = {
 
 | Key | Type | Default | Description |
 |---|---|---|---|
-| `minWidth` | `number` | `1201` | Viewport width (px) at which desktop mode begins. Below this value is mobile. |
+| `minWidth` | `number` | `1201` | Viewport width (px) at which desktop mode begins. Below this value is mobile. Overridden per-nav by `data-mobile-breakpoint`. |
 | `headerSelector` | `string` | `'#dwc-header'` | CSS selector for the header element. |
 | `nestMenuSelector` | `string` | `'.dwc-nest-menu'` | CSS selector for the nav wrapper. |
 | `menuAutoExpansion` | `boolean` | `true` | Auto-expand the first level on mobile open. |
 | `swipeToClose` | `boolean` | `true` | Enable swipe-left gesture to close mobile menu. |
 | `toolTip` | `boolean` | `true` | Show drill-down tooltips on mobile. |
-| `adaptiveHeight` | `0\|1` | `0` | Animate dropdown height when content changes. |
-| `stripeStyle` | `0\|1` | `0` | Apply stripe styling across header rows. |
+| `adaptiveHeight` | `0\|1` | `0` | Animate dropdown height when content changes. Overridden per-nav by `data-adaptive-height`. |
+| `stripeStyle` | `0\|1` | `0` | Apply stripe styling across header rows. Overridden per-nav by `data-stripe-style`. |
 | `toggleLabelWidth` | `0\|1` | `1` | Equalise open/close toggle label widths to prevent layout shift. |
 | `closeNavOnClick` | `0\|1` | `1` | Close the menu when a nav link is clicked. |
 | `closeOnHashClickOnly` | `0\|1` | `0` | Only close the menu when a hash (`#`) link is clicked. |
@@ -50,8 +50,8 @@ window.DwcConfig.MegaMenu = {
 
 | Key | Type | Default | Description |
 |---|---|---|---|
-| `enable` | `0\|1` | `0` | Enable the centered logo feature. |
-| `centerGuide` | `0\|1` | `1` | Show a visual center guide line (visible to logged-in admins only). |
+| `enable` | `0\|1` | `0` | Enable the centered logo feature. Overridden per-nav by `data-centered-logo`. |
+| `centerGuide` | `0\|1` | `1` | Show a visual center guide line (visible to logged-in admins only). Overridden per-nav by `data-center-guide`. |
 | `forceCenteredLogo` | `0\|1` | `1` | Compensate margins to achieve pixel-perfect centering. |
 | `centerNudge` | `number` | `0` | Nudge the logo left (negative) or right (positive) by this many pixels. |
 | `allowOddItems` | `0\|1` | `1` | Allow centering when the menu has an odd number of items. |
@@ -79,6 +79,9 @@ Removes all event listeners and observers. Use this before replacing the instanc
 
 ```js
 window.dwcMegaMenu.destroy();
+
+// Remove data-mobile-breakpoint first — it takes priority over minWidth.
+document.querySelector('.dwc-nest-menu').removeAttribute('data-mobile-breakpoint');
 
 window.DwcConfig.MegaMenu.minWidth = 1025;
 
