@@ -1,6 +1,6 @@
 # Etch Mega Menu Pro + Header Builder
 
-**Etch Mega Menu Pro + Header Builder** is a premium navigation system built for the Etch page builder. It provides a fully-featured, accessible header and navigation solution — from a simple responsive menu to a complex mega menu with offcanvas, fullscreen mobile, stripe animation, and centered logo support.
+**Etch Mega Menu Pro + Header Builder** is a premium navigation system built for the Etch page builder for WordPress. It provides a fully-featured, accessible header and navigation solution — from a simple responsive menu to a complex mega menu with offcanvas, fullscreen mobile, stripe animation, and centered logo support.
 
 ---
 
