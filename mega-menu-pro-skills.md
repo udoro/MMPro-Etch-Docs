@@ -2,6 +2,26 @@
 
 Standalone reference for configuring DWC Mega Menu Pro + Header Builder in Etch via the etch-connector. Read sections 1–3 first — they cover 90% of tasks. Sections 4–7 are lookup-only.
 
+## Connector quick-start
+
+```bash
+# 1. Start the server (keep running in background)
+npx @digital-gravy/etch-connector serve
+
+# 2. Read the connected tab name from the output:
+# [etch-connector] + tab "your-site.com" (https://...)
+
+# 3. Run a script
+npx @digital-gravy/etch-connector eval -t "your-site.com" -f script.js
+
+# 4. For long operations (saveAsync) add --timeout
+npx @digital-gravy/etch-connector eval -t "your-site.com" --timeout 60000 -f script.js
+```
+
+**Safe mode:** Scripts only have access to `etch.*` and standard JS built-ins. `window`, `document`, and all browser globals are blocked — use `etch.*` API calls only.
+
+**Exit codes:** `0` = success, `2` = script error, `1` = operational error (tab not found, timeout, connector unreachable).
+
 ---
 
 ## 1. Site config
