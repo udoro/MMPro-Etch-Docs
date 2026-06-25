@@ -13,7 +13,7 @@ The outermost wrapper of the entire header. It controls sticky behaviour, overla
 | **Sticky Header** | Makes the header stick to the top of the viewport as the user scrolls. To disable sticky on a specific page without removing the setting, add the attribute `data-no-sticky` to any section on that page. |
 | **Scroll Down Visibility** | Which row(s) to show or hide when the user scrolls down. Options: `Default` (all rows stay), `hide-row-1/2/3` (slide that row off-screen), `show-row-1/2/3` (keep only that row visible), `hide-all-rows` (collapse the entire header). |
 | **Scroll Up Visibility** | Which row(s) to restore when the user scrolls back up. Options: `Default`, `show-row-1/2/3`, `show-all-rows`, `reverse`. |
-| **Scroll Visibility Distance** | How many pixels the user must scroll before the hide/show triggers. |
+| **Scroll Visibility Distance** | How far the user must scroll before the hide/show triggers. Accepts `px` values (`200px`), `rem` values (`12rem`), or a plain number (`200`). Default: `200px`. |
 | **Sticky Header Background** | Background colour applied to the header once the user has scrolled. Controls the CSS property `--header-bg-sticky`. |
 | **Scroll Margin** | Sets the `--dwc-scroll-margin` variable so in-page anchor links scroll to the correct position below the sticky header. |
 | **Special Sticky/Overlay Styles** | Unlocks a set of CSS hooks that let you style the header and menu items differently before and after the user scrolls (e.g. white icons on a transparent overlay, dark icons once the sticky background kicks in). Configure these styles via the **STICKY/OVERLAY HEADER SPECIAL STYLES** section in the `.dwc-toggle-vars` and `.dwc-header-vars` CSS classes. |
@@ -67,12 +67,13 @@ Each header row gets a class automatically:
 
 ### Scroll state classes
 
-As the user scrolls, these classes are added and removed on `<body>`:
+As the user scrolls, these classes are added and removed automatically:
 
-| Class | When active |
-|---|---|
-| `.scroll-down` | User is scrolling down |
-| `.scroll-up` | User is scrolling back up |
+| Class | Element | When active |
+|---|---|---|
+| `.dwc-headroom` | `<body>` | Added when sticky header activates. Required for the Special Sticky/Overlay CSS selectors to fire. |
+| `.scroll-down` | `<body>` | User is scrolling down past the scroll visibility distance threshold |
+| `.scroll-up` | `<body>` | User has scrolled back up |
 
 ### CSS targeting
 
@@ -101,6 +102,19 @@ Each row's height is available as a CSS variable on `<body>`:
 ```
 
 Use these when you need to offset or position something relative to the visible header height — for example, setting the top position of a sticky element that sits just below the visible rows.
+
+---
+
+## Per-page feature exclusions
+
+Add these attributes to any `<section>` element on a page to suppress specific header features on that page only, without changing the global settings.
+
+| Attribute | Effect |
+|---|---|
+| `data-no-sticky` | Disables sticky header on this page |
+| `data-no-overlay` | Disables overlay header on this page |
+| `data-no-overlay-style` | Keeps overlay active but suppresses the Special Sticky/Overlay CSS hooks |
+| `data-no-padding` | Opts this section out of the Offset Section Padding |
 
 ---
 

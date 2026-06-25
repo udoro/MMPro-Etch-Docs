@@ -10,9 +10,9 @@ The core navigation component. It controls everything about the menu — how it 
 
 | Setting | Description |
 |---|---|
-| **Stripe Style** | As the user moves between mega menu items, the dropdown panel smoothly morphs — sliding to the new item's position and transitioning its width and height to match the new dropdown's content. Instead of one dropdown closing and another opening, the panel flows seamlessly from one to the next. Only visible on the live site — there is no builder preview for this feature. |
-| **Adaptive Height** | As the user moves between mega menu items of different heights, the dropdown's background area smoothly expands or contracts vertically to match the height of the active dropdown. Only visible on the live site — there is no builder preview for this feature. |
-| **Animate Adaptive Content** | Fades the dropdown content in and out as part of the adaptive height transition. |
+| **Stripe Style** | As the user moves between mega menu items, the dropdown panel smoothly morphs — sliding to the new item's position and transitioning its width and height to match the new dropdown's content. Instead of one dropdown closing and another opening, the panel flows seamlessly from one to the next. Only visible on the live site — there is no builder preview for this feature. **Cannot be used together with Adaptive Height.** |
+| **Adaptive Height** | As the user moves between mega menu items of different heights, the dropdown's background area smoothly expands or contracts vertically to match the height of the active dropdown. Only visible on the live site — there is no builder preview for this feature. **Cannot be used together with Stripe Style.** |
+| **Animate Adaptive Content** | Fades the dropdown content in and out as part of the adaptive height transition. Only available when Adaptive Height is enabled. |
 
 ### Menu Mode
 
@@ -21,15 +21,14 @@ The core navigation component. It controls everything about the menu — how it 
 | **Offcanvas Mode** | The nav behaves as a sidebar even on desktop viewports. All mobile menu styles apply regardless of screen width. |
 | **Flyout Offcanvas** | In offcanvas mode, submenus fly out as overlapping panels (desktop-like behaviour) instead of expanding inline. |
 | **Flyout on Hover** | In offcanvas mode on a desktop-sized screen, dropdowns open on hover rather than requiring a click. |
-| **Last Item is Button** | Styles the last one, two, or three nav items as CTA buttons. |
+| **Last Item is Button** | Styles the last one, two, or three nav items as CTA buttons. Options: None, Last Button, Last 2 Buttons, Last 3 Buttons. |
 | **Non-Button Items Alignment** | Controls how the remaining items align when the CTA button is active. |
-| **Dropdown Trigger Mode** | Global default for how dropdowns open: **Hover**, **Click**, or **Both**. Individual dropdowns can override this. |
 
 ### Mobile
 
 | Setting | Description |
 |---|---|
-| **Open Mobile Menu** | Enables the mobile menu system (required for the hamburger toggle to work). Also controls whether the mobile menu opens in the builder preview. |
+| **Preview Mobile Menu** | Opens the mobile menu in the builder canvas for previewing. Has no effect on the live site — the mobile menu is always available to users on mobile viewports. |
 | **Mobile Breakpoint** | The viewport width (in px) at which mobile mode activates. Below this value the hamburger is shown and the desktop nav is hidden. |
 | **Mobile Menu Width** | Width of the mobile sidebar/drawer panel. |
 | **Mobile Menu Background** | Background colour of the mobile panel. |
@@ -42,9 +41,10 @@ The core navigation component. It controls everything about the menu — how it 
 | **Fullscreen Mobile Menu** | The mobile menu opens above the header, covering the entire screen. |
 | **Mobile Top Background** | Background colour of the top bar area inside the mobile menu. Only applied when **Fullscreen Mobile Menu** is enabled, or when **Transparent Mobile Top** is disabled. |
 | **Transparent Mobile Top** | Makes the mobile top bar area transparent. |
-| **Back to Home Menu Text** | The label shown on the back button at the root level of the drill-down menu. Defaults to "Main Menu". |
-| **Remove Menu Item Borders** | Strips the divider lines between items in the mobile menu. |
 | **Hide Back Text** | Shows only the back icon with no text label on the back button. |
+| **Back Text Mode** | Controls what the back button label shows: **Back to** displays "Back to [Parent Name]" (e.g. "Back to Products"); **Title** displays the current dropdown's own name (e.g. "Products"). |
+| **Back to Home Menu Text** | The label shown on the back button at the root level of the drill-down menu when **Back Text Mode** is set to **Back to**. Defaults to "Main Menu". |
+| **Remove Menu Item Borders** | Strips the divider lines between items in the mobile menu. |
 
 ### Dropdown
 
@@ -59,7 +59,8 @@ The core navigation component. It controls everything about the menu — how it 
 | **Global Mega Menu Width** | Default width for all mega menu panels. Accepts any valid CSS width value — e.g. `1200px`, `100vw`, `var(--content-width)`, a class name, or an element ID. Can be overridden per dropdown in the DWC Dropdown settings. |
 | **Global Inner Width** | Maximum inner content width inside mega menu panels. |
 | **Dropdown Vertical Alignment** | Aligns the top of dropdowns to the bottom of any specified CSS selector — useful for positioning dropdowns relative to a specific header row rather than the nav itself. |
-| **Dropdown Offset Gap** | Gap between the navigation bar and the top edge of dropdown panels. |
+| **Dropdown Offset Gap** | Gap between the navigation bar and the top edge of top-level dropdown panels. |
+| **Nested Dropdown Offset Gap** | Gap between a nestable parent dropdown item and its flyout panel. |
 | **Caret** | Shows a small caret/pointer beneath the active nav item pointing toward the open dropdown. |
 | **Arrow Visibility** | Controls whether the chevron arrow on dropdown toggle buttons is visible. |
 
@@ -67,6 +68,7 @@ The core navigation component. It controls everything about the menu — how it 
 
 | Setting | Description |
 |---|---|
+| **Dropdown Trigger Mode** | Global default for how dropdowns open: **Hover or Click**, **Hover only**, or **Click only**. Individual dropdowns can override this with their own Dropdown Trigger Mode setting. |
 | **Nested Dropdown Active Overlay** | When a nested dropdown opens, a semi-transparent overlay dims the rest of the parent dropdown content. |
 | **Nested Dropdown Active Overlay Color** | The colour and opacity of that overlay. |
 | **Nested Dropdown Inactive Blur** | Blurs the inactive content in the parent dropdown while a nested one is open. |

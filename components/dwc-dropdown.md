@@ -38,12 +38,14 @@ Settings that apply when this item is configured as a mega menu.
 | **Enable** | Switches this dropdown from a standard panel to a full-width mega menu layout. |
 | **Width** | Width of the mega menu panel (overrides the global setting from DWC Nav). |
 | **Inner Width** | Maximum inner content width inside the mega menu panel. Defaults to `100%` of the panel width. Useful when the panel spans the full header width but you want the content to remain constrained to a narrower column. |
+| **Breakout** | Moves this mega menu panel into the header area on mobile (uses the global mobile breakpoint from DWC Nav). Useful for mega menus that should be accessible on mobile without opening the full mobile sidebar. |
 
 ### Content
 
 | Setting | Description |
 |---|---|
 | **Content Alignment** | Horizontal alignment of the dropdown panel relative to its toggle button: **Left**, **Center**, or **Right**. Aligns the panel to the parent item's position. |
+| **Submenu Reveal** | Per-dropdown override for how submenus open on mobile: **Default** (inherits from DWC Nav), **Expand** (push content down), or **Slide** (panel slides in from the side). |
 
 ### Builder
 

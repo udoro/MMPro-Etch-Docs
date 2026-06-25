@@ -14,7 +14,7 @@ The hamburger button that opens and closes the mobile menu. It can be placed any
 | **Color** | Colour of the hamburger bars or icon. Controls `--toggle-color`. |
 | **Hover Color** | Colour of the hamburger bars or icon on hover. Controls `--toggle-hover-color`. |
 | **Flip** | Mirrors the hamburger icon horizontally. |
-| **Hamburger Icon** | The animation style of the hamburger — choose from a range of animated icon styles (e.g. vortex, cross, arrow). |
+| **Hamburger Icon** | The animation style of the hamburger. Options: **Default**, two-line-squeeze, two-line-spin, two-line-collapse, three-line-spin, three-line-collapse, three-line-arrow. |
 | **Toggle Style** | Visual preset for the toggle button. The **Techno** style adjusts the closed-state line proportions. |
 | **Equalize** | When **Open/Close** label mode is active, this equalises the label width so the layout does not shift when the text changes between open and closed states. |
 | **Always Visible** | Keeps the toggle button visible even when the mobile menu is open, and on desktop viewports. Particularly useful when **Fullscreen Mobile Menu** is enabled — without this, the toggle would be hidden behind the fullscreen overlay. |
@@ -40,14 +40,14 @@ An optional text label shown alongside the hamburger icon.
 | Setting | Description |
 |---|---|
 | **Enable** | Shows the label. |
-| **Text** | A static label (shown in both open and closed states). |
-| **Open Text** | Label shown when the menu is **closed** (i.e. the button will open the menu). |
-| **Close Text** | Label shown when the menu is **open** (i.e. the button will close the menu). |
+| **Text** | Label mode. **Open/Close** — uses separate text for the open and closed states (see Open Text and Close Text below). **Menu** — shows a single static label in both states. |
+| **Open Text** | The label shown when the menu is **closed** (the button will open the menu). Only used in **Open/Close** mode. |
+| **Close Text** | The label shown when the menu is **open** (the button will close the menu). Only used in **Open/Close** mode. |
 | **Font Size** | Font size of the label. |
 | **Color** | Text colour of the label. |
 | **Gap** | Space between the hamburger icon and the label. |
 
-> **Tip:** Use **Open Text** and **Close Text** together with **Equalize** to prevent layout shift when the label switches between the two states.
+> **Tip:** When using **Open/Close** mode, enable **Equalize** in the Appearance section to prevent layout shift when the label text changes between states.
 
 ### Behaviour
 
