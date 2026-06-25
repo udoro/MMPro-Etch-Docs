@@ -2,25 +2,67 @@
 
 Standalone reference for configuring DWC Mega Menu Pro + Header Builder in Etch via the etch-connector. Read sections 1–3 first — they cover 90% of tasks. Sections 4–7 are lookup-only.
 
+## Before you start
+
+This skills file lives in a folder called `MMPro Etch Docs`.
+
+**Step 1 — Check for developer context file** at `../MMPro Etch/mmpro-dev-context.md` (sibling folder, one level up). If it exists, read it silently — this is a **developer session**. If not found, this is a **user session**.
+
+**Step 2 — Developer session only:** Do not create or update `mmpro-user-context.md`. The dev context file is the only context file for developer sessions.
+
+**Step 2 — User session only:** Look for `mmpro-user-context.md` in the **same folder as this file**. If it exists, read it silently — it contains saved templates. If not found, skip and continue. Do not touch the dev context file.
+
+**Tab name (both sessions):** Always extract from the server output when the user pastes it. Never cache it.
+
 ## Connector quick-start
 
+### What the user does
+If the user hasn't connected yet, give them exactly these steps — nothing more:
+
+1. In Etch Builder, open Settings → enable **AI Connector**
+2. Click the **AI sparkles button** in the lower-left settings bar → **"Connect external AI agent"**
+3. Paste `npx @digital-gravy/etch-connector serve` into this chat and send it
+
+### What the agent does (internal — never expose to user)
+Once the server output appears in chat:
+1. Extract the tab name from: `[etch-connector] + tab "your-site.com" (...)`
+2. Run the discovery script silently (block IDs + style entry IDs — see Section 3: Script library)
+3. Store tab name, header/nav/toggle block IDs, and style IDs in session memory
+4. Ask the user in plain English: **"I'm connected to [tab name]. What would you like to change?"**
+
+**Never** tell the user about block IDs, eval commands, script files, or any internal steps.
+**Never** ask the user to run scripts themselves.
+
+### Agent eval syntax (reference)
 ```bash
-# 1. Start the server (keep running in background)
-npx @digital-gravy/etch-connector serve
-
-# 2. Read the connected tab name from the output:
-# [etch-connector] + tab "your-site.com" (https://...)
-
-# 3. Run a script
 npx @digital-gravy/etch-connector eval -t "your-site.com" -f script.js
-
-# 4. For long operations (saveAsync) add --timeout
+# For long operations (saveAsync):
 npx @digital-gravy/etch-connector eval -t "your-site.com" --timeout 60000 -f script.js
 ```
 
-**Safe mode:** Scripts only have access to `etch.*` and standard JS built-ins. `window`, `document`, and all browser globals are blocked — use `etch.*` API calls only.
+**Safe mode:** Scripts only have access to `etch.*` and standard JS built-ins. `window`, `document`, and all browser globals are blocked.
 
 **Exit codes:** `0` = success, `2` = script error, `1` = operational error (tab not found, timeout, connector unreachable).
+
+---
+
+## Agent Skills Update
+
+When you discover something new while working — a pattern that worked, a gotcha that cost time, a faster way to do something — **add it to this file before ending the session**. The next AI agent should start faster than you did.
+
+| Discovery type | Where to add it |
+|---|---|
+| New task → action mapping | Section 2: Decision tree |
+| New reusable script | Section 3: Script library |
+| Prop or CSS variable you didn't know about | Section 4: Prop reference |
+| Special styles selector you used | Section 5: Special styles |
+| Mistake to avoid / API behaviour | Section 6: Rules & gotchas |
+| JS config change | Section 3: Script library |
+| Updated site-specific IDs | Section 1: Site config |
+
+**How:** One line or a short code block. No prose. Confirmed working only — no speculation.
+
+**What NOT to add:** Task-specific context, anything already in the component docs, anything unconfirmed.
 
 ---
 
@@ -223,6 +265,28 @@ return {
   topLevelCss: allStyles.find(s => s.id === '1mlutc1').css,
   toggleCss: allStyles.find(s => s.id === '7mjgmt8').css
 };
+```
+
+### Modify a JS config value in the component script
+
+Use for `DwcConfig.MegaMenu` or `DwcConfig.CenteredLogo` options with no prop equivalent (e.g. `breakinToNavList`, `centerNudge`, `roundOffFactor`).
+
+```js
+const comp = etch.components.getJson(1300); // DWC Nav componentId
+
+function findScriptBlock(blocks) {
+  for (const b of blocks) {
+    if (b.script && b.script.code) return b;
+    if (b.innerBlocks) { const f = findScriptBlock(b.innerBlocks); if (f) return f; }
+  }
+}
+
+const sb = findScriptBlock(comp.blocks);
+// script.code is plain JS when read via API — no base64 decode needed
+sb.script.code = sb.script.code.replace('breakinToNavList: 1,', 'breakinToNavList: 0,');
+
+// Persists immediately — no saveAsync needed
+await etch.components.updateAsync(1300, { blocks: comp.blocks });
 ```
 
 ### Common color-mix values
@@ -548,6 +612,11 @@ html:has([data-sticky-overlay-special-style='true'][data-sticky-header='true'] .
 - **DO NOT** style mega menu content via a custom stylesheet — use props
 - **DO NOT** use `{propKey}` in component edit mode bindings — use `{props.propKey}`
 - **NEVER edit or `appendAsync` to the `DWC Mega Menu` stylesheet** — it contains the distributable CSS installed by the user. Read it for debugging only.
+- **Block IDs change between sessions** — always rediscover with `findBlock(etch.blocks.getTree(), componentId).id`. Never use a cached block ID from a previous session.
+- **Tab name — always read from server output.** Never cache it. The connector must be running anyway, so the tab name is always available in the output.
+- **User context file stores templates only** — do not write tab names, block IDs, or style IDs to it.
+- **`etch.blocks.update` in component edit mode does NOT persist script changes** — use `etch.components.updateAsync(id, { blocks: comp.blocks })` instead. The script lives in the component template, not the block instance.
+- **Component `script.code` is plain JS when read via API** — direct string replacement works. No base64 decode/encode needed despite being base64 in the raw JSON file.
 
 ### Adding a new prop — full flow
 
@@ -589,3 +658,68 @@ Key `DwcConfig.MegaMenu` options:
 
 `DwcConfig.CenteredLogo`:
 - `enable`, `forceCenteredLogo`, `centerNudge`, `roundOffFactor`, `allowOddItems`
+
+---
+
+## 8. Templates
+
+Before starting any styling work, check this section and inform the user of available templates. Ask if they wish to apply one before making any changes.
+
+> **Agent instruction:** At the start of a styling session, say: "Available templates: [list names here]. Would you like to apply one as a starting point, or configure manually?"
+
+Applying a template sets a predefined delta of prop values, CSS variable overrides, and stylesheet rules. It overwrites the relevant settings — always confirm with the user before applying.
+
+### How templates are captured (for new template creation)
+
+1. User builds the desired look visually in Etch
+2. AI captures current state via connector (prop groups + style entry CSS)
+3. AI diffs against the distributable JSON provided by the user (e.g. v1.1.2) — the authoritative baseline
+4. Only the delta is saved here as the template definition
+
+### How templates are applied
+
+Read the delta for the chosen template and set each value directly — no diffing needed at apply time.
+
+**Before applying — confirmation table format:**
+
+Show the user a table with four columns: What / Component / Where (class + prop/variable) / Value. Always include both the component name AND the CSS variable class so the user knows exactly where to find each setting.
+
+Example row: `44px nav height | DWC Header | .dwc-header-vars → --header-min-height | 44px`
+
+Always ask for confirmation before applying.
+
+**After applying — status table format:**
+
+Mirror the same table with a ✓ Status column and the exact value that was set. End with: "Would you like to adjust anything?"
+
+---
+
+*No templates defined yet.*
+
+<!--
+Template structure (for reference when adding future templates):
+
+### [Template name]
+
+**Description:** One sentence on the visual style.
+
+**Props (delta only — values that differ from distributable defaults):**
+| Block | Group | Key | Value |
+|---|---|---|---|
+| header | overlay | overlayHeaderBackground | transparent |
+
+**CSS variables (delta only):**
+| Style entry | Variable | Value | !important needed? |
+|---|---|---|---|
+| i357enw (.dwc-header-vars) | --header-min-height | 44px | no |
+
+**Special styles blocks:**
+| Style entry | Block | Value |
+|---|---|---|
+| 9w5k5pq | BEFORE SCROLLING | --menu-item-clr: white |
+
+**Stylesheet rules:**
+```css
+#dwc-header { border-bottom: var(--header-bottom-border); }
+```
+-->
