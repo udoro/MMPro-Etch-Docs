@@ -131,3 +131,10 @@ These variables control the toggle's base appearance and are set via the compone
   --pill-aspect-ratio: 1;      /* pill aspect ratio */
 }
 ```
+
+---
+
+## Slots
+
+This component has no slots. It is self-contained.
+```

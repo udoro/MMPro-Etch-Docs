@@ -8,6 +8,13 @@ A top-level navigation link with no dropdown panel. Use this for simple links in
 
 DWC Menu Item has a content slot for building a fully custom link. When content is added to the slot, the **Text** and **Link To** settings become unavailable — the slot content takes over completely. This lets you build any link structure you want, including icons, custom text layouts, or combined icon and label designs.
 
+The slot name is `Content`. Find it programmatically:
+
+```js
+const item = findBlock(etch.blocks.getTree(), 1298);
+const custom = item.children.find(c => c.slotName === 'Content');
+```
+
 ---
 
 ## Settings

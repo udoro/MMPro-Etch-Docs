@@ -161,3 +161,20 @@ When items are moved into the nav using the **Breakin** relocation mode, they la
   background: #fff;
 }
 ```
+
+---
+
+## Slots
+
+| Slot | Description |
+|---|---|
+| `Nav_items` | Top-level navigation items. Place DWC Dropdown and DWC Menu Item components here. Rendered inside `<ul class="dwc-nav-nested-items">`. |
+| `Mobile_Logo` | Logo shown inside the mobile panel. If left empty the desktop logo is automatically cloned into this slot. |
+| `MobileTop_Content` | Extra content placed in the mobile top bar alongside the close button. |
+
+```js
+const nav = findBlock(etch.blocks.getTree(), 1300);
+const navItems   = nav.children.find(c => c.slotName === 'Nav_items');
+const mobileLogo = nav.children.find(c => c.slotName === 'Mobile_Logo');
+const mobileTop  = nav.children.find(c => c.slotName === 'MobileTop_Content');
+```

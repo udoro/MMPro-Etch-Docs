@@ -167,3 +167,16 @@ The `.dwc-header-vars` class is already applied to the **DWC Header** component 
   --stripe-border-radius: 1rem;  /* border radius of the stripe element */
 }
 ```
+
+---
+
+## Slots
+
+| Slot | Description |
+|---|---|
+| `default` | Everything visible in the header bar — the DWC Nav wrapper, logo, and any other header elements. |
+
+```js
+const header = findBlock(etch.blocks.getTree(), 1302);
+const body = header.children.find(c => c.slotName === 'default');
+```

@@ -130,3 +130,20 @@ The `.dwc-dropdown-items-vars` class is already applied to the **DWC Dropdown** 
   --dropdown-indent-bg: rgb(40 60 150 / 5%); /* background of the indent zone */
 }
 ```
+
+---
+
+## Slots
+
+DWC Dropdown has two slots. Only one is active at a time depending on whether mega menu is enabled.
+
+| Slot | Active when | Rendered as | Description |
+|---|---|---|---|
+| `Mega_Menu_Content` | `megaMenu.enable = true` | `<div>` | The full-width mega menu body. Any layout is valid here. |
+| `Nested_Dropdown_Content` | `megaMenu.enable = false` | `<ul>` | The standard flyout list. Direct children **must be `<li>` tags** — use DWC Dropdown or DWC Menu Item components. |
+
+```js
+const dd = findBlock(etch.blocks.getTree(), 1299);
+const megaSlot   = dd.children.find(c => c.slotName === 'Mega_Menu_Content');
+const flyoutSlot = dd.children.find(c => c.slotName === 'Nested_Dropdown_Content');
+```

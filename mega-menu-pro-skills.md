@@ -1,4 +1,4 @@
-# DWC Mega Menu Pro — AI Skills Reference
+﻿# DWC Mega Menu Pro — AI Skills Reference
 
 Standalone reference for configuring DWC Mega Menu Pro + Header Builder in Etch via the etch-connector. Read sections 1–3 first — they cover 90% of tasks. Sections 4–7 are lookup-only.
 
@@ -119,7 +119,41 @@ const newDropdownId = etch.blocks.create({
 }, parentNavBlockId, insertIndex);
 ```
 
-2. Find the slot-content child and build the inner structure fresh using `etch.blocks.create()`, passing your template class names and style entry IDs **directly in the block JSON** — they are set correctly at creation time with no retrofitting needed.
+2. Find the content slot-content child and build the inner structure fresh using `etch.blocks.create()`, passing your template class names and style entry IDs **directly in the block JSON** — they are set correctly at creation time with no retrofitting needed.
+
+> **Slot selection — pick by `slotName`, not by index.** Every `etch/slot-content` block has a top-level `slotName` field. Never rely on child order.
+>
+> **DWC Dropdown (componentId 1299)** — two slots:
+> ```js
+> const dd = findBlock(etch.blocks.getTree(), 1299);
+> const megaSlot   = dd.children.find(c => c.slotName === 'Mega_Menu_Content');       // mega menu body — use when megaMenu.enable = true
+> const flyoutSlot = dd.children.find(c => c.slotName === 'Nested_Dropdown_Content'); // flyout list — use when megaMenu.enable = false; direct children MUST be <li> tags
+> ```
+>
+> **DWC Menu Item (componentId 1298)** — one slot:
+> ```js
+> const item = findBlock(etch.blocks.getTree(), 1298);
+> const custom = item.children.find(c => c.slotName === 'Content');
+> // Use when the nav item needs more than a plain text label — e.g. an icon + label,
+> // a custom SVG link, or any markup props.text / props.linkTo cannot produce.
+> // Leave empty to use the standard <a> rendered from props.
+> ```
+>
+> **DWC Nav (componentId 1300)** — three slots:
+> ```js
+> const nav = findBlock(etch.blocks.getTree(), 1300);
+> const navItems   = nav.children.find(c => c.slotName === 'Nav_items');         // top-level nav items — DWC Dropdown and DWC Menu Item go here
+> const mobileLogo = nav.children.find(c => c.slotName === 'Mobile_Logo');       // logo inside mobile panel; if empty, desktop logo is auto-cloned
+> const mobileTop  = nav.children.find(c => c.slotName === 'MobileTop_Content'); // extra content in the mobile top bar alongside the close button
+> ```
+>
+> **DWC Header (componentId 1302)** — one slot:
+> ```js
+> const header = findBlock(etch.blocks.getTree(), 1302);
+> const body = header.children.find(c => c.slotName === 'default'); // everything in the header bar — DWC Nav, logo, etc.
+> ```
+>
+> **DWC Mobile Toggle (componentId 1301)** — no slots. Self-contained.
 
 3. **Do NOT use `etch.blocks.create()` for class/styles** — classes set via `attributes.class` in `create()` JSON are NOT persisted (they're stripped on save/reload because the class attribute is coupled to `styles[]`). Use the workflow below instead.
 
@@ -167,11 +201,16 @@ await etch.saveAsync();
 ```
 
 **Key rules:**
-- ONE style entry per mega menu template (the BEM parent). CSS nesting handles all child elements.
-- Only the top container block needs the style entry in `styles[]`. PHP outputs it once; the CSS selector rules apply to all matching child elements.
-- Child blocks get their BEM classes via `attributes.class` in the `replace()` JSON — `replace()` persists these correctly (unlike `create()`).
-- `styles: []` on child blocks is fine — Etch may auto-create empty phantoms but those don't affect rendering.
-- CSS nesting: use `&__element` for BEM children, `&:hover .full-class` for hover states on descendants, `@container` queries nested inside the BEM parent.
+- **One style entry per element class** (e.g. `.mega-menu-revo-2__card` gets its own style entry with its own CSS).
+- Within each element's style entry, nesting is allowed and preferred for: `@container`, pseudo-elements (`&::before`), states (`&:hover`), and child tag selectors (`& span`, `& img`, `& svg`, `& svg path`, `& path`).
+- **Responsive: ALWAYS use `@container`, NEVER `@media`.** The mega menu content div is already declared as a container (`container-type` is set on it by the component), so any element inside a mega menu can use `@container (width < 900px) { ... }` directly. **Do NOT add `container-type` to your own wrapper** (e.g. `.mm-features`) — it's redundant and, worse, it would make your wrapper the query target instead of the full content div. Breakpoints query the mega menu content width, not the viewport. Convert range/`max-width` forms too: `@media (max-width: 1100px)` → `@container (width < 1100px)`.
+- Do **NOT** nest sub-classes (`&__card`) inside a parent's style entry — each sub-class lives in its own entry.
+- Every block needs the matching style entry ID in its `styles[]` array — use `replace()` to set this (see Step C below), passing `styles: [styleId]` for each block in the JSON tree.
+- `replace()` propagates `styles[]` correctly to all nested children in the JSON tree.
+- **Grid best practice:** always use `repeat(auto-fit, minmax(min(to-rem(260px), 100%), 1fr))` — never hardcode `1fr 1fr 1.2fr` or similar. `min()` prevents overflow in narrow containers; `auto-fit` collapses columns naturally without manual breakpoints.
+- **Link style entries must always set both `color` and `&:hover { color: ... }` explicitly** — prevents global/theme `a` styles from bleeding in. Minimum: `color: white; &:hover { color: white; }`.
+- **Use `to-rem()` for all px values** in style entry CSS — e.g. `to-rem(14px)`, `to-rem(20px)`. Style entries go through `CssProcessor::preprocess_css()` which handles the conversion. Never write raw rem values like `0.875rem`; write `to-rem(14px)` instead. Exceptions: aspect ratios, `z-index`, `opacity`, unitless values, and `calc()` expressions where mixing units is intentional.
+- **If ACSS (AutomaticCSS) skills are available, prefer ACSS tokens and utility patterns** over the default styling approach above.
 - **Never put mega menu CSS in the global tuts stylesheet** — use style entries only.
 
 Only duplicate an existing mega menu if you need to copy content (not structure/styles), and plan to keep the same class names as the source.
@@ -696,6 +735,19 @@ html:has([data-sticky-overlay-special-style='true'][data-sticky-header='true'] .
 
 ## 6. Rules & gotchas
 
+### Editing workflow — keep the panel open while styling
+
+Before editing any mega menu / dropdown, set `inBuilder.keepOpen` to `{true}` on that DWC Dropdown so the panel stays open in the builder for the user to watch; toggle it back to `{false}` (or remove it) once the edits are done. Set/read it via the `inBuilder` group attribute:
+```js
+function setGroup(bid,key,obj){ etch.blocks.setAttribute(bid,key,'{'+JSON.stringify(obj)+'}'); }
+setGroup(dropdownId, 'inBuilder', { keepOpen: '{true}' });  // before edits
+await etch.saveAsync();
+// ...do the styling...
+setGroup(dropdownId, 'inBuilder', { keepOpen: '{false}' }); // when done
+await etch.saveAsync();
+```
+Always pair them — never leave a menu stuck open at the end of a session.
+
 ### Customization hierarchy — always try in this order
 
 1. **Component props** — if a prop exists for what you want, use it
@@ -730,12 +782,20 @@ html:has([data-sticky-overlay-special-style='true'][data-sticky-header='true'] .
 - **Component `script.code` is plain JS when read via API** — direct string replacement works. No base64 decode/encode needed despite being base64 in the raw JSON file.
 - **`etch.styles.create(selector, css)` — second arg is a CSS STRING only.** Do NOT pass an object `{ css, type, collection }`. Passing an object stores it as the `css` value; when PHP's `CssProcessor::preprocess_css()` receives an array instead of a string it causes a WordPress critical error on the frontend.
 - **`etch.blocks.update(id, { styles })` silently ignores the `styles` field.** The `styles` array is read-only via `BlockPatch`. Do not attempt to set it through `update()`.
+- **A DWC Dropdown's content slots are identified by a top-level `slotName` field, not by child index.** The two `etch/slot-content` children are `Mega_Menu_Content` and `Nested_Dropdown_Content`. `options`/`context` are empty on these — read `child.slotName`. Always select with `.find(c => c.slotName === 'Mega_Menu_Content')`.
+- **Inline SVG data-URIs in `content`, `mask`/`-webkit-mask`, or `background` MUST be percent-encoded — never use `data:image/svg+xml;utf8,<svg…>` with raw markup.** The `;utf8,` form with unescaped `<`, `>`, spaces, and quotes silently fails to load in Chrome (the Etch builder), so a `content: url(...)` pseudo-element renders nothing and a mask shows nothing — with no error. Encode with `'data:image/svg+xml,' + encodeURIComponent(svg)` (a standard JS built-in, allowed in safe mode). This is exactly why the icon masks in `.mm-features__item-icon` render but a hand-written `;utf8,` `::before` did not. Use single quotes inside the SVG so the encoded string has no `"` to clash with the `url("…")` wrapper.
+- **Every node in `create()`/`replace()` block JSON needs a `children` array — including `etch/text` nodes.** Text nodes are `{ type:'etch/text', version:1, context:{name:'Text'}, options:{}, text:'...', children:[] }`. Omitting `children:[]` on a text node fails validation with `expected array, received undefined`. Element text content lives in child `etch/text` nodes, not a `text` attribute (that attribute is for components like Menu Item labels). Inline tags like `<em>`/`<span>` are plain `etch/element` nodes (no class/styles needed) wrapping their own text node — style them from the parent's entry via `& em` / `& span`.
+- **NEVER use `replace()` to edit an already-populated block — it resets EVERY attribute on EVERY node in the subtree**, silently wiping user edits (a swapped image `src`, a changed link, a renamed class). To change copy in place, locate the `etch/text` node and call `etch.blocks.setText(textNodeId, 'new text')` — then `await etch.saveAsync()`. Only use `replace()` to populate an empty placeholder or when you intend to rebuild the whole subtree from scratch. Walk to the text node via the parent element's class: `el.children.find(c => c.type==='etch/text')` (for mixed content like a heading with `<em>`, set each text node individually — the first text node, the `<em>`'s inner text node, and the trailing text node).
+- **Recovering a value clobbered by `replace()` (or any bad edit) — `etch.history` is read-recoverable.** It exposes `undo()`, `redo()`, `canUndo()`, `canRedo()` (undo/redo are async — `await` them). Pattern: `await etch.history.undo()` repeatedly, reading `etch.blocks.getTree()` after each step until the lost value reappears, capture it, then `await etch.history.redo()` the SAME number of times to return to the current state — reading between steps does not mutate or save. **Caveat: undo/redo did NOT cleanly round-trip a `replace()` in practice** (text reverted while the recovered image stuck). So use history only to *read back* the lost value, then re-apply it explicitly with `setAttribute`/`setText` — never rely on redo alone to restore the full prior state.
 - **`etch.blocks.addClass(id, className)` and `removeClass` take CSS CLASS NAME STRINGS — not style entry IDs.** They modify the HTML `class` attribute only. `addClass` does NOT wire the block's `styles[]` array to an existing style entry — it just appends the string to the class attribute. `removeClass` removes the class string AND (by looking up a style entry with that CSS selector) removes the matching style entry ID from `styles[]`.
 - **The `styles[]` array and the HTML `class` attribute are independent.** PHP uses `styles[]` to decide which style-entry CSS to include in the page `<style>` tag. The `class` attribute is the rendered HTML class. Changing one does not automatically change the other.
 - **To change which style entries apply to a block:** Use `removeClass(id, 'old-css-class')` (removes the class AND the matching style ID from `styles[]`), then `addClass(id, 'new-css-class')` (adds the class to HTML; but this does NOT add the matching style entry ID to `styles[]`). Result: HTML class is correct, but `styles[]` no longer references the new style entry.
 - **Workaround for styles[] not updating:** Put the CSS in the global tuts stylesheet (always output by PHP) instead of relying on per-block `styles[]`. This avoids the issue entirely — the tuts stylesheet CSS applies by CSS selector regardless of `styles[]`.
 - **`setAttribute(id, 'class', value)` does NOT reliably persist the class.** The HTML class attribute is reconstructed from the `styles[]` array on save/reload. Always use `addClass`/`removeClass` to modify classes — never `setAttribute` for the `class` key.
 - **Block IDs change on every page reload** — always rediscover by walking `etch.blocks.getTree()`. Never hardcode IDs across sessions or after a reload.
+- **`getGroup` returns `undefined` if the group attribute doesn't exist yet on the block** — calling `.slice()` on it will throw. Always guard: `const group = etch.blocks.getAttribute(bid, key) ? getGroup(bid, key) : {};`. `setGroup` has no such problem — it creates the attribute if absent. For group props that may not be initialised (e.g. `inBuilder` on a freshly created dropdown), call `setGroup` directly without reading first.
+- **Never `replace()` a populated block** — it resets every attribute on every node, wiping user edits. Edit content in place with `etch.blocks.setText(textNodeId, ...)` + `saveAsync()`. Includes the text-node walk pattern and the mixed-content (heading with `<em>`) note.
+- **History recovery** — `etch.history.undo()`/`redo()` (async) can read back a clobbered value, but doesn't reliably round-trip a `replace()`, so always re-apply the recovered value explicitly with `setAttribute`/`setText` rather than trusting redo.
 
 ### Adding a new prop — full flow
 
