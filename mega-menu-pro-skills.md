@@ -275,6 +275,10 @@ await etch.stylesheets.appendAsync('5378835', '.mega-menu-revo__nav-group { ... 
 | Change toggle icon colour on dark hero (before scroll) | `--toggle-color` in BEFORE SCROLLING block of `.dwc-toggle-vars` (no `!important`) |
 | Change toggle bg (pill) | `appearance.pillBackgroundColor` prop → CSS `--toggle-bg` (**prop-driven, needs `!important`** to override in CSS) |
 | Add a new prop to a component | `etch.components.updateAsync(id, { properties: [...existing, newProp] })` — see Section 3 |
+| Use a nav item as an icon button (e.g. cart, account) | Set `general.appearance` → `Icon` on DWC Dropdown, enable `general.useCustomSvg`, paste SVG into `general.customSvg`. **Requires "Allow unsafe HTML" to be enabled in Etch settings.** When `useCustomSvg` is on, the arrow automatically disappears. |
+| Align nav items left with icon buttons on the right | Set `menuMode.lastItemIsButton` to match the number of icon buttons (`true` = 1, `true-2` = 2, `true-3` = 3; max 3), then set `menuMode.nonButtonItemsAlignment` → `Left` |
+| Align nav items centre with icon buttons on the right | Same as above but set `menuMode.nonButtonItemsAlignment` → `Center` |
+| Break an icon button dropdown out to the header on mobile (sits next to hamburger) | `megaMenu.enable` must be `true` first — `megaMenu.breakout` is only available when mega menu is enabled. Then toggle `megaMenu.breakout` → `true`. Uses the default mobile breakpoint. For a plain icon button with no panel, use DWC Menu Item + `Content` slot + `relocation.mode: breakout` instead. |
 
 ---
 
