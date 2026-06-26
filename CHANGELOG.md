@@ -1,6 +1,6 @@
 # Changelog
 
-> Update Mega Menu Pro + Header Builder using the [Updater](https://etch.designwithcracka.com/mmpro-updater/){:target="_blank"}.
+> Update Mega Menu Pro + Header Builder using the <a href="https://etch.designwithcracka.com/mmpro-updater/" target="_blank" rel="noopener noreferrer">Updater</a>.
 
 ## Version 1.1.1 - June 23, 2026
 
