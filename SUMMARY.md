@@ -1,6 +1,6 @@
-# Table of Contents
+# Table of contents
 
-* [Introduction](README.md)
+* [Documentation](README.md)
 * [Installation & Getting Started](getting-started.md)
 * [Updating](updating.md)
 * [Special Sticky / Overlay Styles](special-styles.md)
