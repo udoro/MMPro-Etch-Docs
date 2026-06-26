@@ -1,5 +1,7 @@
 # Changelog
 
+> Update Mega Menu Pro + Header Builder using the [Updater](updating.md).
+
 ## Version 1.1.1 - June 23, 2026
 
 - Improved reported issue with buffer zone.
