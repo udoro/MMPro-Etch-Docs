@@ -15,6 +15,7 @@
 | [DWC Dropdown](components/dwc-dropdown.md) | A single top-level nav item with a dropdown or mega menu panel |
 | [DWC Menu Item](components/dwc-menu-item.md) | A plain nav link — supports badges, visibility rules, and responsive relocation |
 | [DWC Mobile Toggle](components/dwc-mobile-toggle.md) | The hamburger button that opens and closes the mobile menu |
+| [AI Skills Reference](mega-menu-pro-skills.md) | Skills file for AI agents (e.g. Claude) — covers connector setup, prop reference, and scripting patterns for configuring MMPro via AI |
 
 ---
 

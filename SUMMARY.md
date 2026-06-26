@@ -5,6 +5,7 @@
 * [Updating](updating.md)
 * [Special Sticky / Overlay Styles](special-styles.md)
 * [JavaScript API](javascript-api.md)
+* [AI Skills Reference](mega-menu-pro-skills.md)
 
 ## Components
 
