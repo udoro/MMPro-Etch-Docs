@@ -1,55 +1,59 @@
+---
+icon: diamonds-4
+---
+
 # DWC Header
 
 The outermost wrapper of the entire header. It controls sticky behaviour, overlay positioning, skip-link accessibility, and section offset padding. All DWC components live inside this element.
 
----
+***
 
 ## Settings
 
 ### Sticky
 
-| Setting | Description |
-|---|---|
-| **Sticky Header** | Makes the header stick to the top of the viewport as the user scrolls. To disable sticky on a specific page without removing the setting, add the attribute `data-no-sticky` to any section on that page. |
-| **Scroll Down Visibility** | Which row(s) to show or hide when the user scrolls down. Options: `Default` (all rows stay), `hide-row-1/2/3` (slide that row off-screen), `show-row-1/2/3` (keep only that row visible), `hide-all-rows` (collapse the entire header). |
-| **Scroll Up Visibility** | Which row(s) to restore when the user scrolls back up. Options: `Default`, `show-row-1/2/3`, `show-all-rows`, `reverse`. |
-| **Scroll Visibility Distance** | How far the user must scroll before the hide/show triggers. Accepts `px` values (`200px`), `rem` values (`12rem`), or a plain number (`200`). Default: `200px`. |
-| **Sticky Header Background** | Background colour applied to the header once the user has scrolled. Controls the CSS property `--header-bg-sticky`. |
-| **Scroll Margin** | Sets the `--dwc-scroll-margin` variable so in-page anchor links scroll to the correct position below the sticky header. |
+| Setting                           | Description                                                                                                                                                                                                                                                                                                                                                      |
+| --------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Sticky Header**                 | Makes the header stick to the top of the viewport as the user scrolls. To disable sticky on a specific page without removing the setting, add the attribute `data-no-sticky` to any section on that page.                                                                                                                                                        |
+| **Scroll Down Visibility**        | Which row(s) to show or hide when the user scrolls down. Options: `Default` (all rows stay), `hide-row-1/2/3` (slide that row off-screen), `show-row-1/2/3` (keep only that row visible), `hide-all-rows` (collapse the entire header).                                                                                                                          |
+| **Scroll Up Visibility**          | Which row(s) to restore when the user scrolls back up. Options: `Default`, `show-row-1/2/3`, `show-all-rows`, `reverse`.                                                                                                                                                                                                                                         |
+| **Scroll Visibility Distance**    | How far the user must scroll before the hide/show triggers. Accepts `px` values (`200px`), `rem` values (`12rem`), or a plain number (`200`). Default: `200px`.                                                                                                                                                                                                  |
+| **Sticky Header Background**      | Background colour applied to the header once the user has scrolled. Controls the CSS property `--header-bg-sticky`.                                                                                                                                                                                                                                              |
+| **Scroll Margin**                 | Sets the `--dwc-scroll-margin` variable so in-page anchor links scroll to the correct position below the sticky header.                                                                                                                                                                                                                                          |
 | **Special Sticky/Overlay Styles** | Unlocks a set of CSS hooks that let you style the header and menu items differently before and after the user scrolls (e.g. white icons on a transparent overlay, dark icons once the sticky background kicks in). Configure these styles via the **STICKY/OVERLAY HEADER SPECIAL STYLES** section in the `.dwc-toggle-vars` and `.dwc-header-vars` CSS classes. |
 
 ### Overlay
 
-| Setting | Description |
-|---|---|
-| **Overlay Header** | The header floats over the page content below it (useful for hero sections with a transparent header). To disable overlay on a specific page, add `data-no-overlay` to any section on that page. To keep the overlay active but suppress the special overlay/sticky styles, add `data-no-overlay-style` to any section on that page. |
-| **Overlay Header Mobile** | Extends the overlay behaviour to mobile viewports. |
-| **Overlay Header Width** | Width of the overlay container. |
-| **Overlay Header Background** | Background colour when the overlay is in its default (unscrolled) state. Set to a transparent value for a fully transparent header. Controls `--overlay-header-bg`. |
-| **Overlay Header Active Background** | Background colour applied when the user hovers a menu item or a dropdown is open. Controls `--overlay-header-bg-active`. |
-| **Overlay Header Blur** | Backdrop blur intensity on the overlay. |
-| **Overlay Header Radius** | Border radius on the overlay container. |
-| **Overlay Header Inset** | Offset from the top and sides of the viewport. |
-| **Remove Inset Top** | Removes the top gap, placing the overlay flush with the top of the viewport. |
-| **Overlay Header Shadow** | Box shadow on the overlay container. |
-| **Offset Section Padding** | Automatically adds top padding to the first section on the page so its content is not hidden beneath the header. To opt a specific section out of this padding, add the attribute `data-no-padding` to that section. |
+| Setting                              | Description                                                                                                                                                                                                                                                                                                                          |
+| ------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| **Overlay Header**                   | The header floats over the page content below it (useful for hero sections with a transparent header). To disable overlay on a specific page, add `data-no-overlay` to any section on that page. To keep the overlay active but suppress the special overlay/sticky styles, add `data-no-overlay-style` to any section on that page. |
+| **Overlay Header Mobile**            | Extends the overlay behaviour to mobile viewports.                                                                                                                                                                                                                                                                                   |
+| **Overlay Header Width**             | Width of the overlay container.                                                                                                                                                                                                                                                                                                      |
+| **Overlay Header Background**        | Background colour when the overlay is in its default (unscrolled) state. Set to a transparent value for a fully transparent header. Controls `--overlay-header-bg`.                                                                                                                                                                  |
+| **Overlay Header Active Background** | Background colour applied when the user hovers a menu item or a dropdown is open. Controls `--overlay-header-bg-active`.                                                                                                                                                                                                             |
+| **Overlay Header Blur**              | Backdrop blur intensity on the overlay.                                                                                                                                                                                                                                                                                              |
+| **Overlay Header Radius**            | Border radius on the overlay container.                                                                                                                                                                                                                                                                                              |
+| **Overlay Header Inset**             | Offset from the top and sides of the viewport.                                                                                                                                                                                                                                                                                       |
+| **Remove Inset Top**                 | Removes the top gap, placing the overlay flush with the top of the viewport.                                                                                                                                                                                                                                                         |
+| **Overlay Header Shadow**            | Box shadow on the overlay container.                                                                                                                                                                                                                                                                                                 |
+| **Offset Section Padding**           | Automatically adds top padding to the first section on the page so its content is not hidden beneath the header. To opt a specific section out of this padding, add the attribute `data-no-padding` to that section.                                                                                                                 |
 
 ### Accessibility
 
-| Setting | Description |
-|---|---|
-| **Skip Link** | Injects a visually hidden "Skip to content" link as the first focusable element on the page. Keyboard and screen-reader users can press Tab immediately after the page loads to jump past the navigation to the main content. |
+| Setting                        | Description                                                                                                                                                                                                                                                                                                                                                                                  |
+| ------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Skip Link**                  | Injects a visually hidden "Skip to content" link as the first focusable element on the page. Keyboard and screen-reader users can press Tab immediately after the page loads to jump past the navigation to the main content.                                                                                                                                                                |
 | **Custom Skip Link Parameter** | Defines the target(s) for the skip link. Supports multiple links separated by commas. Use the format `#selector \| Link label` — for example: `#main \| Skip to content, #footer \| Skip to footer`. If the target element does not have an ID, use its tag or class name directly without the `#`: e.g. `main \| Skip to content`. Leave empty for auto-detection of the main content area. |
 
 ### Other
 
-| Setting | Description |
-|---|---|
-| **Header Background Color** | Base background colour for the header element. Controls the CSS property `--header-bg`. |
+| Setting                     | Description                                                                                                                                                                                          |
+| --------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Header Background Color** | Base background colour for the header element. Controls the CSS property `--header-bg`.                                                                                                              |
 | **Dark Background Preview** | Builder-only — darkens the canvas background in the editor. Useful when your menu items or logo are white and would otherwise be invisible against the white canvas. Has no effect on the live site. |
-| **Styling Classes** | Additional CSS class applied to the header element for custom targeting. |
+| **Styling Classes**         | Additional CSS class applied to the header element for custom targeting.                                                                                                                             |
 
----
+***
 
 ## Multi-row headers
 
@@ -59,21 +63,21 @@ The DWC Header supports multiple rows — for example a top utility bar sitting 
 
 Each header row gets a class automatically:
 
-| Class | Row |
-|---|---|
+| Class               | Row                 |
+| ------------------- | ------------------- |
 | `.dwc-header-row-1` | First row (topmost) |
-| `.dwc-header-row-2` | Second row |
-| `.dwc-header-row-3` | Third row |
+| `.dwc-header-row-2` | Second row          |
+| `.dwc-header-row-3` | Third row           |
 
 ### Scroll state classes
 
 As the user scrolls, these classes are added and removed automatically:
 
-| Class | Element | When active |
-|---|---|---|
+| Class           | Element  | When active                                                                                        |
+| --------------- | -------- | -------------------------------------------------------------------------------------------------- |
 | `.dwc-headroom` | `<body>` | Added when sticky header activates. Required for the Special Sticky/Overlay CSS selectors to fire. |
-| `.scroll-down` | `<body>` | User is scrolling down past the scroll visibility distance threshold |
-| `.scroll-up` | `<body>` | User has scrolled back up |
+| `.scroll-down`  | `<body>` | User is scrolling down past the scroll visibility distance threshold                               |
+| `.scroll-up`    | `<body>` | User has scrolled back up                                                                          |
 
 ### CSS targeting
 
@@ -103,20 +107,20 @@ Each row's height is available as a CSS variable on `<body>`:
 
 Use these when you need to offset or position something relative to the visible header height — for example, setting the top position of a sticky element that sits just below the visible rows.
 
----
+***
 
 ## Per-page feature exclusions
 
 Add these attributes to any `<section>` element on a page to suppress specific header features on that page only, without changing the global settings.
 
-| Attribute | Effect |
-|---|---|
-| `data-no-sticky` | Disables sticky header on this page |
-| `data-no-overlay` | Disables overlay header on this page |
+| Attribute               | Effect                                                                   |
+| ----------------------- | ------------------------------------------------------------------------ |
+| `data-no-sticky`        | Disables sticky header on this page                                      |
+| `data-no-overlay`       | Disables overlay header on this page                                     |
 | `data-no-overlay-style` | Keeps overlay active but suppresses the Special Sticky/Overlay CSS hooks |
-| `data-no-padding` | Opts this section out of the Offset Section Padding |
+| `data-no-padding`       | Opts this section out of the Offset Section Padding                      |
 
----
+***
 
 ## CSS variables — `.dwc-header-vars`
 
@@ -168,12 +172,12 @@ The `.dwc-header-vars` class is already applied to the **DWC Header** component 
 }
 ```
 
----
+***
 
 ## Slots
 
-| Slot | Description |
-|---|---|
+| Slot      | Description                                                                                      |
+| --------- | ------------------------------------------------------------------------------------------------ |
 | `default` | Everything visible in the header bar — the DWC Nav wrapper, logo, and any other header elements. |
 
 ```js

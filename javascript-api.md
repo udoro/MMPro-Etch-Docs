@@ -1,10 +1,14 @@
+---
+icon: code
+---
+
 # JavaScript API
 
 The script exposes two globals: `window.dwcMegaMenu` (the live instance) and `window.DwcConfig` (configuration). Advanced users can call instance methods to control the menu programmatically, watch CSS class changes to react to menu state, and listen to the custom events the script dispatches.
 
-> **Important:** `window.DwcConfig` must be defined *before* the mega menu script loads. Methods on `window.dwcMegaMenu` are available after `DOMContentLoaded`.
+> **Important:** `window.DwcConfig` must be defined _before_ the mega menu script loads. Methods on `window.dwcMegaMenu` are available after `DOMContentLoaded`.
 
----
+***
 
 ## Global Configuration
 
@@ -21,43 +25,43 @@ window.DwcConfig.MegaMenu = {
 };
 ```
 
-| Key | Type | Default | Description |
-|---|---|---|---|
-| `minWidth` | `number` | `1201` | Viewport width (px) at which desktop mode begins. Below this value is mobile. Overridden per-nav by `data-mobile-breakpoint`. Changing `minWidth` after page load has no effect on the stylesheet's media queries — use `data-mobile-breakpoint` and reset the stylesheet guard instead (see `destroy()` example). |
-| `headerSelector` | `string` | `'#dwc-header'` | CSS selector for the header element. |
-| `nestMenuSelector` | `string` | `'.dwc-nest-menu'` | CSS selector for the nav wrapper. |
-| `menuAutoExpansion` | `boolean` | `true` | Auto-expand the first level on mobile open. |
-| `swipeToClose` | `boolean` | `true` | Enable swipe-left gesture to close mobile menu. |
-| `toolTip` | `boolean` | `true` | Show drill-down tooltips on mobile. |
-| `adaptiveHeight` | `0\|1` | `0` | Animate dropdown height when content changes. Overridden per-nav by `data-adaptive-height`. |
-| `stripeStyle` | `0\|1` | `0` | Apply stripe styling across header rows. Overridden per-nav by `data-stripe-style`. |
-| `toggleLabelWidth` | `0\|1` | `1` | Equalise open/close toggle label widths to prevent layout shift. |
-| `closeNavOnClick` | `0\|1` | `1` | Close the menu when a nav link is clicked. |
-| `closeOnHashClickOnly` | `0\|1` | `0` | Only close the menu when a hash (`#`) link is clicked. |
-| `closeOnMobileOnly` | `0\|1` | `0` | Restrict click-to-close behaviour to mobile viewports. |
-| `closeNavOnClickExclude` | `string` | `'.js-wpml-ls-item-toggle'` | Selector for links that should not trigger close-on-click. |
-| `breakinToNavList` | `0\|1` | `0` | Place `data-breakin` items inside the nav `<ul>` instead of the nav wrapper. |
-| `shiftFactor` | `number` | `1.05` | Multiplier used when shifting dropdowns to avoid viewport overflow. |
-| `minOverflow` | `number` | `20` | Minimum pixel overflow before a dropdown is repositioned. |
-| `viewportGutter` | `number` | `25` | Minimum gap (px) between a dropdown edge and the viewport edge. |
-| `reinitializeOnURLchange` | `boolean` | `false` | Re-initialise automatically on SPA URL changes via the History API. |
-| `overlayInsideHeader` | `0\|1` | `0` | Render the dropdown overlay inside the header element instead of `<body>`. |
-| `resetNavOnBreakpoint` | `boolean` | `true` | Reset open/active states when crossing the desktop/mobile breakpoint. |
-| `backButtonStyle` | `'title'\|'back-to'` | `'back-to'` | Mobile drill-down back button label. `'title'` shows the parent name; `'back-to'` shows "Back to [Parent]". |
-| `propagateVariables` | `array` | *(see source)* | CSS variables to copy from scoped elements to `:root`. Useful for elements outside the nav that need nav-scoped variables. |
+| Key                       | Type                 | Default                     | Description                                                                                                                                                                                                                                                                                                        |
+| ------------------------- | -------------------- | --------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `minWidth`                | `number`             | `1201`                      | Viewport width (px) at which desktop mode begins. Below this value is mobile. Overridden per-nav by `data-mobile-breakpoint`. Changing `minWidth` after page load has no effect on the stylesheet's media queries — use `data-mobile-breakpoint` and reset the stylesheet guard instead (see `destroy()` example). |
+| `headerSelector`          | `string`             | `'#dwc-header'`             | CSS selector for the header element.                                                                                                                                                                                                                                                                               |
+| `nestMenuSelector`        | `string`             | `'.dwc-nest-menu'`          | CSS selector for the nav wrapper.                                                                                                                                                                                                                                                                                  |
+| `menuAutoExpansion`       | `boolean`            | `true`                      | Auto-expand the first level on mobile open.                                                                                                                                                                                                                                                                        |
+| `swipeToClose`            | `boolean`            | `true`                      | Enable swipe-left gesture to close mobile menu.                                                                                                                                                                                                                                                                    |
+| `toolTip`                 | `boolean`            | `true`                      | Show drill-down tooltips on mobile.                                                                                                                                                                                                                                                                                |
+| `adaptiveHeight`          | `0\|1`               | `0`                         | Animate dropdown height when content changes. Overridden per-nav by `data-adaptive-height`.                                                                                                                                                                                                                        |
+| `stripeStyle`             | `0\|1`               | `0`                         | Apply stripe styling across header rows. Overridden per-nav by `data-stripe-style`.                                                                                                                                                                                                                                |
+| `toggleLabelWidth`        | `0\|1`               | `1`                         | Equalise open/close toggle label widths to prevent layout shift.                                                                                                                                                                                                                                                   |
+| `closeNavOnClick`         | `0\|1`               | `1`                         | Close the menu when a nav link is clicked.                                                                                                                                                                                                                                                                         |
+| `closeOnHashClickOnly`    | `0\|1`               | `0`                         | Only close the menu when a hash (`#`) link is clicked.                                                                                                                                                                                                                                                             |
+| `closeOnMobileOnly`       | `0\|1`               | `0`                         | Restrict click-to-close behaviour to mobile viewports.                                                                                                                                                                                                                                                             |
+| `closeNavOnClickExclude`  | `string`             | `'.js-wpml-ls-item-toggle'` | Selector for links that should not trigger close-on-click.                                                                                                                                                                                                                                                         |
+| `breakinToNavList`        | `0\|1`               | `0`                         | Place `data-breakin` items inside the nav `<ul>` instead of the nav wrapper.                                                                                                                                                                                                                                       |
+| `shiftFactor`             | `number`             | `1.05`                      | Multiplier used when shifting dropdowns to avoid viewport overflow.                                                                                                                                                                                                                                                |
+| `minOverflow`             | `number`             | `20`                        | Minimum pixel overflow before a dropdown is repositioned.                                                                                                                                                                                                                                                          |
+| `viewportGutter`          | `number`             | `25`                        | Minimum gap (px) between a dropdown edge and the viewport edge.                                                                                                                                                                                                                                                    |
+| `reinitializeOnURLchange` | `boolean`            | `false`                     | Re-initialise automatically on SPA URL changes via the History API.                                                                                                                                                                                                                                                |
+| `overlayInsideHeader`     | `0\|1`               | `0`                         | Render the dropdown overlay inside the header element instead of `<body>`.                                                                                                                                                                                                                                         |
+| `resetNavOnBreakpoint`    | `boolean`            | `true`                      | Reset open/active states when crossing the desktop/mobile breakpoint.                                                                                                                                                                                                                                              |
+| `backButtonStyle`         | `'title'\|'back-to'` | `'back-to'`                 | Mobile drill-down back button label. `'title'` shows the parent name; `'back-to'` shows "Back to \[Parent]".                                                                                                                                                                                                       |
+| `propagateVariables`      | `array`              | _(see source)_              | CSS variables to copy from scoped elements to `:root`. Useful for elements outside the nav that need nav-scoped variables.                                                                                                                                                                                         |
 
 ### `window.DwcConfig.CenteredLogo`
 
-| Key | Type | Default | Description |
-|---|---|---|---|
-| `enable` | `0\|1` | `0` | Enable the centered logo feature. Overridden per-nav by `data-centered-logo`. |
-| `centerGuide` | `0\|1` | `1` | Show a visual center guide line (visible to logged-in admins only). Overridden per-nav by `data-center-guide`. |
-| `forceCenteredLogo` | `0\|1` | `1` | Compensate margins to achieve pixel-perfect centering. |
-| `centerNudge` | `number` | `0` | Nudge the logo left (negative) or right (positive) by this many pixels. |
-| `allowOddItems` | `0\|1` | `1` | Allow centering when the menu has an odd number of items. |
-| `roundOffFactor` | `'before'\|'after'` | `'after'` | For odd item counts, place the extra item before or after the logo. |
+| Key                 | Type                | Default   | Description                                                                                                    |
+| ------------------- | ------------------- | --------- | -------------------------------------------------------------------------------------------------------------- |
+| `enable`            | `0\|1`              | `0`       | Enable the centered logo feature. Overridden per-nav by `data-centered-logo`.                                  |
+| `centerGuide`       | `0\|1`              | `1`       | Show a visual center guide line (visible to logged-in admins only). Overridden per-nav by `data-center-guide`. |
+| `forceCenteredLogo` | `0\|1`              | `1`       | Compensate margins to achieve pixel-perfect centering.                                                         |
+| `centerNudge`       | `number`            | `0`       | Nudge the logo left (negative) or right (positive) by this many pixels.                                        |
+| `allowOddItems`     | `0\|1`              | `1`       | Allow centering when the menu has an odd number of items.                                                      |
+| `roundOffFactor`    | `'before'\|'after'` | `'after'` | For odd item counts, place the extra item before or after the logo.                                            |
 
----
+***
 
 ## Public Instance Methods
 
@@ -66,6 +70,7 @@ All methods are on the `window.dwcMegaMenu` singleton.
 ### Lifecycle
 
 #### `reinitialize()`
+
 Tears down event listeners and re-runs setup without a page reload. Use this after dynamically injecting or removing nav elements.
 
 ```js
@@ -77,6 +82,7 @@ window.dwcMegaMenu.reinitialize();
 > **Note:** `reinitialize()` does not reset the stylesheet guard. If you are changing `data-mobile-breakpoint` at runtime and need the stylesheet's media queries updated, use the full `destroy()` pattern below instead of `reinitialize()`.
 
 #### `destroy()`
+
 Removes all event listeners and observers. Use this before replacing the instance with a new configuration.
 
 ```js
@@ -97,19 +103,19 @@ if (styleTag) delete styleTag.dataset.breakpointModified;
 window.dwcMegaMenu = new window.DWCMegaMenuPro().initialize();
 ```
 
----
+***
 
 ### Viewport Detection
 
 These return `boolean` and can be called at any time.
 
-| Method | Returns `true` when… |
-|---|---|
-| `isDesktop()` | Viewport ≥ `minWidth` |
-| `isMobile()` | Viewport < `minWidth` |
+| Method                 | Returns `true` when…                              |
+| ---------------------- | ------------------------------------------------- |
+| `isDesktop()`          | Viewport ≥ `minWidth`                             |
+| `isMobile()`           | Viewport < `minWidth`                             |
 | `isEffectiveDesktop()` | Desktop viewport AND offcanvas mode is not active |
-| `isEffectiveMobile()` | Mobile viewport OR offcanvas mode is active |
-| `isRTL()` | `<html dir="rtl">` is set |
+| `isEffectiveMobile()`  | Mobile viewport OR offcanvas mode is active       |
+| `isRTL()`              | `<html dir="rtl">` is set                         |
 
 ```js
 if (window.dwcMegaMenu.isEffectiveMobile()) {
@@ -121,7 +127,7 @@ if (window.dwcMegaMenu.isRTL()) {
 }
 ```
 
----
+***
 
 ### Dropdown Control
 
@@ -163,7 +169,7 @@ document.querySelector('#open-modal-btn').addEventListener('click', () => {
 });
 ```
 
----
+***
 
 ### Mobile Menu Control
 
@@ -184,11 +190,12 @@ if (window.dwcMegaMenu.isMobileMenuOpen()) {
 }
 ```
 
----
+***
 
 ### Layout
 
 #### `recalculatePositions()`
+
 Forces all open dropdowns to recalculate their position. Useful after layout shifts caused by banners, cookie bars, or dynamic content.
 
 ```js
@@ -200,6 +207,7 @@ document.querySelector('#cookie-bar .accept').addEventListener('click', () => {
 ```
 
 #### `updateDropdownPosition(contentEl)`
+
 Recalculates position for a single dropdown panel. `contentEl` is the dropdown content container (`.dwc-dropdown-content`), not the `<li>`.
 
 ```js
@@ -207,17 +215,17 @@ const panel = document.querySelector('.dwc-dropdown-content');
 window.dwcMegaMenu.updateDropdownPosition(panel);
 ```
 
----
+***
 
 ## Custom Events
 
 These events are dispatched on `document` by the script itself. Listen to them to react to menu-level changes.
 
-| Event | `detail` payload | When fired |
-|---|---|---|
-| `dwc:rtlchange` | `{ isRTL: boolean }` | `<html dir>` attribute changes |
-| `dwc:resize` | *(none)* | Window resize fires |
-| `dwc:navigate` | *(none)* | SPA URL change detected (also *listened* for — see [SPA Integration](#spa--third-party-integrations)) |
+| Event           | `detail` payload     | When fired                                                                                                             |
+| --------------- | -------------------- | ---------------------------------------------------------------------------------------------------------------------- |
+| `dwc:rtlchange` | `{ isRTL: boolean }` | `<html dir>` attribute changes                                                                                         |
+| `dwc:resize`    | _(none)_             | Window resize fires                                                                                                    |
+| `dwc:navigate`  | _(none)_             | SPA URL change detected (also _listened_ for — see [SPA Integration](javascript-api.md#spa--third-party-integrations)) |
 
 ### Listening examples
 
@@ -238,7 +246,7 @@ document.addEventListener('dwc:resize', () => {
 });
 ```
 
----
+***
 
 ## CSS State Classes
 
@@ -246,26 +254,26 @@ No custom events are dispatched for dropdown open/close. The menu communicates s
 
 ### Body classes
 
-| Class | Present when… |
-|---|---|
-| `dwc-mobile` | Viewport is in mobile range |
-| `dwc-offcanvas-active` | Offcanvas sidebar mode is active |
-| `show-nav` | Mobile/offcanvas menu panel is open |
-| `no-scroll` | Body scroll is locked (mobile menu open) |
-| `desktop-centered` | Centered logo desktop layout is active |
+| Class                  | Present when…                            |
+| ---------------------- | ---------------------------------------- |
+| `dwc-mobile`           | Viewport is in mobile range              |
+| `dwc-offcanvas-active` | Offcanvas sidebar mode is active         |
+| `show-nav`             | Mobile/offcanvas menu panel is open      |
+| `no-scroll`            | Body scroll is locked (mobile menu open) |
+| `desktop-centered`     | Centered logo desktop layout is active   |
 
 ### Element classes
 
-| Class | Element | Present when… |
-|---|---|---|
-| `dwc-open` | `.dwc-nest-menu` | Mobile menu is open |
-| `open` | Nav `<li>` | Dropdown is currently open/visible |
-| `active` | Nav `<li>` | Dropdown is active/expanded |
-| `dwc-closing` | Nav `<li>` or menu | Closing animation is in progress |
-| `is-active` | Toggle `<button>` | Toggle button is in active state |
-| `is-breakout` | `<li>` | Item has been relocated via `data-breakout` |
+| Class         | Element            | Present when…                               |
+| ------------- | ------------------ | ------------------------------------------- |
+| `dwc-open`    | `.dwc-nest-menu`   | Mobile menu is open                         |
+| `open`        | Nav `<li>`         | Dropdown is currently open/visible          |
+| `active`      | Nav `<li>`         | Dropdown is active/expanded                 |
+| `dwc-closing` | Nav `<li>` or menu | Closing animation is in progress            |
+| `is-active`   | Toggle `<button>`  | Toggle button is in active state            |
+| `is-breakout` | `<li>`             | Item has been relocated via `data-breakout` |
 
----
+***
 
 ### Reacting to dropdown open/close
 
@@ -305,7 +313,7 @@ new MutationObserver(() => {
 }).observe(productsItem, { attributes: true, attributeFilter: ['class'] });
 ```
 
----
+***
 
 ### Reacting to mobile menu open/close
 
@@ -334,7 +342,7 @@ new MutationObserver(() => {
 }).observe(nestMenu, { attributes: true, attributeFilter: ['class'] });
 ```
 
----
+***
 
 ### Reacting to viewport mode changes
 
@@ -351,7 +359,7 @@ new MutationObserver(() => {
 });
 ```
 
----
+***
 
 ### Reacting to offcanvas mode activating
 
@@ -365,7 +373,7 @@ new MutationObserver(() => {
 });
 ```
 
----
+***
 
 ### Close all dropdowns when a modal or overlay opens
 
@@ -377,7 +385,7 @@ document.querySelector('#open-modal').addEventListener('click', () => {
 });
 ```
 
----
+***
 
 ### Pause / resume a video when a mega menu panel opens
 
@@ -396,7 +404,7 @@ new MutationObserver(() => {
 }).observe(nav, { subtree: true, attributes: true, attributeFilter: ['class'] });
 ```
 
----
+***
 
 ### Run code once a specific dropdown finishes closing
 
@@ -411,7 +419,7 @@ new MutationObserver(() => {
 }).observe(item, { attributes: true, attributeFilter: ['class'] });
 ```
 
----
+***
 
 ### Track which dropdown is open for analytics
 
@@ -433,7 +441,7 @@ new MutationObserver(() => {
 }).observe(nav, { subtree: true, attributes: true, attributeFilter: ['class'] });
 ```
 
----
+***
 
 ## Data Attributes
 
@@ -441,82 +449,84 @@ These attributes are read from HTML elements at runtime. Place them directly on 
 
 ### Breakpoint & Mode
 
-| Attribute | Element | Value | Description |
-|---|---|---|---|
+| Attribute                | Element | Value                | Description                                                                                                                                                                                                      |
+| ------------------------ | ------- | -------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `data-mobile-breakpoint` | DWC Nav | `number` e.g. `1024` | Override the global `minWidth` for this nav. Desktop starts at value + 1. Also rewrites the stylesheet media queries to match on first initialisation (one-time; see `destroy()` example for how to re-trigger). |
-| `data-offcanvas` | DWC Nav | `"true"` | Enable offcanvas/sidebar mode. |
-| `data-offcanvas-hover` | DWC Nav | `"true"` | Enable hover interaction in offcanvas mode (desktop only). |
+| `data-offcanvas`         | DWC Nav | `"true"`             | Enable offcanvas/sidebar mode.                                                                                                                                                                                   |
+| `data-offcanvas-hover`   | DWC Nav | `"true"`             | Enable hover interaction in offcanvas mode (desktop only).                                                                                                                                                       |
 
 ### Dropdown Behaviour
 
-| Attribute | Element | Value | Description |
-|---|---|---|---|
-| `data-megamenu` | DWC Dropdown | `"true"` | Mark this dropdown as a mega menu panel (instead of a standard dropdown). |
-| `data-content-width` | DWC Dropdown | `"500px"` | Override the width of this dropdown's content panel. |
-| `data-dropdown-width` | DWC Dropdown | `"300px"` | Override the width of a standard dropdown. |
-| `data-content-align` | DWC Dropdown | `"left"` \| `"right"` \| `"center"` | Horizontal alignment of the dropdown panel. |
-| `data-content-reference` | DWC Dropdown | CSS selector | Element to use as the positioning reference instead of the nav item. |
-| `data-global-content-width` | DWC Nav | CSS selector | Constraining element for all dropdown widths in this nav. |
-| `data-global-content-vertical` | DWC Nav | `"top"` \| `"bottom"` | Vertical positioning reference for all dropdowns. |
-| `data-equal-dropdown-height` | DWC Nav | `"true"` | Equalise the heights of all sibling dropdowns. |
-| `data-toggle` | DWC Dropdown | `"click"` \| `"hover"` \| `"both"` | Override the interaction mode for this specific dropdown. |
+| Attribute                      | Element      | Value                               | Description                                                               |
+| ------------------------------ | ------------ | ----------------------------------- | ------------------------------------------------------------------------- |
+| `data-megamenu`                | DWC Dropdown | `"true"`                            | Mark this dropdown as a mega menu panel (instead of a standard dropdown). |
+| `data-content-width`           | DWC Dropdown | `"500px"`                           | Override the width of this dropdown's content panel.                      |
+| `data-dropdown-width`          | DWC Dropdown | `"300px"`                           | Override the width of a standard dropdown.                                |
+| `data-content-align`           | DWC Dropdown | `"left"` \| `"right"` \| `"center"` | Horizontal alignment of the dropdown panel.                               |
+| `data-content-reference`       | DWC Dropdown | CSS selector                        | Element to use as the positioning reference instead of the nav item.      |
+| `data-global-content-width`    | DWC Nav      | CSS selector                        | Constraining element for all dropdown widths in this nav.                 |
+| `data-global-content-vertical` | DWC Nav      | `"top"` \| `"bottom"`               | Vertical positioning reference for all dropdowns.                         |
+| `data-equal-dropdown-height`   | DWC Nav      | `"true"`                            | Equalise the heights of all sibling dropdowns.                            |
+| `data-toggle`                  | DWC Dropdown | `"click"` \| `"hover"` \| `"both"`  | Override the interaction mode for this specific dropdown.                 |
 
 ### Mobile Drill-Down
 
-| Attribute | Element | Value | Description |
-|---|---|---|---|
-| `data-back-text` | DWC Dropdown | `"Go back"` | Custom label for the back button in this drill-down level. |
-| `data-target-selector` | DWC Dropdown | CSS selector | Custom target element for drill-down toggle (advanced layout overrides). |
-| `data-open-new-tab` | DWC Nav or `<a>` | `"true"` \| `"false"` | Force all nav links to open in a new tab. Set `"false"` to reverse. |
+| Attribute              | Element          | Value                 | Description                                                              |
+| ---------------------- | ---------------- | --------------------- | ------------------------------------------------------------------------ |
+| `data-back-text`       | DWC Dropdown     | `"Go back"`           | Custom label for the back button in this drill-down level.               |
+| `data-target-selector` | DWC Dropdown     | CSS selector          | Custom target element for drill-down toggle (advanced layout overrides). |
+| `data-open-new-tab`    | DWC Nav or `<a>` | `"true"` \| `"false"` | Force all nav links to open in a new tab. Set `"false"` to reverse.      |
 
 ### Responsive Relocation
 
 These move elements between DOM positions at specific breakpoints.
 
-| Attribute | Element | Value | Description |
-|---|---|---|---|
-| `data-breakout` | `<li>` or element | *(present)* or `"1024"` | Remove from nav and place it outside at mobile. Optionally scope to a max breakpoint. |
-| `data-breakin` | `<li>` or element | *(present)* or `"768"` | Move a mobile-only element into the nav header at desktop. Optionally scope to a min breakpoint. |
-| `data-breakinto` | `<li>` or element | `"selector"` or `"selector\|768"` | Move element into a target container, optionally at a breakpoint. |
+| Attribute        | Element           | Value                             | Description                                                                                      |
+| ---------------- | ----------------- | --------------------------------- | ------------------------------------------------------------------------------------------------ |
+| `data-breakout`  | `<li>` or element | _(present)_ or `"1024"`           | Remove from nav and place it outside at mobile. Optionally scope to a max breakpoint.            |
+| `data-breakin`   | `<li>` or element | _(present)_ or `"768"`            | Move a mobile-only element into the nav header at desktop. Optionally scope to a min breakpoint. |
+| `data-breakinto` | `<li>` or element | `"selector"` or `"selector\|768"` | Move element into a target container, optionally at a breakpoint.                                |
 
 ### Logo & Header Rows
 
-| Attribute | Element | Value | Description |
-|---|---|---|---|
-| `data-centered-logo` | DWC Nav | `"true"` | Enable centered logo layout for this nav. |
-| `data-center-guide` | DWC Nav | `"true"` | Show the visual center guide line (admin only). |
-| `data-header-row` | Nav `<li>` | `"1"` \| `"2"` \| `"3"` | Assign this item to a specific header row (used with stripe style and centered logo). |
+| Attribute            | Element    | Value                   | Description                                                                           |
+| -------------------- | ---------- | ----------------------- | ------------------------------------------------------------------------------------- |
+| `data-centered-logo` | DWC Nav    | `"true"`                | Enable centered logo layout for this nav.                                             |
+| `data-center-guide`  | DWC Nav    | `"true"`                | Show the visual center guide line (admin only).                                       |
+| `data-header-row`    | Nav `<li>` | `"1"` \| `"2"` \| `"3"` | Assign this item to a specific header row (used with stripe style and centered logo). |
 
 ### Accessibility & Skip Links
 
-| Attribute | Element | Value | Description |
-|---|---|---|---|
-| `data-skip-link` | DWC Nav or wrapper | `"#content"` | Add a skip link to the given target. |
-| `data-skip-link` | DWC Nav or wrapper | `"#content \| Skip to main content"` | Skip link with custom label. |
-| `data-skip-link` | DWC Nav or wrapper | `"#content \| Label, #footer \| Footer"` | Multiple skip links, comma-separated. |
-| `data-no-overlay` | Page wrapper | *(present)* | Exclude this page from the overlay header feature. |
-| `data-no-sticky` | Page wrapper | *(present)* | Exclude this page from the sticky header feature. |
+| Attribute         | Element            | Value                                    | Description                                        |
+| ----------------- | ------------------ | ---------------------------------------- | -------------------------------------------------- |
+| `data-skip-link`  | DWC Nav or wrapper | `"#content"`                             | Add a skip link to the given target.               |
+| `data-skip-link`  | DWC Nav or wrapper | `"#content \| Skip to main content"`     | Skip link with custom label.                       |
+| `data-skip-link`  | DWC Nav or wrapper | `"#content \| Label, #footer \| Footer"` | Multiple skip links, comma-separated.              |
+| `data-no-overlay` | Page wrapper       | _(present)_                              | Exclude this page from the overlay header feature. |
+| `data-no-sticky`  | Page wrapper       | _(present)_                              | Exclude this page from the sticky header feature.  |
 
 ### Effects & Toggle Labels
 
-| Attribute | Element | Value | Description |
-|---|---|---|---|
-| `data-flyout-offcanvas` | DWC Nav | `"true"` | Use a flyout animation instead of slide-in for the offcanvas menu. |
-| `data-adaptive-height` | DWC Nav | `"true"` | Animate dropdown height as content changes. |
-| `data-stripe-style` | DWC Nav | `"true"` | Enable stripe styling across header rows. |
-| `data-hover-effect` | DWC Menu Item | `"roll"` | Enable a text-roll hover effect on this item (desktop only). |
-| `data-label` | Toggle button | `"Open/Close"` | Mark this toggle for label-width equalisation. The value is the open label text. |
-| `data-close-text` | Toggle button | `"Close"` | Custom close label text (paired with `data-label`). |
-| `data-roll-text` | Nav item | `"text"` | Text used for the roll/flip hover animation. |
+| Attribute               | Element       | Value          | Description                                                                      |
+| ----------------------- | ------------- | -------------- | -------------------------------------------------------------------------------- |
+| `data-flyout-offcanvas` | DWC Nav       | `"true"`       | Use a flyout animation instead of slide-in for the offcanvas menu.               |
+| `data-adaptive-height`  | DWC Nav       | `"true"`       | Animate dropdown height as content changes.                                      |
+| `data-stripe-style`     | DWC Nav       | `"true"`       | Enable stripe styling across header rows.                                        |
+| `data-hover-effect`     | DWC Menu Item | `"roll"`       | Enable a text-roll hover effect on this item (desktop only).                     |
+| `data-label`            | Toggle button | `"Open/Close"` | Mark this toggle for label-width equalisation. The value is the open label text. |
+| `data-close-text`       | Toggle button | `"Close"`      | Custom close label text (paired with `data-label`).                              |
+| `data-roll-text`        | Nav item      | `"text"`       | Text used for the roll/flip hover animation.                                     |
 
----
+***
 
 ## SPA & Third-Party Integrations
 
 ### Swup
+
 If `window.swup` is detected, the menu hooks into `content:replace` and `page:view` automatically. No configuration needed.
 
 ### History API (manual SPA)
+
 Set `reinitializeOnURLchange: true` in `window.DwcConfig.MegaMenu` to wrap `pushState` / `replaceState` and re-initialise on every URL change.
 
 ```js
@@ -525,6 +535,7 @@ window.DwcConfig.MegaMenu = { reinitializeOnURLchange: true };
 ```
 
 ### Manual SPA trigger
+
 If you control your own router, dispatch `dwc:navigate` on `document` after each page transition:
 
 ```js
@@ -543,9 +554,10 @@ router.on('after-navigate', () => {
 ```
 
 ### DWCHeadroom
+
 If `window.DWCHeadroom` is present, the menu automatically pauses it when the mobile menu opens and resumes it when the menu closes. No configuration needed.
 
----
+***
 
 ## Exported Utilities (`window.DWCMegaMenuUtils`)
 
@@ -555,34 +567,34 @@ If `window.DWCHeadroom` is present, the menu automatically pauses it when the mo
 
 Safe to call directly without knowledge of the internals.
 
-| Export | Description |
-|---|---|
-| `updateMobileClass(minWidth?)` | Adds/removes `dwc-mobile` on `<html>` and manages `dwc-offcanvas-mobile`. `minWidth` is optional — defaults to the current `MegaMenuCONFIG.minWidth`. Call after manual breakpoint or offcanvas state changes. |
-| `getPositioningReferenceElement(headerSelector)` | Resolves the positioning reference element for a dropdown. Pass the header CSS selector (e.g. `'#dwc-header'`). Returns `.dwc-nest-header` when narrower than the header, otherwise the header itself. |
-| `clearPositioningReferenceCache` | Clears the cached positioning reference. Call after DOM changes that alter the header structure. |
-| `ViewportDetector` | Reads viewport dimensions and resolves the current breakpoint. Methods: `getWidth()`, `getHeight()`, `isDesktop()`, `isMobile()`, `isEffectiveDesktop()`, `isEffectiveMobile()`, `isEtch()`. |
-| `RTLDetector` | Watches `<html dir>` via MutationObserver and dispatches `dwc:rtlchange`. Static method: `RTLDetector.isRTL()` for a one-off check without instantiation. |
-| `DropdownDetector` | Determines dropdown type from a `<li.dwce-dropdown>` element. Methods: `isMegaMenu(el)`, `isNestedDropdown(el)`, `isTopLevelDropdown(el)`, `getType(el)`. |
+| Export                                           | Description                                                                                                                                                                                                    |
+| ------------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `updateMobileClass(minWidth?)`                   | Adds/removes `dwc-mobile` on `<html>` and manages `dwc-offcanvas-mobile`. `minWidth` is optional — defaults to the current `MegaMenuCONFIG.minWidth`. Call after manual breakpoint or offcanvas state changes. |
+| `getPositioningReferenceElement(headerSelector)` | Resolves the positioning reference element for a dropdown. Pass the header CSS selector (e.g. `'#dwc-header'`). Returns `.dwc-nest-header` when narrower than the header, otherwise the header itself.         |
+| `clearPositioningReferenceCache`                 | Clears the cached positioning reference. Call after DOM changes that alter the header structure.                                                                                                               |
+| `ViewportDetector`                               | Reads viewport dimensions and resolves the current breakpoint. Methods: `getWidth()`, `getHeight()`, `isDesktop()`, `isMobile()`, `isEffectiveDesktop()`, `isEffectiveMobile()`, `isEtch()`.                   |
+| `RTLDetector`                                    | Watches `<html dir>` via MutationObserver and dispatches `dwc:rtlchange`. Static method: `RTLDetector.isRTL()` for a one-off check without instantiation.                                                      |
+| `DropdownDetector`                               | Determines dropdown type from a `<li.dwce-dropdown>` element. Methods: `isMegaMenu(el)`, `isNestedDropdown(el)`, `isTopLevelDropdown(el)`, `getType(el)`.                                                      |
 
 ### System classes
 
 For subclassing or replacing a specific subsystem. Internal methods on these objects are not supported and may change.
 
-| Export | Description |
-|---|---|
-| `Utils` | General DOM utilities (`debounce`, `throttle`) used internally. |
-| `WidthSystem` | Calculates and applies dropdown panel widths. |
-| `PositioningSystem` | Handles viewport-aware dropdown positioning and overflow correction. |
-| `InteractionSystem` | Manages click/hover/keyboard interaction. Accepts `onDropdownOpen`, `onDropdownClose`, `onMobileMenuOpen`, `onMobileMenuClose` callbacks via `initialize(nestMenu, options)`. |
-| `AccessibilitySystem` | Keyboard navigation, ARIA state management, focus trapping. |
-| `ResponsiveRelocationSystem` | Implements `data-breakout`, `data-breakin`, and `data-breakinto` DOM relocation. |
-| `SwipeGestureHandler` | Touch `touchstart`/`touchend` swipe detection. |
-| `MobileMenuScrollReset` | Resets the mobile panel scroll position on open/close. |
-| `URLChangeDetector` | Wraps History API or hooks Swup to detect SPA navigation. |
-| `TooltipManager` | Manages drill-down tooltips on mobile. |
-| `MenuAnimationController` | Controls open/close animation classes and CSS variable injection for transitions. |
-| `CenteredLogoController` | Implements the centered logo layout algorithm. |
-| `OffcanvasMenuHandler` | Manages offcanvas sidebar mode activation. |
-| `ToggleLabelController` | Equalises open/close toggle label widths via MutationObserver. |
-| `PageExclusion` | Reads `data-no-sticky` / `data-no-overlay` and conditionally disables features per page. |
-| `SkipLinkController` | Builds and injects skip link elements from `data-skip-link`. |
+| Export                       | Description                                                                                                                                                                   |
+| ---------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `Utils`                      | General DOM utilities (`debounce`, `throttle`) used internally.                                                                                                               |
+| `WidthSystem`                | Calculates and applies dropdown panel widths.                                                                                                                                 |
+| `PositioningSystem`          | Handles viewport-aware dropdown positioning and overflow correction.                                                                                                          |
+| `InteractionSystem`          | Manages click/hover/keyboard interaction. Accepts `onDropdownOpen`, `onDropdownClose`, `onMobileMenuOpen`, `onMobileMenuClose` callbacks via `initialize(nestMenu, options)`. |
+| `AccessibilitySystem`        | Keyboard navigation, ARIA state management, focus trapping.                                                                                                                   |
+| `ResponsiveRelocationSystem` | Implements `data-breakout`, `data-breakin`, and `data-breakinto` DOM relocation.                                                                                              |
+| `SwipeGestureHandler`        | Touch `touchstart`/`touchend` swipe detection.                                                                                                                                |
+| `MobileMenuScrollReset`      | Resets the mobile panel scroll position on open/close.                                                                                                                        |
+| `URLChangeDetector`          | Wraps History API or hooks Swup to detect SPA navigation.                                                                                                                     |
+| `TooltipManager`             | Manages drill-down tooltips on mobile.                                                                                                                                        |
+| `MenuAnimationController`    | Controls open/close animation classes and CSS variable injection for transitions.                                                                                             |
+| `CenteredLogoController`     | Implements the centered logo layout algorithm.                                                                                                                                |
+| `OffcanvasMenuHandler`       | Manages offcanvas sidebar mode activation.                                                                                                                                    |
+| `ToggleLabelController`      | Equalises open/close toggle label widths via MutationObserver.                                                                                                                |
+| `PageExclusion`              | Reads `data-no-sticky` / `data-no-overlay` and conditionally disables features per page.                                                                                      |
+| `SkipLinkController`         | Builds and injects skip link elements from `data-skip-link`.                                                                                                                  |

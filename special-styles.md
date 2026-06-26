@@ -1,3 +1,7 @@
+---
+icon: layer-plus
+---
+
 # Special Sticky / Overlay Styles
 
 ## Overview
@@ -6,7 +10,7 @@ By default, sticky and overlay headers share the same visual styles as the rest 
 
 This is useful when you have a transparent overlay header with white text on a hero image, and you need the header to switch to dark text once it becomes sticky after scrolling.
 
----
+***
 
 ## Enabling the feature
 
@@ -15,7 +19,7 @@ This is useful when you have a transparent overlay header with white text on a h
 3. Under **Sticky**, enable **Special Sticky/Overlay Styles**.
 4. Under **Overlay**, enable **Overlay Header**.
 
----
+***
 
 ## How to use
 
@@ -23,7 +27,7 @@ Each component's Custom CSS already contains the pre-written rule blocks for thi
 
 > To override values that are also set via component options (e.g. overlay header background), add `!important` to the variable value.
 
----
+***
 
 ## DWC Header — `.dwc-header-vars`
 
@@ -71,7 +75,7 @@ html:not(.dwc-mobile):has([data-sticky-overlay-special-style='true'][data-sticky
 }
 ```
 
----
+***
 
 ## DWC Menu Item — `.dwc-top-level-items-vars`
 
@@ -110,7 +114,7 @@ html:not(.dwc-mobile):has([data-sticky-overlay-special-style='true'][data-sticky
 }
 ```
 
----
+***
 
 ## DWC Dropdown — `.dwc-dropdown-items-vars`
 
@@ -128,7 +132,7 @@ html:not(.dwc-mobile):has([data-sticky-overlay-special-style='true'][data-sticky
 }
 ```
 
----
+***
 
 ## DWC Mobile Toggle — `.dwc-toggle-vars`
 

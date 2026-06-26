@@ -1,66 +1,70 @@
+---
+icon: diamonds-4
+---
+
 # DWC Dropdown
 
 A top-level navigation item that contains a dropdown panel. The panel can be a standard dropdown (single column or multi-column), a nested flyout, or a full-width mega menu. Place this inside the **DWC Nav** component.
 
----
+***
 
 ## Settings
 
 ### General
 
-| Setting | Description |
-|---|---|
-| **Text** | The label shown on the toggle button in the nav. |
-| **Dropdown Trigger Mode** | Per-item override for how this dropdown opens: **Hover**, **Click**, or **Both**. Overrides the global setting on DWC Nav. |
-| **Visibility** | Show or hide this item at specific breakpoints (desktop only, mobile only, or always visible). |
-| **Appearance** | Visual style of the toggle button: default link, button, or icon. |
-| **No Arrow** | Hides the chevron/arrow indicator on this item's toggle button. |
-| **Use Custom SVG** | Replaces the default chevron with a custom SVG icon. **Note:** requires the **Allow "unsafe" HTML** option to be enabled in the Etch builder settings. |
-| **Custom SVG** | Paste your SVG code directly into this field. Only active when **Use Custom SVG** is enabled. |
+| Setting                   | Description                                                                                                                                            |
+| ------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| **Text**                  | The label shown on the toggle button in the nav.                                                                                                       |
+| **Dropdown Trigger Mode** | Per-item override for how this dropdown opens: **Hover**, **Click**, or **Both**. Overrides the global setting on DWC Nav.                             |
+| **Visibility**            | Show or hide this item at specific breakpoints (desktop only, mobile only, or always visible).                                                         |
+| **Appearance**            | Visual style of the toggle button: default link, button, or icon.                                                                                      |
+| **No Arrow**              | Hides the chevron/arrow indicator on this item's toggle button.                                                                                        |
+| **Use Custom SVG**        | Replaces the default chevron with a custom SVG icon. **Note:** requires the **Allow "unsafe" HTML** option to be enabled in the Etch builder settings. |
+| **Custom SVG**            | Paste your SVG code directly into this field. Only active when **Use Custom SVG** is enabled.                                                          |
 
 ### Nested Dropdown
 
 Settings that apply when this item contains a standard nested/flyout dropdown.
 
-| Setting | Description |
-|---|---|
-| **Width** | Width of this dropdown's panel (overrides the global setting from DWC Nav). |
-| **Equal Heights** | Forces all columns or nested panels inside this dropdown to the same height. |
-| **Exclude from Equal Height** | Marks specific content blocks to be excluded from the equal-height calculation. |
-| **Parent Relative** | Positions this dropdown panel relative to the toggle item rather than the full nav bar. |
+| Setting                       | Description                                                                             |
+| ----------------------------- | --------------------------------------------------------------------------------------- |
+| **Width**                     | Width of this dropdown's panel (overrides the global setting from DWC Nav).             |
+| **Equal Heights**             | Forces all columns or nested panels inside this dropdown to the same height.            |
+| **Exclude from Equal Height** | Marks specific content blocks to be excluded from the equal-height calculation.         |
+| **Parent Relative**           | Positions this dropdown panel relative to the toggle item rather than the full nav bar. |
 
 ### Mega Menu
 
 Settings that apply when this item is configured as a mega menu.
 
-| Setting | Description |
-|---|---|
-| **Enable** | Switches this dropdown from a standard panel to a full-width mega menu layout. |
-| **Width** | Width of the mega menu panel (overrides the global setting from DWC Nav). |
+| Setting         | Description                                                                                                                                                                                                           |
+| --------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Enable**      | Switches this dropdown from a standard panel to a full-width mega menu layout.                                                                                                                                        |
+| **Width**       | Width of the mega menu panel (overrides the global setting from DWC Nav).                                                                                                                                             |
 | **Inner Width** | Maximum inner content width inside the mega menu panel. Defaults to `100%` of the panel width. Useful when the panel spans the full header width but you want the content to remain constrained to a narrower column. |
-| **Breakout** | Moves this mega menu panel into the header area on mobile (uses the global mobile breakpoint from DWC Nav). Useful for mega menus that should be accessible on mobile without opening the full mobile sidebar. |
+| **Breakout**    | Moves this mega menu panel into the header area on mobile (uses the global mobile breakpoint from DWC Nav). Useful for mega menus that should be accessible on mobile without opening the full mobile sidebar.        |
 
 ### Content
 
-| Setting | Description |
-|---|---|
-| **Content Alignment** | Horizontal alignment of the dropdown panel relative to its toggle button: **Left**, **Center**, or **Right**. Aligns the panel to the parent item's position. |
-| **Submenu Reveal** | Per-dropdown override for how submenus open on mobile: **Default** (inherits from DWC Nav), **Expand** (push content down), or **Slide** (panel slides in from the side). |
+| Setting               | Description                                                                                                                                                               |
+| --------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Content Alignment** | Horizontal alignment of the dropdown panel relative to its toggle button: **Left**, **Center**, or **Right**. Aligns the panel to the parent item's position.             |
+| **Submenu Reveal**    | Per-dropdown override for how submenus open on mobile: **Default** (inherits from DWC Nav), **Expand** (push content down), or **Slide** (panel slides in from the side). |
 
 ### Builder
 
-| Setting | Description |
-|---|---|
+| Setting       | Description                                                                                                                               |
+| ------------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
 | **Keep Open** | Builder-only — keeps this dropdown panel open in the editor so you can style and add content more easily. Has no effect on the live site. |
 
 ### Styling
 
-| Setting | Description |
-|---|---|
-| **List Item Class** | CSS class added to the `<li>` wrapper of this dropdown item. |
+| Setting             | Description                                                        |
+| ------------------- | ------------------------------------------------------------------ |
+| **List Item Class** | CSS class added to the `<li>` wrapper of this dropdown item.       |
 | **Styling Classes** | Additional CSS class on the dropdown element for custom targeting. |
 
----
+***
 
 ## CSS variables — `.dwc-dropdown-items-vars`
 
@@ -131,16 +135,16 @@ The `.dwc-dropdown-items-vars` class is already applied to the **DWC Dropdown** 
 }
 ```
 
----
+***
 
 ## Slots
 
 DWC Dropdown has two slots. Only one is active at a time depending on whether mega menu is enabled.
 
-| Slot | Active when | Rendered as | Description |
-|---|---|---|---|
-| `Mega_Menu_Content` | `megaMenu.enable = true` | `<div>` | The full-width mega menu body. Any layout is valid here. |
-| `Nested_Dropdown_Content` | `megaMenu.enable = false` | `<ul>` | The standard flyout list. Direct children **must be `<li>` tags** — use DWC Dropdown or DWC Menu Item components. |
+| Slot                      | Active when               | Rendered as | Description                                                                                                       |
+| ------------------------- | ------------------------- | ----------- | ----------------------------------------------------------------------------------------------------------------- |
+| `Mega_Menu_Content`       | `megaMenu.enable = true`  | `<div>`     | The full-width mega menu body. Any layout is valid here.                                                          |
+| `Nested_Dropdown_Content` | `megaMenu.enable = false` | `<ul>`      | The standard flyout list. Direct children **must be `<li>` tags** — use DWC Dropdown or DWC Menu Item components. |
 
 ```js
 const dd = findBlock(etch.blocks.getTree(), 1299);

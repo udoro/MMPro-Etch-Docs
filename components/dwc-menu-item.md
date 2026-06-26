@@ -1,8 +1,12 @@
+---
+icon: diamonds-4
+---
+
 # DWC Menu Item
 
 A top-level navigation link with no dropdown panel. Use this for simple links in the nav. It supports badges, visibility control, and responsive relocation (moving the item in or out of the nav at different breakpoints).
 
----
+***
 
 ## Custom link slot
 
@@ -15,63 +19,63 @@ const item = findBlock(etch.blocks.getTree(), 1298);
 const custom = item.children.find(c => c.slotName === 'Content');
 ```
 
----
+***
 
 ## Settings
 
 ### General
 
-| Setting | Description |
-|---|---|
-| **Text** | The link label. Not available when the custom link slot is in use. |
-| **Link To** | The URL this item links to. Supports internal pages and external URLs. Not available when the custom link slot is in use. |
-| **Open in New Tab** | Opens the link in a new browser tab (`target="_blank"`). Automatically adds `rel="noopener noreferrer"` for security. |
-| **Visibility** | Show or hide this item at specific breakpoints (desktop only, mobile only, or always visible). |
+| Setting             | Description                                                                                                               |
+| ------------------- | ------------------------------------------------------------------------------------------------------------------------- |
+| **Text**            | The link label. Not available when the custom link slot is in use.                                                        |
+| **Link To**         | The URL this item links to. Supports internal pages and external URLs. Not available when the custom link slot is in use. |
+| **Open in New Tab** | Opens the link in a new browser tab (`target="_blank"`). Automatically adds `rel="noopener noreferrer"` for security.     |
+| **Visibility**      | Show or hide this item at specific breakpoints (desktop only, mobile only, or always visible).                            |
 
 ### Badge
 
 A small label overlaid on or beside the menu item — useful for "New", "Sale", or notification counts.
 
-| Setting | Description |
-|---|---|
-| **Text** | The badge label. |
-| **Font Size** | Text size inside the badge. |
-| **Color** | Badge text colour. |
-| **Background Color** | Badge background colour. |
-| **Border Radius** | How rounded the badge corners are. |
-| **Padding** | Internal spacing inside the badge. |
-| **Gap** | Space between the menu item text and the badge. |
+| Setting              | Description                                     |
+| -------------------- | ----------------------------------------------- |
+| **Text**             | The badge label.                                |
+| **Font Size**        | Text size inside the badge.                     |
+| **Color**            | Badge text colour.                              |
+| **Background Color** | Badge background colour.                        |
+| **Border Radius**    | How rounded the badge corners are.              |
+| **Padding**          | Internal spacing inside the badge.              |
+| **Gap**              | Space between the menu item text and the badge. |
 
 ### Relocation
 
 Relocation moves a nav item to a different location in the DOM when the viewport crosses a breakpoint. This is useful for CTA buttons or other elements that should appear in the page header on desktop but move inside the mobile menu on smaller screens.
 
-> **Note:** Relocation moves items *out of* the nav. To move an element from elsewhere in the page *into* the mobile menu, use the `data-breakin` attribute directly on that element instead (e.g. `data-breakin="480"`). Items moved this way are placed inside the `.breakin-container` in the mobile menu.
+> **Note:** Relocation moves items _out of_ the nav. To move an element from elsewhere in the page _into_ the mobile menu, use the `data-breakin` attribute directly on that element instead (e.g. `data-breakin="480"`). Items moved this way are placed inside the `.breakin-container` in the mobile menu.
 
-| Setting | Description |
-|---|---|
+| Setting  | Description                                                                                                                                                                          |
+| -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | **Mode** | Choose how this item relocates: **Breakout** moves it out of the nav list into the outer header area; **Breakinto** moves it into any CSS selector you specify anywhere on the page. |
 
 **Breakout** — moves the item out of the nav list into the outer header area at the mobile breakpoint:
 
-| Setting | Description |
-|---|---|
+| Setting               | Description                                                                                                                                                                                                                                                                                                                                   |
+| --------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | **Return Breakpoint** | By default the item moves to the header at the mobile breakpoint and stays there for all smaller viewports. Set a lower breakpoint here (e.g. `480`) to define the minimum width at which the item remains in the header — below that value it returns to the mobile menu. Leave empty to keep it in the header across the full mobile range. |
 
 **Breakinto** — moves the item into any container element anywhere on the page:
 
-| Setting | Description |
-|---|---|
-| **Container Selector \| Breakpoint** | The CSS selector of the target container, optionally followed by a pipe and a breakpoint value. Example: `#my-div \| 767` moves the item into `#my-div` at viewports ≤ 767 px. Omit the breakpoint to use the global mobile breakpoint. You can also apply this behaviour to *any* element on the page (not just menu items) by adding the attribute `data-breakinto=".container-selector \| breakpoint"` directly to that element. |
+| Setting                              | Description                                                                                                                                                                                                                                                                                                                                                                                                                         |
+| ------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Container Selector \| Breakpoint** | The CSS selector of the target container, optionally followed by a pipe and a breakpoint value. Example: `#my-div \| 767` moves the item into `#my-div` at viewports ≤ 767 px. Omit the breakpoint to use the global mobile breakpoint. You can also apply this behaviour to _any_ element on the page (not just menu items) by adding the attribute `data-breakinto=".container-selector \| breakpoint"` directly to that element. |
 
 ### Styling
 
-| Setting | Description |
-|---|---|
-| **Link Class** | CSS class added to the `<a>` tag of this item. |
+| Setting             | Description                                                      |
+| ------------------- | ---------------------------------------------------------------- |
+| **Link Class**      | CSS class added to the `<a>` tag of this item.                   |
 | **Styling Classes** | Additional CSS class on the `<li>` wrapper for custom targeting. |
 
----
+***
 
 ## CSS variables — `.dwc-top-level-items-vars`
 
