@@ -522,7 +522,7 @@ await etch.components.updateAsync(1300, { blocks: comp.blocks });
 | `dropdown.dropdownContentBorderSize` | dropdown | Border thickness |
 | `dropdown.dropdownContentBorderColor` | dropdown | Border colour |
 | `dropdown.globalNestedDropdownWidth` | dropdown | Default flyout width. Overridden per-dropdown |
-| `dropdown.globalMegaMenuWidth` | dropdown | Default mega menu width. Accepts CSS value, CSS var, **class name**, or **element ID** (resolves that element's width) |
+| `dropdown.globalMegaMenuWidth` | dropdown | Default mega menu width. Accepts CSS value, CSS var, **class name**, or **element ID** (resolves that element's width). **Never use `%`** — resolves relative to the parent nav item, not the viewport. Use `100vw`, `1200px`, or a `.class`/`#id` reference |
 | `dropdown.globalInnerWidth` | dropdown | Max inner content width inside mega menus |
 | `dropdown.dropdownVerticalAlignment` | dropdown | CSS selector — aligns dropdown top to the bottom of that element. Default: `.dwc-nest-header` |
 | `dropdown.dropdownOffsetGap` | dropdown | Gap between nav bar and top-level dropdown panels |
@@ -555,17 +555,17 @@ await etch.components.updateAsync(1300, { blocks: comp.blocks });
 | `nestedDropdown.equalHeights` | Forces all columns to same height |
 | `nestedDropdown.excludeEqualHeight` | Excludes block from equal-height calc |
 | `nestedDropdown.parentRelative` | Panel relative to toggle item, not full nav bar |
-| `megaMenu.enable` | Switches to full-width mega menu layout |
-| `megaMenu.width` | Panel width — CSS value, CSS var, class name, or element ID |
+| `megaMenu.enable` | Switches to full-width mega menu layout. Stored as actual boolean `true`/`false` (not `{true}` string) |
+| `megaMenu.width` | Panel width — CSS value, CSS var, class name, or element ID. **Never use `%`** — it resolves relative to the parent dropdown item. Use `100vw`, `1200px`, or `.class`/`#id` instead |
 | `megaMenu.innerWidth` | Max inner content width. Default: `100%` |
-| `megaMenu.breakout` | Moves mega menu into header area on mobile (uses global mobile breakpoint) |
-| `general.contentAlignment` | Panel horizontal alignment: default / center / left / right |
-| `general.visibility` | Desktop only / Mobile only / Hide on Both / Default |
-| `general.appearance` | Default (link) / Button / Icon |
-| `general.noArrow` | Hides chevron (not available for icon appearance) |
-| `general.useCustomSvg` | Custom chevron SVG. Requires "Allow unsafe HTML" in Etch settings |
-| `general.customSvg` | SVG code |
-| `general.submenuReveal` | Per-dropdown mobile reveal: Default / Expand / Slide |
+| `megaMenu.breakout` | Moves mega menu into header area on mobile (uses global mobile breakpoint). Stored as `{true}`/`{false}` string |
+| `general.contentAlignment` | Stored values: `default` / `center` / `left` / `right` |
+| `general.visibility` | Stored values: `Default` / `hide-on-desktop` / `hide-on-mobile` / `hide-on-both` |
+| `general.appearance` | Stored values: `default` / `button` / `icon` — **all lowercase**. Using `Icon` or `Button` (capital) silently fails |
+| `general.noArrow` | Hides chevron. Stored as `{true}`/`{false}` string |
+| `general.useCustomSvg` | Custom SVG icon. Stored as `{true}`/`{false}` string. Requires "Allow unsafe HTML" in Etch settings |
+| `general.customSvg` | Raw SVG string — inject as inline HTML, no encoding needed |
+| `general.submenuReveal` | Stored values: `default` / `expand` / `slide` |
 
 ### DWC Menu Item (componentId 1298)
 
@@ -771,6 +771,9 @@ Always pair them — never leave a menu stuck open at the end of a session.
 
 ### DO NOT
 
+- **DO NOT** set `dropdown.dropdownContentBorderSize` to `0` or any value below `1px` — use `1px` as the minimum; set `dropdownContentBorderColor` to `transparent` if you want an invisible border
+- **DO NOT** use `%` for `megaMenu.width` or `globalMegaMenuWidth` — `%` resolves relative to the parent dropdown item, not the viewport or header. Use `100vw`, a fixed `px` value, or a `.class`/`#id` reference
+- **DO NOT** use capitalised select values for `general.appearance`, `general.visibility`, or `general.submenuReveal` — the stored values are lowercase (`icon`, `hide-on-desktop`, `slide`). Capitalised values silently fail (the component ignores them and falls back to default)
 - **DO NOT** modify selector strings in special styles blocks — only add values inside `{ }`
 - **DO NOT** use raw `rgba()` — use `color-mix(in oklch, ...)`
 - **DO NOT** use `replace()` — use `replaceAll()` (CSS blocks contain both commented and active declarations)
