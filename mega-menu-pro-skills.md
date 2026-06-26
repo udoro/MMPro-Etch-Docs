@@ -94,6 +94,117 @@ DWC Mega Menu:               etch.stylesheets.list().find(s => s.name === 'DWC M
 
 ## 2. Decision tree
 
+### Building a new mega menu template — ALWAYS build from scratch
+
+**Never duplicate an existing mega menu to create a new template.** Duplicating copies all quantum (or other template) class names and style entry associations. Changing them after the fact is extremely painful because:
+- `addClass` only modifies the HTML `class` attribute — it does NOT update the `styles[]` array
+- `removeClass` modifies both, but the two are out of sync after any manual class change
+- `setAttribute('class', ...)` does not persist — the class is reconstructed from `styles[]` on save
+
+**Correct workflow for a new mega menu template:**
+
+1. Create a new DWC Dropdown block with mega menu enabled:
+```js
+const newDropdownId = etch.blocks.create({
+  type: 'etch/component',
+  version: 1,
+  context: { name: 'My New Mega Menu' },
+  options: {},
+  children: [],
+  componentId: 1299,
+  attributes: {
+    text: 'Nav Label',
+    megaMenu: '{{\"enable\":\"{true}\",\"width\":\"1360\"}}',
+  }
+}, parentNavBlockId, insertIndex);
+```
+
+2. Find the slot-content child and build the inner structure fresh using `etch.blocks.create()`, passing your template class names and style entry IDs **directly in the block JSON** — they are set correctly at creation time with no retrofitting needed.
+
+3. **Do NOT use `etch.blocks.create()` for class/styles** — classes set via `attributes.class` in `create()` JSON are NOT persisted (they're stripped on save/reload because the class attribute is coupled to `styles[]`). Use the workflow below instead.
+
+**Correct workflow — `replace()` + single BEM parent style entry:**
+
+```js
+// Step A: Create ONE BEM parent style entry with ALL nested CSS
+const bemStyleId = etch.styles.create('.mega-menu-revo-2', `
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 1.25rem;
+  background: #3520c0;
+
+  &__cards-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+  }
+
+  &__card {
+    position: relative;
+    ...
+    &:hover .mega-menu-revo-2__card-img { transform: translateY(-20px); }
+  }
+
+  @container (width < 900px) {
+    &__cards-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+`);
+
+// Step B: Build the block tree (no classes yet) using create() or getJson()
+// Step C: Replace the top-level container with fixed JSON — replace() DOES persist styles[]
+const newId = etch.blocks.replace(ciBlockId, {
+  type: 'etch/element', version: 1, context: { name: 'Mega Menu Revo 2' }, options: {},
+  tag: 'div',
+  attributes: { class: 'mega-menu-revo-2' },
+  styles: [bemStyleId],   // ← only the TOP block needs the style entry
+  children: [
+    // child blocks: set BEM classes in attributes, leave styles: []
+    // Etch auto-creates empty phantom style entries for child classes — harmless
+  ]
+});
+await etch.saveAsync();
+```
+
+**Key rules:**
+- ONE style entry per mega menu template (the BEM parent). CSS nesting handles all child elements.
+- Only the top container block needs the style entry in `styles[]`. PHP outputs it once; the CSS selector rules apply to all matching child elements.
+- Child blocks get their BEM classes via `attributes.class` in the `replace()` JSON — `replace()` persists these correctly (unlike `create()`).
+- `styles: []` on child blocks is fine — Etch may auto-create empty phantoms but those don't affect rendering.
+- CSS nesting: use `&__element` for BEM children, `&:hover .full-class` for hover states on descendants, `@container` queries nested inside the BEM parent.
+- **Never put mega menu CSS in the global tuts stylesheet** — use style entries only.
+
+Only duplicate an existing mega menu if you need to copy content (not structure/styles), and plan to keep the same class names as the source.
+
+### If you must duplicate and rename classes
+
+If the user explicitly asks to duplicate, follow this safe process to rename classes without breaking rendering. Read Section 6 (Rules & gotchas) for the full API behaviour details before starting.
+
+**Step 1 — Create the new style entries first** (before touching any blocks):
+```js
+// etch.styles.create returns the new style entry ID as a string
+const navGroupId = etch.styles.create('.mega-menu-revo__nav-group', 'padding: 1rem; position: relative; gap: 1rem;');
+// repeat for every class you are renaming
+```
+Save the returned IDs — you will need them.
+
+**Step 2 — For each block, use `removeClass` then `addClass` with CSS class name strings:**
+```js
+etch.blocks.removeClass(blockId, 'old-css-class-name');  // removes class + old style ID from styles[]
+etch.blocks.addClass(blockId, 'new-css-class-name');     // adds class to HTML only — styles[] NOT updated
+```
+`addClass` will add the correct HTML class but will NOT wire the new style entry ID into `styles[]`. See Section 6.
+
+**Step 3 — Work around the styles[] gap using the tuts stylesheet:**
+Because `addClass` does not update `styles[]`, the new style entries' CSS will not be output by PHP on the frontend. The workaround: put ALL the new template's CSS in the tuts stylesheet instead of relying on per-block style entries. The tuts stylesheet is always output and applies by CSS selector regardless of `styles[]`.
+```js
+await etch.stylesheets.appendAsync('5378835', '.mega-menu-revo__nav-group { ... }');
+```
+
+**Step 4 — Walk the tree by structural position, not by cached block IDs.** Block IDs change on every page reload. Always rediscover by walking `etch.blocks.getTree()` and matching by position or text attribute within the same script execution.
+
+---
+
 **I want to → exact action**
 
 | Goal | Action |
@@ -617,6 +728,14 @@ html:has([data-sticky-overlay-special-style='true'][data-sticky-header='true'] .
 - **User context file stores templates only** — do not write tab names, block IDs, or style IDs to it.
 - **`etch.blocks.update` in component edit mode does NOT persist script changes** — use `etch.components.updateAsync(id, { blocks: comp.blocks })` instead. The script lives in the component template, not the block instance.
 - **Component `script.code` is plain JS when read via API** — direct string replacement works. No base64 decode/encode needed despite being base64 in the raw JSON file.
+- **`etch.styles.create(selector, css)` — second arg is a CSS STRING only.** Do NOT pass an object `{ css, type, collection }`. Passing an object stores it as the `css` value; when PHP's `CssProcessor::preprocess_css()` receives an array instead of a string it causes a WordPress critical error on the frontend.
+- **`etch.blocks.update(id, { styles })` silently ignores the `styles` field.** The `styles` array is read-only via `BlockPatch`. Do not attempt to set it through `update()`.
+- **`etch.blocks.addClass(id, className)` and `removeClass` take CSS CLASS NAME STRINGS — not style entry IDs.** They modify the HTML `class` attribute only. `addClass` does NOT wire the block's `styles[]` array to an existing style entry — it just appends the string to the class attribute. `removeClass` removes the class string AND (by looking up a style entry with that CSS selector) removes the matching style entry ID from `styles[]`.
+- **The `styles[]` array and the HTML `class` attribute are independent.** PHP uses `styles[]` to decide which style-entry CSS to include in the page `<style>` tag. The `class` attribute is the rendered HTML class. Changing one does not automatically change the other.
+- **To change which style entries apply to a block:** Use `removeClass(id, 'old-css-class')` (removes the class AND the matching style ID from `styles[]`), then `addClass(id, 'new-css-class')` (adds the class to HTML; but this does NOT add the matching style entry ID to `styles[]`). Result: HTML class is correct, but `styles[]` no longer references the new style entry.
+- **Workaround for styles[] not updating:** Put the CSS in the global tuts stylesheet (always output by PHP) instead of relying on per-block `styles[]`. This avoids the issue entirely — the tuts stylesheet CSS applies by CSS selector regardless of `styles[]`.
+- **`setAttribute(id, 'class', value)` does NOT reliably persist the class.** The HTML class attribute is reconstructed from the `styles[]` array on save/reload. Always use `addClass`/`removeClass` to modify classes — never `setAttribute` for the `class` key.
+- **Block IDs change on every page reload** — always rediscover by walking `etch.blocks.getTree()`. Never hardcode IDs across sessions or after a reload.
 
 ### Adding a new prop — full flow
 
