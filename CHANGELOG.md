@@ -6,6 +6,27 @@ icon: arrows-retweet
 
 > Update Mega Menu Pro + Header Builder using the [Updater](https://etch.designwithcracka.com/mmpro-updater/).
 
+## Version 1.2 - Coming Soon
+
+### New
+
+* GitBook docs are now available.
+* MMPro Skills AI integration: build your navigation with the MMPro-trained AI agent via the Etch AI Connector and Mega Menu Pro Skills.
+* MMPro AI Assistant in the header template: access documentation and real-time AI chat directly in the builder.
+* Mega Menu Dropdown “Breakout” feature: move dropdown panels out of the menu on mobile, useful for elements such as account icon buttons.
+* Support for `last-item-is-button alignment` via attributes `data-is-cta="left"` and `data-is-cta="center"` on a custom CTA link.
+
+### Improved
+
+* Enhanced intelligent buffer zones.
+* Overlay header inset controls are now separated into inline and block-axis options.
+* Refined dropdown arrow visibility.
+* NotebookLM docs updated with Markdown-based source files for improved AI readability and content processing.
+* Keyboard focus styles refined.
+* Several edge-case bug fixes.
+
+***
+
 ## Version 1.1.1 - June 23, 2026
 
 * Improved reported issue with buffer zone.
