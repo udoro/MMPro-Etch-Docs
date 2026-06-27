@@ -39,7 +39,18 @@ Once the server output appears in chat:
 
 **Never** tell the user about block IDs, eval commands, script files, or any internal steps. **Never** ask the user to run scripts themselves.
 
-### Agent eval syntax (reference)
+### Connector commands (agent reference)
+
+Run everything via `npx @digital-gravy/etch-connector <command>`. The agent runs these — never the user.
+
+```bash
+serve [--ws-port 7331] [--control-port 7332] [--ws-host 127.0.0.1]   # start the connector (the user pastes this)
+tabs  [--json] [--cdp]                                               # list connected tabs
+eval  [code] [-t|--tab name] [-f|--file path] [--timeout ms] [--cdp] # run a script in a tab
+# CDP visual-verification commands (shot/html/computed) — see "Visual verification" below
+```
+
+`eval` is the workhorse:
 
 ```bash
 npx @digital-gravy/etch-connector eval -t "your-site.com" -f script.js
@@ -47,9 +58,76 @@ npx @digital-gravy/etch-connector eval -t "your-site.com" -f script.js
 npx @digital-gravy/etch-connector eval -t "your-site.com" --timeout 60000 -f script.js
 ```
 
-**Safe mode:** Scripts only have access to `etch.*` and standard JS built-ins. `window`, `document`, and all browser globals are blocked.
+- **`-f` is mandatory for anything multi-line.** PowerShell here-strings passed inline are silently swallowed — always write the script to a file and use `-f`.
+- The script body runs as an **async function**: `await` is available and whatever you `return` comes back on stdout as JSON. `console.log` output is printed separately from the return value.
+- `-t` is optional when only one tab is connected.
+
+**Safe mode:** Scripts only have access to `etch.*` and standard JS built-ins. `window`, `document`, all browser globals, network requests, and browser storage are blocked. Use `etch.*` API calls instead of DOM access — `encodeURIComponent` and other standard JS built-ins are available.
 
 **Exit codes:** `0` = success, `2` = script error, `1` = operational error (tab not found, timeout, connector unreachable).
+
+**Connection persistence:** The connection lives in both the chat that ran `serve` and the open builder tab — it stays alive while both are open, and new chats reuse it **without re-running `serve`**. It ends only if the user closes the serve chat or navigates away from the builder tab. Use one connected tab per site (different sites are fine; never two tabs on the same site). If a session can't reach Etch, check the original serve chat and builder tab are still open before asking the user to reconnect.
+
+### `etch` API surface (everything scripts can call)
+
+```js
+Object.keys(etch)
+// ["blocks", "loops", "styles", "stylesheets", "components",
+//  "navigation", "fields", "ui", "history",
+//  "saveAsync", "apiVersion", "version"]
+```
+
+Core methods this skill relies on (full behaviour/gotchas in Section 6):
+
+```js
+// blocks — buffered, needs await etch.saveAsync()
+etch.blocks.getTree()                       // PublicBlockJson[] — whole document
+etch.blocks.getJson(id) / find({type,class,attribute})
+etch.blocks.create(json, parentId?, index?) // parentId null/omitted = document root
+etch.blocks.replace(id, json) / duplicate(id) / move(id, newParentId, index?) / delete(id)
+etch.blocks.copy(id) -> CopyObject          // bundles referenced styles/loops/components (Etch 1.5.4+)
+await etch.blocks.pasteAsync(payload, targetId?, index?) // re-maps them to fresh ids
+etch.blocks.setText(id, text) / setAttribute(id, key, val) / getAttribute(id, key)
+etch.blocks.addClass(id, cls) / removeClass(id, cls)      // class STRINGS, not style IDs
+etch.blocks.enterComponentEditMode(id) / saveComponentEditModeAsync() / exitComponentEditMode()
+
+// styles — buffered, needs await etch.saveAsync()
+etch.styles.list()                          // [{ id, selector, type, collection, css }]
+etch.styles.create(selector, cssString) / update(id, { css }) / setVariable(id, '--v', val)
+
+// persist-immediately (NO saveAsync)
+etch.stylesheets.appendAsync(id, css) / list()
+etch.components.getJson(cid) / updateAsync(cid, { properties|blocks })
+
+// history — async; read-recoverable (see Section 6)
+await etch.history.undo() / redo() ; canUndo() / canRedo()
+```
+
+### Visual verification (CDP mode)
+
+CDP mode connects to Chrome's DevTools directly (bypassing the Etch tab) so the agent can **see** its work — screenshots, rendered HTML, and final computed CSS. Use it to confirm a mega menu actually renders as intended.
+
+**Prerequisite:** Chrome must be running with remote debugging: `chrome --remote-debugging-port=9222`. Add `--cdp` to each command.
+
+```bash
+# Screenshot (whole page or one element)
+npx @digital-gravy/etch-connector shot --cdp -t "your-site.com" -o page.png            # full page
+npx @digital-gravy/etch-connector shot --cdp -t "your-site.com" -s ".dwce-nav-nested" -o nav.png
+#   flags: -s|--selector  -o|--out  --full  --jpeg  --freeze=false
+# Rendered HTML for an element
+npx @digital-gravy/etch-connector html ".dwce-dropdown.open" --cdp -t "your-site.com"
+# Final computed CSS (omit --props for all)
+npx @digital-gravy/etch-connector computed ".dwc-nav-nested-items > li" --cdp -t "your-site.com" --props color,background,display
+```
+
+> **`--freeze=false` is essential for mega menus.** By default `shot` freezes the page before capturing, which closes open dropdowns. To screenshot an **open** dropdown/mega menu (or a mid-animation state), pass `--freeze=false`.
+
+**Mega-menu verification workflow** (pairs with the `inBuilder.keepOpen` rule in Section 6):
+
+1. Set `inBuilder.keepOpen` → `{true}` on the DWC Dropdown so the panel stays open, then `await etch.saveAsync()`.
+2. `shot --cdp --freeze=false -s "<panel selector>"` to capture the open panel; eyeball layout/colours.
+3. Use `computed` to confirm CSS variables resolved (e.g. `--menu-item-clr` shows as the expected colour on `.dwc-nav-nested-items > li`, panel bg on `.dwce-dropdown.open`).
+4. Reset `inBuilder.keepOpen` → `{false}` and `await etch.saveAsync()` when done — never leave a menu stuck open.
 
 ***
 
@@ -230,6 +308,8 @@ await etch.saveAsync();
 Only duplicate an existing mega menu if you need to copy content (not structure/styles), and plan to keep the same class names as the source.
 
 ### If you must duplicate and rename classes
+
+> **⚠ VERIFY (Etch 1.5.4+) — `copy()`/`pasteAsync()` may replace this whole workaround.** Etch 1.5.4 added `etch.blocks.copy(blockId)` → `CopyObject` and `await etch.blocks.pasteAsync(payload, targetId?, index?)`. Unlike `duplicate()`, paste **bundles the referenced global styles, loops, and components and re-creates them with fresh ids** — exactly the `styles[]`/class-rename pain the steps below work around. It never touches the system clipboard, so it works in connector scripts. **Not yet confirmed on a live MMPro install** — before trusting it for mega-menu duplication, test whether the re-mapped style entries keep working class names and whether component-backed blocks (DWC Dropdown etc.) survive the round-trip. Until verified here (confirmed-only rule), keep using the manual process below.
 
 If the user explicitly asks to duplicate, follow this safe process to rename classes without breaking rendering. Read Section 6 (Rules & gotchas) for the full API behaviour details before starting.
 
@@ -813,6 +893,7 @@ Always pair them — never leave a menu stuck open at the end of a session.
 * **A DWC Dropdown's content slots are identified by a top-level `slotName` field, not by child index.** The two `etch/slot-content` children are `Mega_Menu_Content` and `Nested_Dropdown_Content`. `options`/`context` are empty on these — read `child.slotName`. Always select with `.find(c => c.slotName === 'Mega_Menu_Content')`.
 * **Inline SVG data-URIs in `content`, `mask`/`-webkit-mask`, or `background` MUST be percent-encoded — never use `data:image/svg+xml;utf8,<svg…>` with raw markup.** The `;utf8,` form with unescaped `<`, `>`, spaces, and quotes silently fails to load in Chrome (the Etch builder), so a `content: url(...)` pseudo-element renders nothing and a mask shows nothing — with no error. Encode with `'data:image/svg+xml,' + encodeURIComponent(svg)` (a standard JS built-in, allowed in safe mode). This is exactly why the icon masks in `.mm-features__item-icon` render but a hand-written `;utf8,` `::before` did not. Use single quotes inside the SVG so the encoded string has no `"` to clash with the `url("…")` wrapper.
 * **Every node in `create()`/`replace()` block JSON needs a `children` array — including `etch/text` nodes.** Text nodes are `{ type:'etch/text', version:1, context:{name:'Text'}, options:{}, text:'...', children:[] }`. Omitting `children:[]` on a text node fails validation with `expected array, received undefined`. Element text content lives in child `etch/text` nodes, not a `text` attribute (that attribute is for components like Menu Item labels). Inline tags like `<em>`/`<span>` are plain `etch/element` nodes (no class/styles needed) wrapping their own text node — style them from the parent's entry via `& em` / `& span`.
+* **`create()` accepts `null` (or an omitted `parentId`) to insert at the document root** (Etch 1.5.4+). Inserting under a parent that can't contain the block — a text block, a void element like `img`, or a text container handed a block-level child — throws `WRONG_BLOCK_TYPE`. The same rule applies to `move()` (the block is left in place) and to indexed `pasteAsync()`. Previously a bad target failed silently; now it errors clearly.
 * **NEVER use `replace()` to edit an already-populated block — it resets EVERY attribute on EVERY node in the subtree**, silently wiping user edits (a swapped image `src`, a changed link, a renamed class). To change copy in place, locate the `etch/text` node and call `etch.blocks.setText(textNodeId, 'new text')` — then `await etch.saveAsync()`. Only use `replace()` to populate an empty placeholder or when you intend to rebuild the whole subtree from scratch. Walk to the text node via the parent element's class: `el.children.find(c => c.type==='etch/text')` (for mixed content like a heading with `<em>`, set each text node individually — the first text node, the `<em>`'s inner text node, and the trailing text node).
 * **Recovering a value clobbered by `replace()` (or any bad edit) — `etch.history` is read-recoverable.** It exposes `undo()`, `redo()`, `canUndo()`, `canRedo()` (undo/redo are async — `await` them). Pattern: `await etch.history.undo()` repeatedly, reading `etch.blocks.getTree()` after each step until the lost value reappears, capture it, then `await etch.history.redo()` the SAME number of times to return to the current state — reading between steps does not mutate or save. **Caveat: undo/redo did NOT cleanly round-trip a `replace()` in practice** (text reverted while the recovered image stuck). So use history only to _read back_ the lost value, then re-apply it explicitly with `setAttribute`/`setText` — never rely on redo alone to restore the full prior state.
 * **`etch.blocks.addClass(id, className)` and `removeClass` take CSS CLASS NAME STRINGS — not style entry IDs.** They modify the HTML `class` attribute only. `addClass` does NOT wire the block's `styles[]` array to an existing style entry — it just appends the string to the class attribute. `removeClass` removes the class string AND (by looking up a style entry with that CSS selector) removes the matching style entry ID from `styles[]`.
