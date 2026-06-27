@@ -13,6 +13,7 @@ icon: arrows-retweet
 * GitBook docs are now available.
 * MMPro Skills AI integration: build your navigation with the MMPro-trained AI agent via the Etch AI Connector and Mega Menu Pro Skills.
 * MMPro AI Assistant in the header template: access documentation and real-time AI chat directly in the builder.
+* Enhanced keyboard navigation for mega menu links.
 * Mega Menu Dropdown “Breakout” feature: move dropdown panels out of the menu on mobile, useful for elements such as account icon buttons.
 * Support for `last-item-is-button alignment` via attributes `data-is-cta="left"` and `data-is-cta="center"` on a custom CTA link.
 
