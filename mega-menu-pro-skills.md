@@ -8,38 +8,112 @@ Standalone reference for configuring DWC Mega Menu Pro + Header Builder in Etch 
 
 ## START HERE — mandatory workflow
 
-Follow this every session. Skipping it is why agents fail this skill.
+You must execute these steps sequentially. You are strictly forbidden from modifying any workspace files or generating styling code until Steps 1 through 4 are successfully completed and validated via terminal logs.
 
-1. **Connect & preflight.** Get the tab name, **resolve the DWC component IDs by name** (Section 1 —
-   they are site-specific, not fixed `1298–1302`), then confirm the Header and Nav exist on the page
-   (see "What the agent does"). If they're not found, **STOP** — don't improvise.
-2. **Clarify scope before any build — ask, don't assume.** When the request implies new structure
-   (a design/screenshot, "build an X-style nav", "make it look like …"), ask the user which they want:
-   - **(a) Restyle / adjust the existing items** — keep current nav items, change look & behavior; or
-   - **(b) Full rebuild from scratch** — remove the current items and build fresh to match the design.
+### 0. Skill File First
+1. Read this entire skill file before writing or executing any edits.
+2. If the task involves grouped component props (`megaMenu`, `general`, `inBuilder`, `classes`, `relocation`, etc.), do not use direct `setAttribute` or raw serialized strings until you have confirmed the exact helper from this skill file.
+3. Use the documented helper functions for grouped props: `getGroup(bid, key)` and `setGroup(bid, key, obj)`.
+4. Never delete or remove a native grouped prop from a DWC component as a cleanup step. If a grouped prop exists, leave it disabled rather than removing it.
+5. Delete temporary connector scripts immediately after the task is complete and the changes are verified. Do not leave generated `*.js` eval files in the workspace.
+6. If the skill file does not show a helper for the requested prop, stop and do not mutate grouped props until the correct pattern is confirmed.
 
-   These are very different jobs. Confirm before touching anything. If a design/screenshot is
-   provided, also confirm you should match it exactly and whether to clear existing content first.
-   Restate your understanding of every item/section you'll build and get a yes before building.
+> Example: set `megaMenu` on DWC Dropdown using the documented helper, not direct raw JSON.
+> ```js
+> setGroup(dropdownId, 'megaMenu', {
+>   enable: '{true}',
+>   width: '#dwc-header',
+>   breakout: '{false}'
+> });
+> ```
 
-   **Before any destructive rebuild (option b), ALWAYS offer to back up first.** Copy the whole
-   header (Nav + logo) to a portable snapshot and save it, so the user can restore if they dislike
-   the result — then proceed only after they confirm:
+### 1. Connect & Preflight Gate
+1. Extract the active tab name from the connector server output logs.
+2. Resolve the dynamic DWC component IDs by name immediately. Do not guess or use hardcoded IDs (`1298–1302`).
+3. Run an evaluation script to confirm both `findBlock(getTree(), HEADER)` and `findBlock(getTree(), NAV)` return valid block objects.
+4. **Hard Stop Condition:** If either block returns `null` or `undefined`, you must immediately halt execution. Output this exact message to the user: `"CRITICAL: DWC Header/Nav not detected on this page/template. Halting operation to prevent custom structural overrides."` Do not write any HTML, CSS, or custom fallback code.
+
+### 2. Scope Clarification & User Confirmation Gate
+Before invoking any file editing or code generation tools, you must present the user with a strict choice if the prompt implies a structural layout or style change:
+* Ask the user explicitly to confirm:
+  - **(a) Restyle / adjust existing items** (retain nav items, alter look/behavior).
+  - **(b) Full destructive rebuild from scratch** (wipe active items, build fresh).
+* If a visual asset or screenshot is provided, you must explicitly state how you intend to match it and ask if existing layout content must be cleared first.
+* **The Backup Invariant (Strictly Mandatory for Option B):** If option (b) is selected, you are strictly forbidden from running any destructive code until you generate a temporary script, execute the snippet below via the connector, and save the returned JSON payload to a local backup file (`dwc-header-backup.json`):
+  ```js
+  const headerBlock = findBlock(etch.blocks.getTree(), compId('DWC Header'));
+  return etch.blocks.copy(headerBlock.id); 
+  ```
+* Do not proceed until the user explicitly replies to your confirmation prompt in the chat.
+
+### 3. Node Shape Validation
+When inspecting or traversing the tree layout, you must adhere to the exact component schema properties. 
+* Assert that component properties reside within `attributes` (**never** read `n.props`).
+* Assert that element tags reside within `tag` (**never** read `n.tagName`).
+* **Inspection Protocol:** If you encounter any structural property mutation where you are uncertain of the schema keys, you must write a single-line test script utilizing `getJson(id)` on the specific node, execute it via `-f`, and parse the live terminal return object before continuing.
+
+### 4. Customization Hierarchy & Execution Contract
+You are strictly forbidden from skipping down this hierarchy. Reaching for a raw, hand-written custom stylesheet or global CSS rule without proving that Tiers 1 and 2 are incapable of fulfilling the request constitutes a total skill failure. 
+
+#### TIER 1: Live Schema Property Inspection (Mandatory Pre-requisite)
+1. Write a local script file named `inspect-schema.js` in the active workspace directory containing this exact layout:
    ```js
-   const headerBlock = findBlock(etch.blocks.getTree(), compId('DWC Header'));
-   const backup = etch.blocks.copy(headerBlock.id);   // CopyObject — write it to a file / context
-   // restore later: await etch.blocks.pasteAsync(backup); await etch.saveAsync();
+   (async () => {
+     const componentJson = await etch.components.getJson(RESOLVED_ID); 
+     console.log(JSON.stringify(componentJson.properties, null, 2));
+     return { success: true };
+   })();
    ```
-3. **Use the correct node shape.** Component props live in `attributes`, **not** `n.props`; the
-   element tag is `tag`, **not** `n.tagName`. Walking with the wrong fields makes a real DWC menu
-   look "custom" — see "Block node shape". When unsure, `getJson(id)` one node and read its real keys.
-4. **Customization hierarchy — try in this exact order, top-down (NEVER skip to the bottom):**
-   1. **Component prop** — almost everything is a prop. Map the request to one via Section 2
-      (decision tree) + Section 4 (prop reference). Confirm the exact key with
-      `etch.components.getJson(130x).properties` before setting.
-   2. **CSS-variable class** — if no prop exists, override a `--var` in the relevant `.dwc-*-vars` style entry.
-   3. **Custom (tuts) stylesheet** — only for CSS *properties* with no prop and no variable.
-   4. **JavaScript config** — absolute last resort (Section 7).
+   *(Ensure `RESOLVED_ID` matches your resolved component ID from Step 1).*
+2. Execute the file via your terminal tool using the strict file flag:
+   `npx @digital-gravy/etch-connector eval -t "[tab-name]" -f inspect-schema.js`
+3. Read the terminal standard output logs (`stdout`) to identify matching properties.
+4. Output this exact structural declaration in the chat window using the real terminal output data before generating any final implementation code:
+   `"I have read the live schema for ID [ID]. The existing props are: [list relevant props found]. There is/is not a native prop for this request."`
+5. Delete `inspect-schema.js` using your workspace file tools immediately after printing the declaration.
+
+#### TIER 2: CSS-Variable Overrides
+* If and only if the terminal output from Tier 1 confirms no native property controls the layout request, search the `.dwc-*-vars` style entry.
+* Modify the layout exclusively by overriding the specific active `--var` within that structural block.
+
+#### TIER 3: Custom Stylesheets (Tuts)
+* This tier is restricted. You may write custom CSS properties to the custom stylesheet if and only if you have documented in your chat declaration that absolutely no native component property (Tier 1) or CSS variable (Tier 2) exposes control over that layout behavior.
+
+#### TIER 4: JavaScript Configuration Global Overrides
+* Absolute last resort. Do not touch global configurations unless all higher options are non-functional.
+
+
+
+
+   **STEP 1: MANDATORY LOCAL SCRIPT GENERATION** 
+ 
+      Before editing any file or executing layout changes, you MUST use your file tools to create a temporary script named `inspect-schema.js` in the current working directory containing this exact layout:
+
+```js
+// inspect-schema.js
+(async () => {
+  const componentJson = await etch.components.getJson(1302); 
+  console.log(JSON.stringify(componentJson.properties, null, 2));
+  return { success: true };
+})();
+```
+*(Note: Replace 1302 with your resolved site-specific component ID).*
+
+   **STEP 2: MANDATORY CLI RUN & DECLARATION** 
+You MUST run the temporary file via your terminal tools before generating any output code:
+`npx @digital-gravy/etch-connector eval -t "[your-active-tab-name]" -f inspect-schema.js`
+
+Once executed, you MUST explicitly type out this exact declaration in the chat window using the real terminal output data before proceeding:
+"I have read the live schema for ID [insert ID]. The existing props are: [list relevant props found]. There is/is not a native prop for this request." 
+
+Only after making this declaration may you move to overriding a `--var` in the `.dwc-*-vars` entry or deleting the temporary file.
+
+   **STEP 3: WORKFLOW ORDER MATRIX** 
+   Only proceed to a lower step if the step above it is technically incapable of fulfilling the layout request:
+1. COMPONENT PROP — Map the request to a native prop via Section 2 + Section 4. 
+2. CSS-VARIABLE CLASS — If no native prop exists, override a `--var` in the relevant `.dwc-*-vars` style entry.
+3. CUSTOM STYLESHEET — ONLY for raw CSS properties where absolutely no native prop or `--var` exists in the system.
+4. JAVASCRIPT CONFIG — Absolute last resort. (Section 7).
 5. **Apply, then `await etch.saveAsync()`** (blocks/styles are buffered).
 6. **Verify** — read the changed prop/variable back, and screenshot with CDP (Visual verification).
 
@@ -56,6 +130,15 @@ This skills file lives in a folder called `MMPro Etch Docs`.
 **Step 2 — Developer session only:** Do not create or update `mmpro-user-context.md`. The dev context file is the only context file for developer sessions.
 
 **Step 2 — User session only:** Look for `mmpro-user-context.md` in the **same folder as this file**. If it exists, read it silently — it contains saved templates. If not found, skip and continue. Do not touch the dev context file.
+
+**Step 3 — Load API reference (both sessions).** Check for the cheatsheet at `../ETCH-DEV-API/etch-connector-cheatsheet.md`. If not found locally, WebFetch the following before writing any scripts:
+- `https://docs.etchwp.com/public-api/types-reference.html` — block JSON shapes (`etch/svg`, `etch/element`, `etch/text`, etc.)
+- `https://docs.etchwp.com/public-api/components.html` — component property types, especially `ConditionComponentProperty` (has nested `properties` children that a shallow schema read will miss)
+- `https://design-with-cracka.gitbook.io/etchmegamenupro` — complete DWC Mega Menu Pro prop reference per component. Fetch per-component pages for any prop not already in Section 4 rather than running schema-read scripts to discover stored values.
+
+Pay particular attention to: block JSON shapes (`etch/svg` stores `src` in `attributes`, not top-level), `ConditionComponentProperty` nested `properties`, the `{{...}}` group encoding rules, and the full prop list for each DWC component.
+
+
 
 **Tab name (both sessions):** Always extract from the server output when the user pastes it. Never cache it.
 
@@ -110,18 +193,27 @@ npx @digital-gravy/etch-connector eval -t "your-site.com" -f script.js
 npx @digital-gravy/etch-connector eval -t "your-site.com" --timeout 60000 -f script.js
 ```
 
-- **`-f` is mandatory for anything multi-line.** PowerShell here-strings passed inline are silently swallowed — always write the script to a file and use `-f`.
-- The script body runs as an **async function**: `await` is available and whatever you `return` comes back on stdout as JSON. `console.log` output is printed separately from the return value.
-- `-t` is optional when only one tab is connected.
-- **⚠ A timed-out eval does NOT abort the in-page script.** The connector stops *waiting* at `--timeout`, but your `async` code keeps running in the builder. A long per-item loop (e.g. delete-all + paste 10) can keep mutating *after* you get "timed out" — producing duplicates / partial state. Always re-read state before retrying; don't blindly re-run.
-- **Batch mutations into one script with a single `await etch.saveAsync()` at the end** — don't save per item. Keep loops short and pass a generous `--timeout` (e.g. 150000) for multi-item builds.
-- **`blocks.copy()` / `pasteAsync()` of a full mega menu is heavy (~10s each)** because it bundles the whole subtree + every referenced style entry. Great for cloning *one* styled panel; for building *many* clean items from scratch, `create()` lightweight blocks is far faster and avoids dragging demo content. (Confirmed: paste reuses existing style entries by id rather than duplicating them.)
+- **CRITICAL AGENT CONSTRAINT — DO NOT EXECUTE INLINE:** PowerShell will silently swallow multi-line inline scripts. You are STRICTLY FORBIDDEN from running multi-line strings directly via `npx @digital-gravy/etch-connector eval`.
+  1. You MUST write your JavaScript to a temporary file first (e.g., `temp-query.js`).
+  2. Run it using the `-f` flag: `npx @digital-gravy/etch-connector eval -t "site.com" -f temp-query.js`
+  3. Delete the temporary file immediately after execution.
+- **Async Execution Context:** The script body runs as an **async function**: `await` is available and whatever you `return` comes back on stdout as JSON. `console.log` output is printed separately from the return value.
+- **Tab Targeting Rules:** The `-t` parameter is optional when only one tab is actively connected. If multiple tabs are open, the `-t` parameter is strictly mandatory.
+- **⚠ Timeout Warning (Non-Aborting State):** A timed-out eval does NOT abort the in-page script. The connector stops *waiting* at `--timeout`, but your `async` code keeps running in the builder. A long per-item loop (e.g., delete-all + paste 10) can keep mutating the layout *after* you get a "timed out" error — producing duplicates or partial states. Always re-read the active state before retrying; do not blindly re-run the code payload.
+- **Batching Rule:** Batch mutations into one single script with a single `await etch.saveAsync()` at the end — do not run individual saves per item. Keep loops short and pass a generous `--timeout` parameter (e.g., 150000) for multi-item builds.
+- **Performance Thresholds:** `blocks.copy()` / `pasteAsync()` of a full mega menu is heavy (~10s each) because it bundles the whole subtree + every referenced style entry. While great for cloning *one* styled panel, building *many* clean items from scratch via `create()` for lightweight blocks is far faster and avoids dragging demo content. (Confirmed: paste reuses existing style entries by id rather than duplicating them.)
 
-**Safe mode:** Scripts only have access to `etch.*` and standard JS built-ins. `window`, `document`, all browser globals, network requests, and browser storage are blocked. Use `etch.*` API calls instead of DOM access — `encodeURIComponent` and other standard JS built-ins are available.
+### Execution Context & Boundaries
 
-**Exit codes:** `0` = success, `2` = script error, `1` = operational error (tab not found, timeout, connector unreachable).
+**Safe mode restrictions:** Scripts only have access to `etch.*` and standard JS built-ins. `window`, `document`, all browser globals, network requests, and browser storage are strictly blocked. Use native `etch.*` API calls instead of custom DOM access — `encodeURIComponent` and other standard JS built-ins are available.
 
-**Connection persistence:** The connection lives in both the chat that ran `serve` and the open builder tab — it stays alive while both are open, and new chats reuse it **without re-running `serve`**. It ends only if the user closes the serve chat or navigates away from the builder tab. Use one connected tab per site (different sites are fine; never two tabs on the same site). If a session can't reach Etch, check the original serve chat and builder tab are still open before asking the user to reconnect.
+**Exit codes mapping:** 
+* `0` = Success
+* `2` = Script compilation/runtime error
+* `1` = Operational error (tab not found, timeout, connector unreachable)
+
+**Connection persistence logic:** The connection lives in both the chat that ran `serve` and the open builder tab — it stays alive while both are open, and new chats reuse it **without re-running `serve`**. It ends only if the user closes the serve chat or navigates away from the builder tab. Use exactly one connected tab per site (different sites are fine; never spin up two tabs on the same site). If a session can't reach Etch, verify the original serve chat and builder tab are still open before prompting the user to reconnect.
+
 
 ### `etch` API surface (everything scripts can call)
 
@@ -136,26 +228,38 @@ Core methods this skill relies on (full behaviour/gotchas in Section 6):
 
 ```js
 // blocks — buffered, needs await etch.saveAsync()
-etch.blocks.getTree()                       // PublicBlockJson[] — whole document
+etch.blocks.getTree()                        // PublicBlockJson[] — whole document
 etch.blocks.getJson(id) / find({type,class,attribute})
-etch.blocks.create(json, parentId?, index?) // parentId null/omitted = document root
+etch.blocks.create(json, parentId?, index?)  // parentId null/omitted = document root
+etch.blocks.update(id, patch)                // patch: { name?, hidden?, attributes?, text? } — preferred for multi-prop edits
 etch.blocks.replace(id, json) / duplicate(id) / move(id, newParentId, index?) / delete(id)
-etch.blocks.copy(id) -> CopyObject          // bundles referenced styles/loops/components (Etch 1.5.4+)
+etch.blocks.copy(id) -> CopyObject           // bundles referenced styles/loops/components
 await etch.blocks.pasteAsync(payload, targetId?, index?) // re-maps them to fresh ids
+etch.blocks.select(id) / deselect() / getSelectedId()
 etch.blocks.setText(id, text) / setAttribute(id, key, val) / getAttribute(id, key)
-etch.blocks.addClass(id, cls) / removeClass(id, cls)      // class STRINGS, not style IDs
-etch.blocks.enterComponentEditMode(id) / saveComponentEditModeAsync() / exitComponentEditMode()
+etch.blocks.removeAttribute(id, key)
+etch.blocks.rename(id, name)
+etch.blocks.addClass(id, cls) / removeClass(id, cls) / hasClass(id, cls)  // class STRINGS, not style IDs
+etch.blocks.enterComponentEditMode(id) / saveComponentEditModeAsync()
+etch.blocks.exitComponentEditMode(options?)  // options: { revert?: boolean } — pass revert:true to discard
+etch.blocks.isInComponentEditMode()
 
 // styles — buffered, needs await etch.saveAsync()
-etch.styles.list()                          // [{ id, selector, type, collection, css }]
-etch.styles.create(selector, cssString) / update(id, { css }) / setVariable(id, '--v', val)
+etch.styles.list(filter?)                    // [{ id, selector, type, collection, css }]; filter: { type? }
+etch.styles.create(selector, cssString) / update(id, { selector?, css? }) / delete(id)
+// CSS variables sub-API (targets :root custom properties — NOT style-entry variables):
+etch.styles.setVariable('--var-name', value, collection?)   // ⚠ first arg is the VAR NAME, not a style entry ID
+etch.styles.getVariable('--var-name', collection?)
+etch.styles.listVariables(collection?)       // Record<string, string>
+etch.styles.removeVariable('--var-name', collection?)
 
 // persist-immediately (NO saveAsync)
 etch.stylesheets.appendAsync(id, css) / list()
 etch.components.getJson(cid) / updateAsync(cid, { properties|blocks })
+etch.fields.*                                // all async, persist immediately — no saveAsync
 
-// history — async; read-recoverable (see Section 6)
-await etch.history.undo() / redo() ; canUndo() / canRedo()
+// history — returns void, NOT async (do not await)
+etch.history.undo() / redo() ; canUndo() / canRedo()
 ```
 
 ### Block node shape (read this before walking the tree)
@@ -163,14 +267,16 @@ await etch.history.undo() / redo() ; canUndo() / canRedo()
 `getTree()` / `getJson()` return nodes with **exactly** these fields:
 
 ```js
-{ id, type, componentId?, slotName?, attributes, children, tag?, text?, options?, context?, styles? }
+{ id, parentId, type, componentId?, slotName?, attributes, children, tag?, text?, options?, context?, script?, styles? }
 ```
 
-- `type` — `etch/component` | `etch/element` | `etch/text` | `etch/slot-content` | `etch/svg` | …
+- `id` — block's stable id. `parentId` — parent block id, or `null` at document root.
+- `type` — full union: `etch/component` | `etch/element` | `etch/text` | `etch/slot-content` | `etch/slot-placeholder` | `etch/svg` | `etch/dynamic-element` | `etch/dynamic-image` | `etch/loop` | `etch/condition` | `etch/raw-html` | `etch/passthrough` | `etch/post-content`
 - `componentId` — number, only on `etch/component` nodes. **DWC components** (Menu Item, Dropdown, Nav, Toggle, Header). The numbers are **site-specific** — resolve them by name (Section 1). This doc writes `1298–1302` as readable placeholders for the resolved `ITEM/DROPDOWN/NAV/TOGGLE/HEADER`.
 - `attributes` — object. **For a component instance this is where its bound PROPS live** (group props are `{{…}}`-encoded strings; read with `getGroup`/`getAttribute`, set with `setGroup`/`setAttribute`).
 - `children` — array of child nodes. Slots are `etch/slot-content` children identified by `slotName` (pick by `slotName`, never by index).
 - `tag` — element tag on `etch/element` (e.g. `'div'`). `text` — content on `etch/text`. `styles` — read-only style-entry IDs.
+- `script?` — `{ code: string }` — optional inline script attached to the block. Used by DWC Nav's embedded JS config.
 
 > **⚠ There is NO `n.props` and NO `n.tagName`.** Reading them returns `undefined`, and an agent that walks the tree looking for `props`/`tagName` will see "empty" components and wrongly conclude the page uses a *custom* menu — then fall back to writing CSS by hand. **Props are in `attributes`; the element tag is `tag`.** When in doubt, `getJson(id)` one node and inspect its real keys before assuming.
 
@@ -447,7 +553,7 @@ row below is a prop or a CSS-variable override — **none** of it needs hand-wri
 | dropdown content opens downward | `general.submenuReveal: expand` (1299); mobile equivalent `mobile.submenuReveal: Expand` (Nav) |
 | mobile menu expands down + fade | `mobile.slideInDirection: expand down` + `mobile.submenuSlideExtras.fadeItemsOnSlide` (Nav) |
 | desktop dropdown height transitions smoothly | `animation.adaptiveHeight {true}` (Nav) — mutually exclusive with `animation.stripeStyle` |
-| whitish blurred backdrop | confirm a desktop-dropdown backdrop prop in the live schema first; the `backdrop.*` group is the **mobile-menu** backdrop, so a desktop dropdown overlay may need a `.dwc-*-vars` variable instead |
+| whitish blurred backdrop | `backdrop.navBackdropBackgroundColor` (colour/opacity) + `backdrop.navBackdropBlur` (blur intensity) on the DWC Nav. These props control the overlay that appears behind dropdown content when it opens — on both desktop and mobile. |
 | full-width panel, inner = content width | `megaMenu.enable {true}`, width via `dropdown.globalMegaMenuWidth: #dwc-header` (resolves to the header width — **never `100vw`/`%`**, they add the scrollbar width and cause horizontal overflow), inner via `megaMenu.innerWidth` / `dropdown.globalInnerWidth` |
 | no item hover background | already default; if present, `--dropdown-item-hover-bg: transparent` in `.dwc-dropdown-items-vars` |
 | hover colour = darker black | `--menu-item-hover-clr` in `.dwc-top-level-items-vars` (no `!important`) |
@@ -538,8 +644,16 @@ await etch.saveAsync();
 
 ### Update a CSS variable in a style entry
 
+> ⚠ **`setVariable` sets a `:root` custom property** — it does NOT modify variables declared inside a style entry's CSS block. First arg is the **variable name**, not a style entry ID.
+> Correct: `etch.styles.setVariable('--menu-item-clr', '#1d1d1f')`
+> **Wrong (do not use):** `etch.styles.setVariable('styleEntryId', '--menu-item-clr', '#1d1d1f')` — this creates a `:root` property named after the entry ID, which is useless.
+
+To reliably change a variable **inside** a style entry, use read → string-replace → `styles.update`:
+
 ```js
-etch.styles.setVariable('1mlutc1', '--menu-item-clr', '#1d1d1f');
+const entry = etch.styles.list().find(s => s.selector === '.dwc-top-level-items-vars');
+const newCss = entry.css.replaceAll('--menu-item-clr: var(--black, #000);', '--menu-item-clr: #1d1d1f;');
+await etch.styles.update(entry.id, { css: newCss });
 await etch.saveAsync();
 ```
 
@@ -648,7 +762,7 @@ const comp = etch.components.getJson(1300); // DWC Nav componentId
 function findScriptBlock(blocks) {
   for (const b of blocks) {
     if (b.script && b.script.code) return b;
-    if (b.innerBlocks) { const f = findScriptBlock(b.innerBlocks); if (f) return f; }
+    if (b.children) { const f = findScriptBlock(b.children); if (f) return f; }
   }
 }
 
@@ -701,7 +815,7 @@ await etch.components.updateAsync(1300, { blocks: comp.blocks });
 | `overlay.overlayHeaderWidth`            | overlay      | `--overlay-header-width`     | Width of overlay container                                                          |
 | `overlay.overlayHeaderBackground`       | overlay      | `--overlay-header-bg`        | Default (unscrolled) bg. **Prop-driven → `!important`**                             |
 | `overlay.overlayHeaderActiveBackground` | overlay      | `--overlay-header-bg-active` | Bg when user hovers a nav item or dropdown opens. **Prop-driven → `!important`**    |
-| `overlay.overlayHeaderBlur`             | overlay      | `--overlay-header-blur`      | Backdrop blur intensity                                                             |
+| `overlay.overlayHeaderBlur`             | overlay      | `--overlay-header-blur`      | Backdrop-filter blur on the header overlay element (frosted glass header bar)       |
 | `overlay.overlayHeaderRadius`           | overlay      | `--overlay-header-radius`    | Border radius                                                                       |
 | `overlay.overlayHeaderInset`            | overlay      | `--overlay-header-inset`     | Offset from viewport edges                                                          |
 | `overlay.removeInsetTop`                | overlay      | —                            | Removes top gap                                                                     |
@@ -755,11 +869,13 @@ await etch.components.updateAsync(1300, { blocks: comp.blocks });
 | `dropdown.arrowVisibilty`                           | dropdown      | Default / Hide / Hide on Mobile / Hide on Desktop                                                                                                                                                                                                            |
 | `interactionUx.dropdownTriggerMode`                 | interactionUx | Global trigger: Hover or Click / Hover only / Click only                                                                                                                                                                                                     |
 | `interactionUx.nestedDropdownActiveOverlay`         | interactionUx | Dims parent content when nested opens                                                                                                                                                                                                                        |
+| `interactionUx.nestedDropdownActiveOverlayColor`    | interactionUx | Colour and opacity of the dim overlay when a nested dropdown opens                                                                                                                                                                                           |
+| `interactionUx.nestedDropdownInactiveBlur`          | interactionUx | Blurs inactive parent dropdown content while a nested panel is open                                                                                                                                                                                          |
 | `interactionUx.parentRelativeNestedDropdown`        | interactionUx | Positions nested panels relative to parent item                                                                                                                                                                                                              |
 | `interactionUx.menuItemHoverEffect`                 | interactionUx | Default / Text Roll (desktop only)                                                                                                                                                                                                                           |
-| `backdrop.hideNavBackdrop`                          | backdrop      | Removes mobile menu backdrop                                                                                                                                                                                                                                 |
-| `backdrop.navBackdropBlur`                          | backdrop      | Backdrop blur                                                                                                                                                                                                                                                |
-| `backdrop.navBackdropBackgroundColor`               | backdrop      | Backdrop colour/opacity                                                                                                                                                                                                                                      |
+| `backdrop.hideNavBackdrop`                          | backdrop      | Removes the overlay that appears when dropdown content opens                                                                                                                                                                                                 |
+| `backdrop.navBackdropBlur`                          | backdrop      | Blur intensity of the scrim that appears over the page when dropdowns open                                                                                                                                                                                   |
+| `backdrop.navBackdropBackgroundColor`               | backdrop      | Colour and opacity of the scrim that appears over the page when dropdowns open                                                                                                                                                                               |
 | `logo.centeredLogo`                                 | logo          | Splits items either side of logo                                                                                                                                                                                                                             |
 | `logo.centerGuide`                                  | logo          | Debug visual guide (admin only)                                                                                                                                                                                                                              |
 | `logo.mobileLogoSize`                               | logo          | Logo size in mobile menu                                                                                                                                                                                                                                     |
@@ -779,10 +895,29 @@ await etch.components.updateAsync(1300, { blocks: comp.blocks });
 | `nestedDropdown.equalHeights`       | Forces all columns to same height                                                                                                                                                   |
 | `nestedDropdown.excludeEqualHeight` | Excludes block from equal-height calc                                                                                                                                               |
 | `nestedDropdown.parentRelative`     | Panel relative to toggle item, not full nav bar                                                                                                                                     |
-| `megaMenu.enable`                   | Switches to full-width mega menu layout. Stored as actual boolean `true`/`false` (not `{true}` string)                                                                              |
+| `megaMenu.enable`                   | Switches to full-width mega menu layout. Stored as `"{true}"`/`"{false}"` string — same as all boolean group props (NOT an actual boolean)                                                                              |
 | `megaMenu.width`                    | Panel width — CSS value, CSS var, class name, or element ID. For full-width use **`#dwc-header`** (or `header` tag). **Never `100vw`/`%`** — `100vw` adds the scrollbar width (horizontal overflow); `%` resolves relative to the parent dropdown item. `1200px` etc. also fine |
 | `megaMenu.innerWidth`               | Max inner content width. Default: `100%`                                                                                                                                            |
-| `megaMenu.breakout`                 | Moves mega menu into header area on mobile (uses global mobile breakpoint). Stored as `{true}`/`{false}` string                                                                     |
+| `megaMenu.breakout`                 | Moves mega menu item into header area on mobile (uses global mobile breakpoint). Stored as `{true}`/`{false}` string                                                                |
+
+> **⚠ Common agent mistake — enabling mega menu on an existing dropdown.**
+> `megaMenu` is a **group prop** encoded as a `{{...}}` string. You cannot set sub-keys individually with `setAttribute`. Always read the full group, mutate, and write back:
+> ```js
+> // CORRECT
+> const mm = getGroup(dropdownId, 'megaMenu');
+> mm.enable = '{true}';
+> mm.width  = '#dwc-header';
+> setGroup(dropdownId, 'megaMenu', mm);
+> await etch.saveAsync();
+>
+> // WRONG — throws INVALID_ARGUMENT (no prop named "megaMenu.enable" exists)
+> // etch.blocks.setAttribute(dropdownId, 'megaMenu.enable', '{true}');
+> ```
+> For a **new** dropdown block, pass the encoded group in `create()` attributes:
+> ```js
+> attributes: { megaMenu: '{{' + JSON.stringify({ enable:'{true}', width:'#dwc-header', breakout:'{false}' }) + '}}' }
+> ```
+
 | `general.contentAlignment`          | Stored values: `default` / `center` / `left` / `right`                                                                                                                              |
 | `general.visibility`                | Stored values: `Default` / `hide-on-desktop` / `hide-on-mobile` / `hide-on-both`                                                                                                    |
 | `general.appearance`                | Stored values: `default` / `button` / `icon` — **all lowercase**. Using `Icon` or `Button` (capital) silently fails                                                                 |
@@ -1000,6 +1135,12 @@ await etch.saveAsync();
 
 Always pair them — never leave a menu stuck open at the end of a session.
 
+### Execution discipline — name the method before writing it
+
+**Before writing any script line, identify the documented method by name.** If you cannot point to the specific section of this skills file or the API docs that covers the approach you are about to use, look it up first. Do not proceed on familiarity or assumption.
+
+This applies mid-task, not just at session start. Reading docs once at the beginning creates awareness — it does not replace consulting them at each decision point during execution.
+
 ### Customization hierarchy — always try in this order
 
 1. **Component props** — if a prop exists for what you want, use it
@@ -1016,6 +1157,7 @@ Always pair them — never leave a menu stuck open at the end of a session.
 | `etch.loops.*`       | Yes       | `await etch.saveAsync()` |
 | `etch.components.*`  | No        | Persists immediately     |
 | `etch.stylesheets.*` | No        | Persists immediately     |
+| `etch.fields.*`      | No        | Persists immediately (all methods are async, no saveAsync) |
 
 ### DO NOT
 
@@ -1036,14 +1178,16 @@ Always pair them — never leave a menu stuck open at the end of a session.
 * **User context file stores templates only** — do not write tab names, block IDs, or style IDs to it.
 * **`etch.blocks.update` in component edit mode does NOT persist script changes** — use `etch.components.updateAsync(id, { blocks: comp.blocks })` instead. The script lives in the component template, not the block instance.
 * **Component `script.code` is plain JS when read via API** — direct string replacement works. No base64 decode/encode needed despite being base64 in the raw JSON file.
+* **`etch.styles.setVariable('--var-name', value)` sets a `:root` custom property — it does NOT modify variables declared inside a style entry.** The first argument is the **variable name** (e.g. `'--menu-item-clr'`), not a style entry ID. A more-specific selector rule in a style entry will override any `:root` value. To reliably change a CSS variable inside a style entry, read the CSS string, string-replace the declaration, and call `etch.styles.update(id, { css })`.
+* **Before any `etch.styles.*` call, confirm the method applies to the target.** `setVariable` cannot reach variables inside nested CSS blocks (e.g. `&[appearance='icon']`, `&[appearance='button']`). If the variable lives inside a nested selector, stop — use read → string-replace within that block only → `styles.update`. Never use `setVariable` as a shortcut without first confirming the variable is at the root level of the style entry.
 * **`etch.styles.create(selector, css)` — second arg is a CSS STRING only.** Do NOT pass an object `{ css, type, collection }`. Passing an object stores it as the `css` value; when PHP's `CssProcessor::preprocess_css()` receives an array instead of a string it causes a WordPress critical error on the frontend.
-* **`etch.blocks.update(id, { styles })` silently ignores the `styles` field.** The `styles` array is read-only via `BlockPatch`. Do not attempt to set it through `update()`.
+* **`styles` is not part of `BlockPatch` and cannot be set via `etch.blocks.update()`.** `BlockPatch` only accepts `{ name?, hidden?, attributes?, text? }`. The `styles` array is read-only on `PublicBlockJson`; wire it at creation time via `replace()` with `styles: [styleId]` in the JSON, or use `addClass`/`removeClass`.
 * **A DWC Dropdown's content slots are identified by a top-level `slotName` field, not by child index.** The two `etch/slot-content` children are `Mega_Menu_Content` and `Nested_Dropdown_Content`. `options`/`context` are empty on these — read `child.slotName`. Always select with `.find(c => c.slotName === 'Mega_Menu_Content')`.
 * **Inline SVG data-URIs in `content`, `mask`/`-webkit-mask`, or `background` MUST be percent-encoded — never use `data:image/svg+xml;utf8,<svg…>` with raw markup.** The `;utf8,` form with unescaped `<`, `>`, spaces, and quotes silently fails to load in Chrome (the Etch builder), so a `content: url(...)` pseudo-element renders nothing and a mask shows nothing — with no error. Encode with `'data:image/svg+xml,' + encodeURIComponent(svg)` (a standard JS built-in, allowed in safe mode). This is exactly why the icon masks in `.mm-features__item-icon` render but a hand-written `;utf8,` `::before` did not. Use single quotes inside the SVG so the encoded string has no `"` to clash with the `url("…")` wrapper.
 * **Every node in `create()`/`replace()` block JSON needs a `children` array — including `etch/text` nodes.** Text nodes are `{ type:'etch/text', version:1, context:{name:'Text'}, options:{}, text:'...', children:[] }`. Omitting `children:[]` on a text node fails validation with `expected array, received undefined`. Element text content lives in child `etch/text` nodes, not a `text` attribute (that attribute is for components like Menu Item labels). Inline tags like `<em>`/`<span>` are plain `etch/element` nodes (no class/styles needed) wrapping their own text node — style them from the parent's entry via `& em` / `& span`.
-* **`create()` accepts `null` (or an omitted `parentId`) to insert at the document root** (Etch 1.5.4+). Inserting under a parent that can't contain the block — a text block, a void element like `img`, or a text container handed a block-level child — throws `WRONG_BLOCK_TYPE`. The same rule applies to `move()` (the block is left in place) and to indexed `pasteAsync()`. Previously a bad target failed silently; now it errors clearly.
+* **`create()` accepts `null` (or an omitted `parentId`) to insert at the document root.** Inserting under a parent that can't contain the block — a text block, a void element like `img`, or a text container handed a block-level child — throws `WRONG_BLOCK_TYPE`. The same rule applies to `move()` (the block is left in place) and to indexed `pasteAsync()`.
 * **NEVER use `replace()` to edit an already-populated block — it resets EVERY attribute on EVERY node in the subtree**, silently wiping user edits (a swapped image `src`, a changed link, a renamed class). To change copy in place, locate the `etch/text` node and call `etch.blocks.setText(textNodeId, 'new text')` — then `await etch.saveAsync()`. Only use `replace()` to populate an empty placeholder or when you intend to rebuild the whole subtree from scratch. Walk to the text node via the parent element's class: `el.children.find(c => c.type==='etch/text')` (for mixed content like a heading with `<em>`, set each text node individually — the first text node, the `<em>`'s inner text node, and the trailing text node).
-* **Recovering a value clobbered by `replace()` (or any bad edit) — `etch.history` is read-recoverable.** It exposes `undo()`, `redo()`, `canUndo()`, `canRedo()` (undo/redo are async — `await` them). Pattern: `await etch.history.undo()` repeatedly, reading `etch.blocks.getTree()` after each step until the lost value reappears, capture it, then `await etch.history.redo()` the SAME number of times to return to the current state — reading between steps does not mutate or save. **Caveat: undo/redo did NOT cleanly round-trip a `replace()` in practice** (text reverted while the recovered image stuck). So use history only to _read back_ the lost value, then re-apply it explicitly with `setAttribute`/`setText` — never rely on redo alone to restore the full prior state.
+* **Recovering a value clobbered by `replace()` (or any bad edit) — `etch.history` is read-recoverable.** It exposes `undo()`, `redo()`, `canUndo()`, `canRedo()` (both return `void` — do NOT await). Pattern: call `etch.history.undo()` repeatedly, reading `etch.blocks.getTree()` after each step until the lost value reappears, capture it, then call `etch.history.redo()` the SAME number of times to return to the current state — reading between steps does not mutate or save. **Caveat: undo/redo did NOT cleanly round-trip a `replace()` in practice** (text reverted while the recovered image stuck). So use history only to _read back_ the lost value, then re-apply it explicitly with `setAttribute`/`setText` — never rely on redo alone to restore the full prior state.
 * **`etch.blocks.addClass(id, className)` and `removeClass` take CSS CLASS NAME STRINGS — not style entry IDs.** They modify the HTML `class` attribute only. `addClass` does NOT wire the block's `styles[]` array to an existing style entry — it just appends the string to the class attribute. `removeClass` removes the class string AND (by looking up a style entry with that CSS selector) removes the matching style entry ID from `styles[]`.
 * **The `styles[]` array and the HTML `class` attribute are independent.** PHP uses `styles[]` to decide which style-entry CSS to include in the page `<style>` tag. The `class` attribute is the rendered HTML class. Changing one does not automatically change the other.
 * **To change which style entries apply to a block:** Use `removeClass(id, 'old-css-class')` (removes the class AND the matching style ID from `styles[]`), then `addClass(id, 'new-css-class')` (adds the class to HTML; but this does NOT add the matching style entry ID to `styles[]`). Result: HTML class is correct, but `styles[]` no longer references the new style entry.
@@ -1052,7 +1196,7 @@ Always pair them — never leave a menu stuck open at the end of a session.
 * **Block IDs change on every page reload** — always rediscover by walking `etch.blocks.getTree()`. Never hardcode IDs across sessions or after a reload.
 * **`getGroup` returns `undefined` if the group attribute doesn't exist yet on the block** — calling `.slice()` on it will throw. Always guard: `const group = etch.blocks.getAttribute(bid, key) ? getGroup(bid, key) : {};`. `setGroup` has no such problem — it creates the attribute if absent. For group props that may not be initialised (e.g. `inBuilder` on a freshly created dropdown), call `setGroup` directly without reading first.
 * **Never `replace()` a populated block** — it resets every attribute on every node, wiping user edits. Edit content in place with `etch.blocks.setText(textNodeId, ...)` + `saveAsync()`. Includes the text-node walk pattern and the mixed-content (heading with `<em>`) note.
-* **History recovery** — `etch.history.undo()`/`redo()` (async) can read back a clobbered value, but doesn't reliably round-trip a `replace()`, so always re-apply the recovered value explicitly with `setAttribute`/`setText` rather than trusting redo.
+* **History recovery** — `etch.history.undo()`/`redo()` (return void, not async) can read back a clobbered value, but doesn't reliably round-trip a `replace()`, so always re-apply the recovered value explicitly with `setAttribute`/`setText` rather than trusting redo.
 
 ### Adding a new prop — full flow
 
@@ -1074,7 +1218,20 @@ etch.styles.list().find(s => s.selector === '.dwc-header-vars').id
 
 ### `etch.styles` API shape
 
-`etch.styles.list()` returns `{ id, selector, type, collection, css }`. The CSS is in the `.css` string field. Update with `etch.styles.update(id, { css: newCssString })`.
+```js
+// CSS rules (buffered — needs saveAsync)
+etch.styles.list(filter?)              // [{ id, selector, type, collection, css }]; filter: { type? }
+etch.styles.create(selector, cssStr)   // returns new id (CSS STRING only — not an object)
+etch.styles.update(id, { css })        // patch css and/or selector
+etch.styles.delete(id)                 // remove a rule
+
+// :root CSS custom properties (buffered — needs saveAsync)
+// ⚠ First arg is always the VARIABLE NAME, not a style entry ID
+etch.styles.setVariable('--var', value, collection?)
+etch.styles.getVariable('--var', collection?)
+etch.styles.listVariables(collection?)   // Record<string, string>
+etch.styles.removeVariable('--var', collection?)
+```
 
 ***
 
@@ -1134,3 +1291,131 @@ Mirror the same table with a ✓ Status column and the exact value that was set.
 ***
 
 _No templates defined yet._
+
+***
+
+## Appendix A — Authoring payloads, temp-script lifecycle, and quick verification (required)
+
+This appendix contains a small set of **required** rules and helper patterns agents must follow when authoring block JSON or running temporary connector scripts. These items are intentionally brief and prescriptive so every agent can run the minimal tests and succeed first time.
+
+### A.1 Mandatory minimal node shapes (use exactly)
+Always include these keys when creating nodes via `etch.blocks.create()` or `replace()`.
+
+- Element node (minimal valid JSON)
+
+```js
+{
+  type: 'etch/element',
+  version: 1,
+  context: { name: 'Optional name' },
+  options: {},
+  tag: 'div',
+  attributes: {},
+  styles: [],
+  children: [ /* child nodes */ ]
+}
+```
+
+- Text node (minimal valid JSON)
+
+```js
+{
+  type: 'etch/text',
+  version: 1,
+  context: {},
+  text: 'Your text here',
+  attributes: {},
+  styles: [],
+  children: []
+}
+```
+
+Notes: omitting `version`, `context`, `styles`, or `children` causes the connector validator to fail with `expected array, received undefined` or similar errors. Treat these keys as required plumbing — not optional.
+
+### A.2 Temporary script lifecycle (required)
+Every agent must follow this lifecycle for connector eval scripts and local temp files:
+
+1. Create the temporary `.js` file containing the eval body in the active workspace folder.
+2. Run the file via `npx @digital-gravy/etch-connector eval -t "TAB" -f file.js`.
+3. Capture and print the raw connector stdout to the session (for audit).
+4. Immediately delete the file from the workspace before any other action (no exceptions).
+
+Agents must report the exact deleted filename list back in the chat: `Deleted: [file1.js, file2.js]`.
+
+### A.3 Minimal-test pattern (required before bulk ops)
+Before any bulk mutation (create/replace many blocks), run a minimal non-destructive test that:
+
+- Resolves the DWC component IDs by name (DWC Header/Nav/Dropdown/Menu Item/Toggle).
+- Finds a single dropdown instance and its `Mega_Menu_Content` slot.
+- Creates one minimal element + text node pair using the shapes in A.1 inside that slot.
+- If creation succeeds, delete the created test block immediately.
+
+If the test fails, do NOT run the bulk script. Parse the connector error JSON and fix the missing key indicated by the first `path` entry (e.g., add `children: []` if path ends with `children`). Re-run the minimal test until it passes.
+
+### A.4 Helper factories (copy into any script to avoid shape mistakes)
+Include these small helpers at the top of agent scripts to produce correct node shapes:
+
+```js
+function createTextNode(text){
+  return { type:'etch/text', version:1, context:{}, text, attributes:{}, styles:[], children:[] };
+}
+function createElementNode(tag, attrs={}, styles=[], children=[]){
+  return { type:'etch/element', version:1, context:{}, options:{}, tag, attributes:attrs, styles, children };
+}
+function getGroup(bid,key){ const raw = etch.blocks.getAttribute(bid,key); return raw ? JSON.parse(raw.slice(1,-1)) : {}; }
+function setGroup(bid,key,obj){ etch.blocks.setAttribute(bid,key,'{'+JSON.stringify(obj)+'}'); }
+```
+
+Use these rather than hand-writing node JSON.
+
+### A.5 Idempotency and duplicate avoidance (required)
+Before creating a panel for a dropdown, check the slot for an existing panel marker (a data attribute or class your workflow uses). Example check:
+
+```js
+const slotJson = etch.blocks.getJson(slotId);
+const hasPanel = slotJson.children.some(c => c.attributes?.['data-ephemeral-panel']);
+if(hasPanel) continue; // skip
+```
+
+If the workflow does not have an agreed marker, create the panel and add `attributes: { 'data-ephemeral-panel': 'true' }` so future runs skip it.
+
+### A.6 Copy/paste verification (optional, but must be tested)
+The skill file forbids naive duplication unless verified. To test `etch.blocks.copy()`/`pasteAsync()` safely:
+
+1. Create one authoritative template in-builder (or build-from-scratch in code).
+2. Run the verification snippet that copies and pastes once into a test slot, then compare the `styles` arrays of the source and pasted block.
+3. If paste re-maps to new style-entry IDs consistently and the pasted block renders correctly, document that evidence in the session and then you may opt to `pasteAsync` for remaining dropdowns.
+
+Verification snippet (run once):
+
+```js
+const payload = etch.blocks.copy(templateId);
+const newId = await etch.blocks.pasteAsync(payload, testSlotId);
+const orig = etch.blocks.getJson(templateId);
+const pasted = etch.blocks.getJson(newId);
+return { origStyles: orig.styles, pastedStyles: pasted.styles, newId };
+```
+
+If `pastedStyles` re-uses the exact same style-entry IDs as `origStyles` (not remapped), abort clone workflow and use build-from-scratch.
+
+### A.7 Timeouts and save discipline
+- Minimal test: `--timeout 60000`.
+- Bulk operations with many creates/pastes: `--timeout 150000` (or larger if site is slow).
+- Batch mutations and call a single `await etch.saveAsync()` at the end. Do not call `saveAsync()` per item.
+
+### A.8 Logging and error parsing (required)
+If an eval errors with a validation list, capture the first error object and act on it: the `path` points to the missing key. Example mapping:
+
+- path ends with `"children"` → add `children: []` at that node
+- path contains `"version"` → add `version: 1`
+- path contains `"context"` → add `context: {}`
+
+Always include the first error object in the session transcript when asking for help.
+
+### A.9 Auto-clean wrapper (recommended)
+Agents should run temporary scripts via a one-shot wrapper that writes the file, evals it, logs stdout, and deletes the file before continuing. This wrapper must itself be transient (or printed to the chat for manual execution) and must not leave temp files in the workspace.
+
+---
+
+Agents MUST follow the checks in this appendix in addition to the main skill file. Failure to delete temp scripts or to run the minimal test before bulk operations will be considered a skills violation and must be corrected before continuing work on the site.
+

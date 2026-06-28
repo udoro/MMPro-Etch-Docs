@@ -81,11 +81,11 @@ The core navigation component. It controls everything about the menu — how it 
 
 ### Backdrop
 
-| Setting                           | Description                                                   |
-| --------------------------------- | ------------------------------------------------------------- |
-| **Hide Nav Backdrop**             | Removes the overlay that appears behind the open mobile menu. |
-| **Nav Backdrop Blur**             | Blur intensity of the mobile menu backdrop.                   |
-| **Nav Backdrop Background Color** | Colour and opacity of the mobile menu backdrop.               |
+| Setting                           | Description                                                                |
+| --------------------------------- | -------------------------------------------------------------------------- |
+| **Hide Nav Backdrop**             | Removes the overlay that appears when the dropdown content opens.          |
+| **Nav Backdrop Blur**             | Blur intensity of the nav backdrop.                                        |
+| **Nav Backdrop Background Color** | Colour and opacity of the nav backdrop.                                    |
 
 ### Logo
 
