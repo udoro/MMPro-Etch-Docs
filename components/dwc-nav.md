@@ -25,8 +25,8 @@ The core navigation component. It controls everything about the menu — how it 
 | **Offcanvas Mode**             | The nav behaves as a sidebar even on desktop viewports. All mobile menu styles apply regardless of screen width.         |
 | **Flyout Offcanvas**           | In offcanvas mode, submenus fly out as overlapping panels (desktop-like behaviour) instead of expanding inline.          |
 | **Flyout on Hover**            | In offcanvas mode on a desktop-sized screen, dropdowns open on hover rather than requiring a click.                      |
-| **Last Item is Button**        | Styles the last one, two, or three nav items as CTA buttons. Options: None, Last Button, Last 2 Buttons, Last 3 Buttons. |
-| **Non-Button Items Alignment** | Controls how the remaining items align when the CTA button is active.                                                    |
+| **Last Item is Button**        | Styles the last one, two, or three nav items as CTA buttons. Options: None, Last Button, Last 2 Buttons, Last 3 Buttons. **CTA-button styling (the `--menu-cta-*` variables) applies only to DWC _Menu Item_ last items — DWC _Dropdown_ items are not turned into CTA buttons, even when their Appearance is set to `button` or `icon`.** To make a dropdown look like a button/icon, use the dropdown's own **Appearance** setting instead. For trailing dropdowns, this setting only serves to enable **Non-Button Items Alignment**. |
+| **Non-Button Items Alignment** | Controls how the remaining items align (Left or Center) when Last Item is Button is active. **Note:** trailing icon/button-appearance DWC Dropdowns (e.g. a search or cart icon) are **right-aligned by default** — you do not need Last Item is Button to right-align them.                                                                                                                                                                                                                                |
 
 ### Mobile
 

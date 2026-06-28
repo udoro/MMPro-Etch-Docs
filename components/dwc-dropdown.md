@@ -17,7 +17,7 @@ A top-level navigation item that contains a dropdown panel. The panel can be a s
 | **Text**                  | The label shown on the toggle button in the nav.                                                                                                       |
 | **Dropdown Trigger Mode** | Per-item override for how this dropdown opens: **Hover**, **Click**, or **Both**. Overrides the global setting on DWC Nav.                             |
 | **Visibility**            | Show or hide this item at specific breakpoints (desktop only, mobile only, or always visible).                                                         |
-| **Appearance**            | Visual style of the toggle button: default link, button, or icon.                                                                                      |
+| **Appearance**            | Visual style of the toggle button: **default** (link), **button**, or **icon**. This is how you turn a dropdown into a button or an icon (e.g. a search or cart icon) — set it here, **not** via DWC Nav's _Last Item is Button_ (that CTA styling applies to DWC Menu Items only, not dropdowns). Trailing icon/button-appearance dropdowns are **right-aligned in the nav by default**. |
 | **No Arrow**              | Hides the chevron/arrow indicator on this item's toggle button.                                                                                        |
 | **Use Custom SVG**        | Replaces the default chevron with a custom SVG icon. **Note:** requires the **Allow "unsafe" HTML** option to be enabled in the Etch builder settings. |
 | **Custom SVG**            | Paste your SVG code directly into this field. Only active when **Use Custom SVG** is enabled.                                                          |
@@ -132,6 +132,46 @@ The `.dwc-dropdown-items-vars` class is already applied to the **DWC Dropdown** 
 ```css
 .dwc-dropdown-items-vars {
   --dropdown-indent-bg: rgb(40 60 150 / 5%); /* background of the indent zone */
+}
+```
+
+### Icon / Button appearance
+
+When a dropdown's **Appearance** is set to `icon` or `button`, its toggle is styled by these **nested** blocks inside `.dwc-dropdown-items-vars`. By default both render a **black pill background with a white glyph/label**. Override the variables inside the relevant block — for example set `--menu-item-bg` and `--menu-item-hover-bg` to `transparent` and `--icon-clr` to a dark colour for a plain, background-free icon.
+
+```css
+.dwc-dropdown-items-vars {
+  /* DROPDOWN ITEM IS BUTTON */
+  &[appearance='button'] > .dwc-submenu-toggle {
+    --menu-item-bg: var(--black, #000);          /* button background */
+    --menu-item-clr: var(--white, #fff);         /* label colour */
+    --menu-item-hover-clr: var(--white, #fff);
+    --menu-item-hover-bg: var(--black, #000);
+    --menu-item-radius: 50vw;                     /* 50vw = pill */
+    --icon-size: 0;                               /* 0 = show label text, not a glyph */
+    --icon-clr: var(--white, #fff);
+    --icon-hover-clr: var(--white, #fff);
+    --menu-item-inline-padding: 1.5rem;
+    --menu-item-block-padding: 1rem;
+    --menu-item-width: 200px;                     /* max width on mobile */
+    --menu-item-border: solid 1px transparent;
+    --menu-item-hover-border: solid 1px transparent;
+  }
+
+  /* DROPDOWN ITEM IS ICON */
+  &[appearance='icon'] > .dwc-submenu-toggle {
+    --menu-item-bg: var(--black, #000);          /* the icon's pill/circle background */
+    --menu-item-clr: var(--white, #fff);
+    --menu-item-hover-clr: var(--white, #fff);
+    --menu-item-hover-bg: var(--black, #000);
+    --icon-clr: var(--white, #fff);              /* glyph colour (applied as the SVG stroke) */
+    --icon-hover-clr: var(--white, #fff);
+    --icon-size: to-rem(14px);                   /* glyph size */
+    --button-max-diameter: to-rem(45px);         /* tap-target diameter */
+    --menu-item-radius: 50vw;                     /* 50vw = circle */
+    --menu-item-border: solid 1px transparent;
+    --menu-item-hover-border: solid 1px transparent;
+  }
 }
 ```
 

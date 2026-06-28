@@ -6,6 +6,47 @@ icon: sparkles
 
 Standalone reference for configuring DWC Mega Menu Pro + Header Builder in Etch via the etch-connector. Read sections 1–3 first — they cover 90% of tasks. Sections 4–7 are lookup-only.
 
+## START HERE — mandatory workflow
+
+Follow this every session. Skipping it is why agents fail this skill.
+
+1. **Connect & preflight.** Get the tab name, **resolve the DWC component IDs by name** (Section 1 —
+   they are site-specific, not fixed `1298–1302`), then confirm the Header and Nav exist on the page
+   (see "What the agent does"). If they're not found, **STOP** — don't improvise.
+2. **Clarify scope before any build — ask, don't assume.** When the request implies new structure
+   (a design/screenshot, "build an X-style nav", "make it look like …"), ask the user which they want:
+   - **(a) Restyle / adjust the existing items** — keep current nav items, change look & behavior; or
+   - **(b) Full rebuild from scratch** — remove the current items and build fresh to match the design.
+
+   These are very different jobs. Confirm before touching anything. If a design/screenshot is
+   provided, also confirm you should match it exactly and whether to clear existing content first.
+   Restate your understanding of every item/section you'll build and get a yes before building.
+
+   **Before any destructive rebuild (option b), ALWAYS offer to back up first.** Copy the whole
+   header (Nav + logo) to a portable snapshot and save it, so the user can restore if they dislike
+   the result — then proceed only after they confirm:
+   ```js
+   const headerBlock = findBlock(etch.blocks.getTree(), compId('DWC Header'));
+   const backup = etch.blocks.copy(headerBlock.id);   // CopyObject — write it to a file / context
+   // restore later: await etch.blocks.pasteAsync(backup); await etch.saveAsync();
+   ```
+3. **Use the correct node shape.** Component props live in `attributes`, **not** `n.props`; the
+   element tag is `tag`, **not** `n.tagName`. Walking with the wrong fields makes a real DWC menu
+   look "custom" — see "Block node shape". When unsure, `getJson(id)` one node and read its real keys.
+4. **Customization hierarchy — try in this exact order, top-down (NEVER skip to the bottom):**
+   1. **Component prop** — almost everything is a prop. Map the request to one via Section 2
+      (decision tree) + Section 4 (prop reference). Confirm the exact key with
+      `etch.components.getJson(130x).properties` before setting.
+   2. **CSS-variable class** — if no prop exists, override a `--var` in the relevant `.dwc-*-vars` style entry.
+   3. **Custom (tuts) stylesheet** — only for CSS *properties* with no prop and no variable.
+   4. **JavaScript config** — absolute last resort (Section 7).
+5. **Apply, then `await etch.saveAsync()`** (blocks/styles are buffered).
+6. **Verify** — read the changed prop/variable back, and screenshot with CDP (Visual verification).
+
+> **🚫 NEVER write CSS into the global stylesheet to achieve menu styling or behavior that a prop or
+> CSS-variable class can do.** Reaching for a hand-written global stylesheet rule is the signature of
+> an agent that skipped the hierarchy above. If you find yourself about to do it, go back to the prop reference.
+
 ## Before you start
 
 This skills file lives in a folder called `MMPro Etch Docs`.
@@ -30,12 +71,23 @@ If the user hasn't connected yet, give them exactly these steps — nothing more
 
 ### What the agent does (internal — never expose to user)
 
-Once the server output appears in chat:
+Once the server output appears (in chat, or in the terminal if the user ran `serve` there):
 
 1. Extract the tab name from: `[etch-connector] + tab "your-site.com" (...)`
-2. Run the discovery script silently (block IDs + style entry IDs — see Section 3: Script library)
-3. Store tab name, header/nav/toggle block IDs, and style IDs in session memory
-4. Ask the user in plain English: **"I'm connected to \[tab name]. What would you like to change?"**
+2. **Preflight — confirm MMPro is on this page (do this before anything else).** First **resolve the
+   DWC component IDs by name** (`compId('DWC Header')`, `compId('DWC Nav')` — see Section 1; the IDs
+   are site-specific, NOT fixed `1298–1302`). Then check that `findBlock(getTree(), HEADER)` and
+   `findBlock(getTree(), NAV)` both return a block.
+   - **Found** → store tab name, header/nav/toggle block IDs, the resolved component IDs, and the
+     `.dwc-*-vars` style IDs in session memory, then continue.
+   - **Not found** → the DWC Header/Nav isn't placed on this page. **STOP.** Tell the user plainly
+     (e.g. "I don't see the DWC Mega Menu Pro header on this page — is it added to this page/template?")
+     and do **not** improvise with custom HTML/CSS. The #1 cause of an agent wrongly deciding the menu
+     is "custom" and hand-writing CSS is **searching by the wrong (hardcoded) component ID** or
+     walking the tree with bad field names (see "Block node shape"). If `compId('DWC Header')`
+     returns a number but `findBlock` returns nothing, the header is on a different page/template —
+     not absent.
+3. Ask the user in plain English: **"I'm connected to \[tab name]. What would you like to change?"**
 
 **Never** tell the user about block IDs, eval commands, script files, or any internal steps. **Never** ask the user to run scripts themselves.
 
@@ -61,6 +113,9 @@ npx @digital-gravy/etch-connector eval -t "your-site.com" --timeout 60000 -f scr
 - **`-f` is mandatory for anything multi-line.** PowerShell here-strings passed inline are silently swallowed — always write the script to a file and use `-f`.
 - The script body runs as an **async function**: `await` is available and whatever you `return` comes back on stdout as JSON. `console.log` output is printed separately from the return value.
 - `-t` is optional when only one tab is connected.
+- **⚠ A timed-out eval does NOT abort the in-page script.** The connector stops *waiting* at `--timeout`, but your `async` code keeps running in the builder. A long per-item loop (e.g. delete-all + paste 10) can keep mutating *after* you get "timed out" — producing duplicates / partial state. Always re-read state before retrying; don't blindly re-run.
+- **Batch mutations into one script with a single `await etch.saveAsync()` at the end** — don't save per item. Keep loops short and pass a generous `--timeout` (e.g. 150000) for multi-item builds.
+- **`blocks.copy()` / `pasteAsync()` of a full mega menu is heavy (~10s each)** because it bundles the whole subtree + every referenced style entry. Great for cloning *one* styled panel; for building *many* clean items from scratch, `create()` lightweight blocks is far faster and avoids dragging demo content. (Confirmed: paste reuses existing style entries by id rather than duplicating them.)
 
 **Safe mode:** Scripts only have access to `etch.*` and standard JS built-ins. `window`, `document`, all browser globals, network requests, and browser storage are blocked. Use `etch.*` API calls instead of DOM access — `encodeURIComponent` and other standard JS built-ins are available.
 
@@ -102,6 +157,22 @@ etch.components.getJson(cid) / updateAsync(cid, { properties|blocks })
 // history — async; read-recoverable (see Section 6)
 await etch.history.undo() / redo() ; canUndo() / canRedo()
 ```
+
+### Block node shape (read this before walking the tree)
+
+`getTree()` / `getJson()` return nodes with **exactly** these fields:
+
+```js
+{ id, type, componentId?, slotName?, attributes, children, tag?, text?, options?, context?, styles? }
+```
+
+- `type` — `etch/component` | `etch/element` | `etch/text` | `etch/slot-content` | `etch/svg` | …
+- `componentId` — number, only on `etch/component` nodes. **DWC components** (Menu Item, Dropdown, Nav, Toggle, Header). The numbers are **site-specific** — resolve them by name (Section 1). This doc writes `1298–1302` as readable placeholders for the resolved `ITEM/DROPDOWN/NAV/TOGGLE/HEADER`.
+- `attributes` — object. **For a component instance this is where its bound PROPS live** (group props are `{{…}}`-encoded strings; read with `getGroup`/`getAttribute`, set with `setGroup`/`setAttribute`).
+- `children` — array of child nodes. Slots are `etch/slot-content` children identified by `slotName` (pick by `slotName`, never by index).
+- `tag` — element tag on `etch/element` (e.g. `'div'`). `text` — content on `etch/text`. `styles` — read-only style-entry IDs.
+
+> **⚠ There is NO `n.props` and NO `n.tagName`.** Reading them returns `undefined`, and an agent that walks the tree looking for `props`/`tagName` will see "empty" components and wrongly conclude the page uses a *custom* menu — then fall back to writing CSS by hand. **Props are in `attributes`; the element tag is `tag`.** When in doubt, `getJson(id)` one node and inspect its real keys before assuming.
 
 ### Visual verification (CDP mode)
 
@@ -153,27 +224,41 @@ When you discover something new while working — a pattern that worked, a gotch
 
 ## 1. Site config
 
-Fill in the site-specific values once. Style entry IDs come from the distributable and are consistent across all installations.
+**Everything here is site-specific — resolve it at runtime, never hardcode.** Both DWC component IDs
+**and** style-entry IDs vary per install (observed: components `1298–1302` on one site, `758–762` on
+another; toggle-vars `reiqdv9` on one, `2j8195b` on another). Assuming fixed numbers is the #1 cause
+of "the menu looks custom / I can't find the header" failures.
+
+### Resolve DWC component IDs by NAME — do this first, every session
+
+```js
+const compId = (name) => etch.components.list().find(c => c.name === name)?.id;
+const HEADER   = compId('DWC Header');
+const NAV      = compId('DWC Nav');
+const TOGGLE   = compId('DWC Mobile Toggle');
+const DROPDOWN = compId('DWC Dropdown');
+const ITEM     = compId('DWC Menu Item');
+
+// Then locate block instances with the RESOLVED ids:
+const headerBlock = findBlock(etch.blocks.getTree(), HEADER);
+const navBlock    = findBlock(etch.blocks.getTree(), NAV);
+```
+
+> Throughout this doc, examples write `1298`–`1302` (Menu Item / Dropdown / Nav / Toggle / Header) as
+> **readable placeholders**. Always substitute your resolved `ITEM / DROPDOWN / NAV / TOGGLE / HEADER`.
+
+### Resolve style-entry IDs by SELECTOR
+
+```js
+const styleId = (sel) => etch.styles.list().find(s => s.selector === sel)?.id;
+const headerVars = styleId('.dwc-header-vars');
+// also: .dwc-nav-vars, .dwc-top-level-items-vars, .dwc-dropdown-items-vars, .dwc-toggle-vars
+```
 
 ```
-## Site-specific (fill in per site)
-Tab:                         <your-tab-name>
-Header block ID:             <discover: findBlock(etch.blocks.getTree(), 1302).id>
-Nav block ID:                <discover: findBlock(etch.blocks.getTree(), 1300).id>
-Toggle block ID:             <discover: findBlock(etch.blocks.getTree(), 1301).id>
-
-## Distributable defaults (same for all sites on this version)
-.dwc-header-vars style:      i357enw
-.dwc-nav-vars style:         wkuk8bf
-.dwc-top-level-items-vars:   9w5k5pq
-.dwc-dropdown-items-vars:    wkvxtty
-.dwc-toggle-vars style:      reiqdv9
-
 ## MMPro stylesheet (READ ONLY — never edit, reference/debug only)
-DWC Mega Menu:               etch.stylesheets.list().find(s => s.name === 'DWC Mega Menu').id
+DWC Mega Menu:  etch.stylesheets.list().find(s => s.name === 'DWC Mega Menu').id
 ```
-
-> If a site's style entry IDs don't match the defaults above, the CSS variable class was modified after installation. Verify with: `etch.styles.list().find(s => s.selector === '.dwc-header-vars').id`
 
 ***
 
@@ -342,6 +427,37 @@ await etch.stylesheets.appendAsync('5378835', '.mega-menu-revo__nav-group { ... 
 
 ***
 
+### Worked example — a natural-language brief → props
+
+This is the method: decompose the user's words into props/variables before touching anything. Every
+row below is a prop or a CSS-variable override — **none** of it needs hand-written global CSS.
+(Confirm exact keys/select values at runtime with `etch.components.getJson(130x).properties`.)
+
+> Brief: *"Apple-style nav. All dropdowns open on hover except Shop and the search icon (click).
+> Search icon hidden on mobile. On mobile, search + bag icons sit outside the menu next to the toggle.
+> Dropdowns open downward. Mobile menu expands down with a subtle fade-in. Desktop dropdown height
+> transitions smoothly between items. Whitish blurred backdrop. Dropdown spans full width but inner
+> content matches content width. No item hover background. Hover colour a darker black. Apple logo."*
+
+| Brief phrase | Where it maps |
+| --- | --- |
+| dropdowns on hover; Shop + Search on click | `interactionUx.dropdownTriggerMode` (Nav) = Hover or Click; then per-item `dropdownTriggerMode: click` on the Shop + Search DWC Dropdowns (1299) |
+| search icon hidden on mobile | `general.visibility: hide-on-mobile` on the Search Dropdown (1299) |
+| search/bag outside mobile menu, by the toggle | icon-button dropdown with a panel → `megaMenu.enable {true}` then `megaMenu.breakout {true}`; plain icon link → DWC Menu Item + `relocation.mode: breakout` |
+| dropdown content opens downward | `general.submenuReveal: expand` (1299); mobile equivalent `mobile.submenuReveal: Expand` (Nav) |
+| mobile menu expands down + fade | `mobile.slideInDirection: expand down` + `mobile.submenuSlideExtras.fadeItemsOnSlide` (Nav) |
+| desktop dropdown height transitions smoothly | `animation.adaptiveHeight {true}` (Nav) — mutually exclusive with `animation.stripeStyle` |
+| whitish blurred backdrop | confirm a desktop-dropdown backdrop prop in the live schema first; the `backdrop.*` group is the **mobile-menu** backdrop, so a desktop dropdown overlay may need a `.dwc-*-vars` variable instead |
+| full-width panel, inner = content width | `megaMenu.enable {true}`, width via `dropdown.globalMegaMenuWidth: #dwc-header` (resolves to the header width — **never `100vw`/`%`**, they add the scrollbar width and cause horizontal overflow), inner via `megaMenu.innerWidth` / `dropdown.globalInnerWidth` |
+| no item hover background | already default; if present, `--dropdown-item-hover-bg: transparent` in `.dwc-dropdown-items-vars` |
+| hover colour = darker black | `--menu-item-hover-clr` in `.dwc-top-level-items-vars` (no `!important`) |
+| use the Apple logo | locate the logo block and set its image `src` / inline SVG |
+
+Only the "whitish backdrop" row may fall to a CSS-variable class — everything else is a prop. That
+ratio (props-first, CSS-variable rarely, global stylesheet never) is what a correct build looks like.
+
+***
+
 **I want to → exact action**
 
 | Goal                                                                               | Action                                                                                                                                                                                                                                                                                                   |
@@ -374,8 +490,9 @@ await etch.stylesheets.appendAsync('5378835', '.mega-menu-revo__nav-group { ... 
 | Change toggle bg (pill)                                                            | `appearance.pillBackgroundColor` prop → CSS `--toggle-bg` (**prop-driven, needs `!important`** to override in CSS)                                                                                                                                                                                       |
 | Add a new prop to a component                                                      | `etch.components.updateAsync(id, { properties: [...existing, newProp] })` — see Section 3                                                                                                                                                                                                                |
 | Use a nav item as an icon button (e.g. cart, account)                              | Set `general.appearance` → `Icon` on DWC Dropdown, enable `general.useCustomSvg`, paste SVG into `general.customSvg`. **Requires "Allow unsafe HTML" to be enabled in Etch settings.** When `useCustomSvg` is on, the arrow automatically disappears.                                                    |
-| Align nav items left with icon buttons on the right                                | Set `menuMode.lastItemIsButton` to match the number of icon buttons (`true` = 1, `true-2` = 2, `true-3` = 3; max 3), then set `menuMode.nonButtonItemsAlignment` → `Left`                                                                                                                                |
-| Align nav items centre with icon buttons on the right                              | Same as above but set `menuMode.nonButtonItemsAlignment` → `Center`                                                                                                                                                                                                                                      |
+| Put icon-appearance dropdowns (search/cart) on the right                           | **Default — do nothing.** Trailing icon-appearance DWC Dropdowns are right-aligned automatically. Do **NOT** set `lastItemIsButton` for them (that is a DWC **Menu Item** CTA feature — see gotchas).                                                                                                     |
+| Left/centre-align the other items while icons stay right                           | Set `menuMode.nonButtonItemsAlignment` → `Left` / `Center` (with `menuMode.lastItemIsButton` set to the icon count to mark the trailing items). For icon dropdowns this only sets alignment — it does **not** make them CTA buttons.                                                                       |
+| Make a real pill CTA button in the nav                                              | Use a **DWC Menu Item** with `general.appearance` → `button` as the last item + `menuMode.lastItemIsButton`. The `--menu-cta-*` vars style it. (Icon-appearance dropdowns cannot be CTA buttons.)                                                                                                          |
 | Break an icon button dropdown out to the header on mobile (sits next to hamburger) | `megaMenu.enable` must be `true` first — `megaMenu.breakout` is only available when mega menu is enabled. Then toggle `megaMenu.breakout` → `true`. Uses the default mobile breakpoint. For a plain icon button with no panel, use DWC Menu Item + `Content` slot + `relocation.mode: breakout` instead. |
 
 ***
@@ -385,6 +502,8 @@ await etch.stylesheets.appendAsync('5378835', '.mega-menu-revo__nav-group { ... 
 ### Core helpers (include at top of every script)
 
 ```js
+// Resolve DWC component IDs by NAME — they are site-specific, never hardcode (see Section 1).
+const compId = (name) => etch.components.list().find(c => c.name === name)?.id;
 function getGroup(bid, key) {
   return JSON.parse(etch.blocks.getAttribute(bid, key).slice(1, -1));
 }
@@ -557,6 +676,13 @@ await etch.components.updateAsync(1300, { blocks: comp.blocks });
 
 ## 4. Prop reference
 
+> **Full reference (online):** this section is a quick reference of the common props. For the
+> exhaustive list of every setting **and** the complete `.dwc-*-vars` CSS variables per component,
+> read the official docs at <https://design-with-cracka.gitbook.io/etchmegamenupro> (per-component
+> pages: DWC Header, DWC Nav, DWC Dropdown, DWC Menu Item, DWC Mobile Toggle). If you have web
+> access, fetch them when you need a setting not listed here. Cross-component exceptions (e.g.
+> CTA/`lastItemIsButton` styling is DWC Menu Item-only) are in Section 6.
+
 ### DWC Header (componentId 1302)
 
 | Prop key                                | Group        | CSS variable                 | Notes                                                                               |
@@ -595,8 +721,8 @@ await etch.components.updateAsync(1300, { blocks: comp.blocks });
 | `menuMode.offcanvasMode`                            | menuMode      | Sidebar on all viewports                                                                                                                                                                                                                                     |
 | `menuMode.flyoutOffcanvas`                          | menuMode      | Desktop-like flyout in offcanvas mode                                                                                                                                                                                                                        |
 | `menuMode.flyoutOnHover`                            | menuMode      | Hover opens dropdowns in offcanvas on desktop                                                                                                                                                                                                                |
-| `menuMode.lastItemIsButton`                         | menuMode      | Select: `false` / `true` (1 CTA) / `true-2` / `true-3`                                                                                                                                                                                                       |
-| `menuMode.nonButtonItemsAlignment`                  | menuMode      | Alignment of non-CTA items when CTA active                                                                                                                                                                                                                   |
+| `menuMode.lastItemIsButton`                         | menuMode      | Select: `false` / `true` (1 CTA) / `true-2` / `true-3`. **CTA-button styling (`--menu-cta-*`) only applies to DWC *Menu Item* last items — NOT to icon/button-appearance DWC Dropdowns.** For trailing icon dropdowns this does nothing but enable `nonButtonItemsAlignment`; do not use it to right-align them (that's default). |
+| `menuMode.nonButtonItemsAlignment`                  | menuMode      | Left/Center alignment of the non-button items (needs `lastItemIsButton` set). Trailing icon-appearance dropdowns are right-aligned by default regardless.                                                                                                     |
 | `mobile.previewMobileMenu`                          | mobile        | Builder preview only (renamed from openMobileMenu)                                                                                                                                                                                                           |
 | `mobile.mobileBreakpoint`                           | mobile        | Default: `1200px`                                                                                                                                                                                                                                            |
 | `mobile.mobileMenuWidth`                            | mobile        | Width of sidebar panel                                                                                                                                                                                                                                       |
@@ -620,7 +746,7 @@ await etch.components.updateAsync(1300, { blocks: comp.blocks });
 | `dropdown.dropdownContentBorderSize`                | dropdown      | Border thickness                                                                                                                                                                                                                                             |
 | `dropdown.dropdownContentBorderColor`               | dropdown      | Border colour                                                                                                                                                                                                                                                |
 | `dropdown.globalNestedDropdownWidth`                | dropdown      | Default flyout width. Overridden per-dropdown                                                                                                                                                                                                                |
-| `dropdown.globalMegaMenuWidth`                      | dropdown      | Default mega menu width. Accepts CSS value, CSS var, **class name**, or **element ID** (resolves that element's width). **Never use `%`** — resolves relative to the parent nav item, not the viewport. Use `100vw`, `1200px`, or a `.class`/`#id` reference |
+| `dropdown.globalMegaMenuWidth`                      | dropdown      | Default mega menu width. Accepts CSS value, CSS var, **class name**, or **element ID** (resolves that element's width). For full-width, use **`#dwc-header`** (or the `header` tag) — it matches the header exactly. **Never `100vw`/`%`**: `100vw` includes the scrollbar width → horizontal overflow; `%` resolves relative to the parent nav item. Fixed values like `1200px` are also fine |
 | `dropdown.globalInnerWidth`                         | dropdown      | Max inner content width inside mega menus                                                                                                                                                                                                                    |
 | `dropdown.dropdownVerticalAlignment`                | dropdown      | CSS selector — aligns dropdown top to the bottom of that element. Default: `.dwc-nest-header`                                                                                                                                                                |
 | `dropdown.dropdownOffsetGap`                        | dropdown      | Gap between nav bar and top-level dropdown panels                                                                                                                                                                                                            |
@@ -654,7 +780,7 @@ await etch.components.updateAsync(1300, { blocks: comp.blocks });
 | `nestedDropdown.excludeEqualHeight` | Excludes block from equal-height calc                                                                                                                                               |
 | `nestedDropdown.parentRelative`     | Panel relative to toggle item, not full nav bar                                                                                                                                     |
 | `megaMenu.enable`                   | Switches to full-width mega menu layout. Stored as actual boolean `true`/`false` (not `{true}` string)                                                                              |
-| `megaMenu.width`                    | Panel width — CSS value, CSS var, class name, or element ID. **Never use `%`** — it resolves relative to the parent dropdown item. Use `100vw`, `1200px`, or `.class`/`#id` instead |
+| `megaMenu.width`                    | Panel width — CSS value, CSS var, class name, or element ID. For full-width use **`#dwc-header`** (or `header` tag). **Never `100vw`/`%`** — `100vw` adds the scrollbar width (horizontal overflow); `%` resolves relative to the parent dropdown item. `1200px` etc. also fine |
 | `megaMenu.innerWidth`               | Max inner content width. Default: `100%`                                                                                                                                            |
 | `megaMenu.breakout`                 | Moves mega menu into header area on mobile (uses global mobile breakpoint). Stored as `{true}`/`{false}` string                                                                     |
 | `general.contentAlignment`          | Stored values: `default` / `center` / `left` / `right`                                                                                                                              |
@@ -664,6 +790,27 @@ await etch.components.updateAsync(1300, { blocks: comp.blocks });
 | `general.useCustomSvg`              | Custom SVG icon. Stored as `{true}`/`{false}` string. Requires "Allow unsafe HTML" in Etch settings                                                                                 |
 | `general.customSvg`                 | Raw SVG string — inject as inline HTML, no encoding needed                                                                                                                          |
 | `general.submenuReveal`             | Stored values: `default` / `expand` / `slide`                                                                                                                                       |
+
+#### Styling a dropdown in icon / button appearance — `.dwc-dropdown-items-vars`
+
+A dropdown set to `general.appearance` = `icon` or `button` defaults to a **black pill background with a white glyph**. These values live inside **nested blocks** in `.dwc-dropdown-items-vars` (`&[appearance='icon']` / `&[appearance='button']`), **not** at the root — so `etch.styles.setVariable` can't reach them. Edit the block's CSS instead (read the entry, string-replace inside the target block, `etch.styles.update`):
+
+```css
+/* inside .dwc-dropdown-items-vars */
+&[appearance='icon'] > .dwc-submenu-toggle {
+  --menu-item-bg: var(--black, #000);      /* the pill/circle background — transparent for a plain icon */
+  --menu-item-hover-bg: var(--black, #000);
+  --menu-item-clr: var(--white, #fff);
+  --icon-clr: var(--white, #fff);          /* glyph colour (SVG stroke) */
+  --icon-hover-clr: var(--white, #fff);
+  --icon-size: to-rem(14px);               /* glyph size */
+  --button-max-diameter: to-rem(45px);     /* tap-target diameter */
+  --menu-item-radius: 50vw;                /* 50vw = circle */
+}
+/* &[appearance='button'] block uses the same vars; --icon-size: 0 (text, not a glyph) */
+```
+
+Plain Apple-style icon (no bg, dark glyph): in the **`icon` block only**, set `--menu-item-bg`/`--menu-item-hover-bg` → `transparent` and `--icon-clr`/`--icon-hover-clr` → your dark colour. **Edit only the `icon` block** — the `button` block has identical variable names, so a global replace would hit both. This one change fixes desktop and the breakout icon colour on mobile together.
 
 ### DWC Menu Item (componentId 1298)
 
@@ -873,8 +1020,9 @@ Always pair them — never leave a menu stuck open at the end of a session.
 ### DO NOT
 
 * **DO NOT** set `dropdown.dropdownContentBorderSize` to `0` or any value below `1px` — use `1px` as the minimum; set `dropdownContentBorderColor` to `transparent` if you want an invisible border
-* **DO NOT** use `%` for `megaMenu.width` or `globalMegaMenuWidth` — `%` resolves relative to the parent dropdown item, not the viewport or header. Use `100vw`, a fixed `px` value, or a `.class`/`#id` reference
+* **DO NOT** use `%` or `100vw` for `megaMenu.width` / `globalMegaMenuWidth`. `%` resolves relative to the parent dropdown item; `100vw` includes the scrollbar width and causes horizontal overflow. **For full-width, use `#dwc-header` (or the `header` tag)** so the panel matches the header exactly; a fixed `px` value or `.class`/`#id` reference also works.
 * **DO NOT** use capitalised select values for `general.appearance`, `general.visibility`, or `general.submenuReveal` — the stored values are lowercase (`icon`, `hide-on-desktop`, `slide`). Capitalised values silently fail (the component ignores them and falls back to default)
+* **DO NOT** use `menuMode.lastItemIsButton` to make an icon/cart/search button or to right-align it. **`lastItemIsButton` + the `--menu-cta-*` CTA styling only work on DWC *Menu Item* last items, not on DWC *Dropdown* items** (even with `general.appearance: button`/`icon`). For a dropdown-as-icon/button, use the dropdown's own `general.appearance` (`icon`/`button`); trailing icon dropdowns are **right-aligned by default** (no `lastItemIsButton` needed). For dropdowns, `lastItemIsButton` only enables `nonButtonItemsAlignment` (left/center of the other items). *(Confirmed by testing — this exception is not stated in the official component documentation.)*
 * **DO NOT** modify selector strings in special styles blocks — only add values inside `{ }`
 * **DO NOT** use raw `rgba()` — use `color-mix(in oklch, ...)`
 * **DO NOT** use `replace()` — use `replaceAll()` (CSS blocks contain both commented and active declarations)
