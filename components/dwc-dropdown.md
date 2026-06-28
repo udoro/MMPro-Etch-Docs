@@ -154,8 +154,11 @@ When a dropdown's **Appearance** is set to `icon` or `button`, its toggle is sty
     --menu-item-inline-padding: 1.5rem;
     --menu-item-block-padding: 1rem;
     --menu-item-width: 200px;                     /* max width on mobile */
-    --menu-item-border: solid 1px transparent;
-    --menu-item-hover-border: solid 1px transparent;
+    --menu-item-border: solid 1px transparent; /* border on mobile */
+    --menu-item-hover-border: solid 1px transparent; /* hover border on mobile */
+    --chevron-clr: var(--icon-clr);
+    --chevron-hover-clr: var(--icon-hover-clr);
+    --chevron-size: var(--icon-size);
   }
 
   /* DROPDOWN ITEM IS ICON */
@@ -171,6 +174,9 @@ When a dropdown's **Appearance** is set to `icon` or `button`, its toggle is sty
     --menu-item-radius: 50vw;                     /* 50vw = circle */
     --menu-item-border: solid 1px transparent;
     --menu-item-hover-border: solid 1px transparent;
+    --chevron-clr: var(--icon-clr);
+    --chevron-hover-clr: var(--icon-hover-clr);
+    --chevron-size: var(--icon-size);
   }
 }
 ```
