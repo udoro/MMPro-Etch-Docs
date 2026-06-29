@@ -12,18 +12,25 @@ The AI Connector lets you control **Mega Menu Pro + Header Builder** through a c
 
 * Etch Builder with Mega Menu Pro + Header Builder installed
 * [Node.js](https://nodejs.org) (v18 or later)
-* **Claude Code** — the AI must run inside an IDE with terminal access so it can execute connector commands. Claude Code is available as a [VS Code extension](https://marketplace.visualstudio.com/items?itemName=anthropic.claude-code), a [JetBrains plugin](https://plugins.jetbrains.com/plugin/24996-claude-code), or the [CLI](https://docs.anthropic.com/en/claude-code/getting-started)
+* An **AI coding agent with terminal access** — the AI needs to be able to run terminal commands against your live Etch Builder tab. Any of the following will work:
 
-> **Why Claude Code?** The AI needs to run terminal commands against your live Etch Builder tab. Regular claude.ai (web) has no terminal access and cannot use the connector.
+| Agent | How to get it |
+|---|---|
+| [Claude Code](https://docs.anthropic.com/en/claude-code/getting-started) | VS Code / JetBrains extension, or CLI — use **Opus 4.8 or later** for best design output |
+| [Cursor](https://www.cursor.com) | Standalone AI IDE with built-in agent mode |
+| [OpenAI Codex](https://openai.com/codex) | CLI agent |
+
+> The AI must be running in **agent mode** with terminal access enabled — a standard chat-only interface (e.g. a web chat with no tools) will not work.
 
 ***
 
 ## How it works
 
 1. You enable the AI Connector in Etch Builder
-2. You tell Claude Code you're connected — Claude runs the connector and links to your builder tab
-3. Claude reads your live layout state and makes changes directly
-4. You just chat — Claude handles everything else
+2. You load the MMPro Skills File into your AI agent so it understands the system
+3. You tell the agent you're connected — it runs the connector and links to your builder tab
+4. The agent reads your live layout state and makes changes directly
+5. You just chat — the agent handles everything else
 
 ***
 
@@ -38,17 +45,17 @@ The AI Connector lets you control **Mega Menu Pro + Header Builder** through a c
 
 ### Step 2 — Load the Skills File
 
-The Skills File teaches Claude how Mega Menu Pro works. Download it and place it in the folder you'll open in your IDE, or attach it at the start of each Claude Code session.
+The Skills File teaches your AI agent how Mega Menu Pro works. Download it and place it in the folder you'll open in your IDE, or attach it at the start of each agent session.
 
 [Download the MMPro Skills File](https://github.com/udoro/MMPro-Etch-Docs/blob/main/ai-connector/mega-menu-pro-skills.md)
 
 ### Step 3 — Connect
 
-Open your project in VS Code (or your IDE) and start a Claude Code session with the Skills File loaded. Then let Claude know you've completed the Etch setup — for example:
+Open your project in your IDE and start an agent session with the Skills File loaded. Then let the agent know you've completed the Etch setup — for example:
 
 > *"I've enabled the AI Connector in Etch and clicked Connect external AI agent."*
 
-Claude will run the connection command, detect your Etch Builder tab, confirm it's connected, and ask what you'd like to change.
+The agent will run the connection command, detect your Etch Builder tab, confirm it's connected, and ask what you'd like to change.
 
 ***
 
@@ -64,16 +71,16 @@ Once connected, just describe what you want:
 
 > *"Change the nav item colour to dark gray, hover to black"*
 
-Claude will confirm your intent before making any structural changes, and will back up your layout before a full rebuild.
+The agent will confirm your intent before making any structural changes, and will back up your layout before a full rebuild.
 
 ***
 
 ## Tips
 
-* **Reload the Skills File each session** — Claude's memory doesn't persist between conversations. Place the file in your project folder or re-attach it at the start of each new chat.
-* **Keep Claude Code open** — closing the session disconnects the agent.
+* **Reload the Skills File each session** — AI agents don't retain memory between conversations. Place the file in your project folder or re-attach it at the start of each new session.
+* **Keep the agent session open** — closing it disconnects the connector.
 * **One tab at a time** — connect to one Etch Builder tab per site.
-* **Session recovery** — if Claude loses the connection mid-session, check that the Etch Builder tab is still open. You usually don't need to reconnect.
+* **Session recovery** — if the agent loses the connection mid-session, check that the Etch Builder tab is still open. You usually don't need to reconnect.
 
 ***
 
@@ -81,6 +88,6 @@ Claude will confirm your intent before making any structural changes, and will b
 
 | Problem | Fix |
 |---|---|
-| Claude says it can't find the DWC Header/Nav | Make sure the DWC Header is placed on the current page/template in Etch |
-| Claude can't connect | Make sure Node.js is installed and the Etch Builder tab is open |
-| Changes not saving | Ask Claude to save — it runs `saveAsync()` after each change |
+| Agent says it can't find the DWC Header/Nav | Make sure the DWC Header is placed on the current page/template in Etch |
+| Agent can't connect | Make sure Node.js is installed and the Etch Builder tab is open |
+| Changes not saving | Ask the agent to save — it runs `saveAsync()` after each change |
