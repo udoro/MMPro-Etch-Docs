@@ -6,26 +6,24 @@ icon: sparkles
 
 The AI Connector lets you control **Mega Menu Pro + Header Builder** through a conversational AI agent — describe what you want in plain English and the agent makes it happen directly inside your Etch Builder.
 
-> **Supported AI:** Claude by Anthropic (recommended). Use [claude.ai](https://claude.ai) or the [Claude desktop app](https://claude.ai/download).
+***
+
+## Requirements
+
+* Etch Builder with Mega Menu Pro + Header Builder installed
+* [Node.js](https://nodejs.org) (v18 or later)
+* **Claude Code** — the AI must run inside an IDE with terminal access so it can execute connector commands. Claude Code is available as a [VS Code extension](https://marketplace.visualstudio.com/items?itemName=anthropic.claude-code), a [JetBrains plugin](https://plugins.jetbrains.com/plugin/24996-claude-code), or the [CLI](https://docs.anthropic.com/en/claude-code/getting-started)
+
+> **Why Claude Code?** The AI needs to run terminal commands against your live Etch Builder tab. Regular claude.ai (web) has no terminal access and cannot use the connector.
 
 ***
 
 ## How it works
 
 1. You enable the AI Connector in Etch Builder
-2. You connect it to an external AI agent (Claude)
-3. You load the MMPro Skills File into your Claude conversation
-4. You chat with Claude — it reads your live builder state and applies changes directly
-
-The AI never guesses. It reads your actual component IDs, live props, and style entries before touching anything.
-
-***
-
-## Prerequisites
-
-* Etch Builder with Mega Menu Pro + Header Builder installed
-* [Node.js](https://nodejs.org) installed (v18 or later)
-* A [Claude](https://claude.ai) account (Pro plan recommended for longer sessions)
+2. You tell Claude Code you're connected — Claude runs the connector and links to your builder tab
+3. Claude reads your live layout state and makes changes directly
+4. You just chat — Claude handles everything else
 
 ***
 
@@ -38,41 +36,25 @@ The AI never guesses. It reads your actual component IDs, live props, and style 
 3. Click the **AI sparkles button** in the lower-left settings bar
 4. Select **"Connect external AI agent"**
 
-### Step 2 — Start the connector server
+### Step 2 — Load the Skills File
 
-Open your terminal and run:
-
-```bash
-npx @digital-gravy/etch-connector serve
-```
-
-Leave this terminal running. You'll see output like:
-
-```
-[etch-connector] + tab "your-site.com" (...)
-```
-
-Copy that entire output — you'll paste it into Claude.
-
-### Step 3 — Load the Skills File into Claude
-
-The Skills File is what teaches Claude how Mega Menu Pro works. You need to load it at the start of every new conversation.
+The Skills File teaches Claude how Mega Menu Pro works. Download it and place it in the folder you'll open in your IDE, or attach it at the start of each Claude Code session.
 
 [Download the MMPro Skills File](https://github.com/udoro/MMPro-Etch-Docs/blob/main/ai-connector/mega-menu-pro-skills.md)
 
-**To load it into Claude:**
+### Step 3 — Connect
 
-1. Open a new Claude conversation
-2. Attach the downloaded `mega-menu-pro-skills.md` file (use the paperclip / attachment button)
-3. Paste the connector server output from Step 2 into the chat and send it
+Open your project in VS Code (or your IDE) and start a Claude Code session with the Skills File loaded. Then let Claude know you've completed the Etch setup — for example:
 
-Claude will confirm it's connected and ask what you'd like to change.
+> *"I've enabled the AI Connector in Etch and clicked Connect external AI agent."*
+
+Claude will run the connection command, detect your Etch Builder tab, confirm it's connected, and ask what you'd like to change.
 
 ***
 
 ## Using the AI
 
-Once connected, just describe what you want in plain English:
+Once connected, just describe what you want:
 
 > *"Make the header transparent on load with a white blur when a dropdown opens"*
 
@@ -82,17 +64,16 @@ Once connected, just describe what you want in plain English:
 
 > *"Change the nav item colour to dark gray, hover to black"*
 
-Claude will confirm your intent before making any structural changes, and will always back up your layout before a full rebuild.
+Claude will confirm your intent before making any structural changes, and will back up your layout before a full rebuild.
 
 ***
 
 ## Tips
 
-* **Reload the Skills File each session** — Claude's memory doesn't persist between conversations. Attach the file at the start of every new chat.
-* **Keep the serve terminal open** — closing it disconnects the agent.
-* **One tab at a time** — connect to one Etch Builder tab per site. Multiple tabs on the same site will cause conflicts.
-* **Confirm before big changes** — Claude will ask before wiping and rebuilding. Read its confirmation carefully.
-* **Session recovery** — if Claude loses the connection mid-session, check that the original serve terminal and your Etch Builder tab are still open. Usually you don't need to re-run `serve`.
+* **Reload the Skills File each session** — Claude's memory doesn't persist between conversations. Place the file in your project folder or re-attach it at the start of each new chat.
+* **Keep Claude Code open** — closing the session disconnects the agent.
+* **One tab at a time** — connect to one Etch Builder tab per site.
+* **Session recovery** — if Claude loses the connection mid-session, check that the Etch Builder tab is still open. You usually don't need to reconnect.
 
 ***
 
@@ -101,6 +82,5 @@ Claude will confirm your intent before making any structural changes, and will a
 | Problem | Fix |
 |---|---|
 | Claude says it can't find the DWC Header/Nav | Make sure the DWC Header is placed on the current page/template in Etch |
-| Connection drops | Check the serve terminal is still running and the Builder tab is still open |
-| "Tab not found" error | Re-run `npx @digital-gravy/etch-connector serve` and paste the new output into Claude |
-| Changes not saving | Claude runs `saveAsync()` after each change — if it times out, ask Claude to save again |
+| Claude can't connect | Make sure Node.js is installed and the Etch Builder tab is open |
+| Changes not saving | Ask Claude to save — it runs `saveAsync()` after each change |
