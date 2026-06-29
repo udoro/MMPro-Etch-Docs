@@ -51,11 +51,13 @@ The Skills File teaches your AI agent how Mega Menu Pro works. Download it and p
 
 ### Step 3 — Connect
 
-Open your project in your IDE and start an agent session with the Skills File loaded. Then let the agent know you've completed the Etch setup — for example:
+Open your project in your IDE and start an agent session with the Skills File loaded. Then paste the following command into the chat and send it:
 
-> *"I've enabled the AI Connector in Etch and clicked Connect external AI agent."*
+```
+npx @digital-gravy/etch-connector serve
+```
 
-The agent will run the connection command, detect your Etch Builder tab, confirm it's connected, and ask what you'd like to change.
+The agent will run the command, detect your Etch Builder tab, confirm it's connected, and ask what you'd like to change.
 
 ***
 
