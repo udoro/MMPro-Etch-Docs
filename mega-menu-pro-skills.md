@@ -18,6 +18,42 @@ You must execute these steps sequentially. You are strictly forbidden from modif
 5. Delete temporary connector scripts immediately after the task is complete and the changes are verified. Do not leave generated `*.js` eval files in the workspace.
 6. If the skill file does not show a helper for the requested prop, stop and do not mutate grouped props until the correct pattern is confirmed.
 
+---
+
+### ⛔ PRE-SCRIPT DECLARATION — mandatory before writing any connector script
+
+You are **strictly forbidden** from writing or executing any connector script until you have output the following declaration verbatim in the chat, with every field filled in from real inspection — not assumed. The user can see this output and will catch any item that is skipped, vague, or faked.
+
+**Output this exact block before every script:**
+
+```
+PRE-SCRIPT DECLARATION
+─────────────────────────────────────────────
+Task: [one sentence describing what this script does]
+Skills file sections re-read: [list the specific sections consulted for this task]
+Props to set: [list every prop] — schema inspected via etch.components.getJson(): YES
+Prop keys confirmed (not assumed): [list keys]
+Select values from selectOptionsString (not UI label): [list var: value pairs, or N/A]
+Default values omitted: YES — [list any prop you considered but omitted because it matched the default, or N/A]
+Global props used instead of local: [list, or N/A]
+Responsive code included: YES / N/A — [reason if N/A]
+slot-content children included in create(): YES / N/A — [reason if N/A]
+Intent confirmed with user: YES / [paste the confirmation]
+Verification source: LIVE STATE only
+─────────────────────────────────────────────
+```
+
+**Hard stop conditions — do not proceed if any of the following are true:**
+- Any field above is blank, says "TBD", or was filled from memory/assumption rather than live inspection
+- Schema was not actually run — `selectOptionsString` values were assumed from the UI label
+- A layout is being built without `@container` queries included
+- A local prop is being set when a global equivalent exists
+- The user has not confirmed intent on a visual/structural change
+
+An agent that writes a script without outputting this declaration, or outputs it with fields filled from assumption rather than inspection, has violated the workflow. The declaration is not a formality — it is the proof that the work was done correctly before execution.
+
+---
+
 > Example: set `megaMenu` on DWC Dropdown using the documented helper, not direct raw JSON.
 > ```js
 > setGroup(dropdownId, 'megaMenu', {
@@ -76,7 +112,7 @@ You are strictly forbidden from skipping down this hierarchy. Reaching for a raw
 * If and only if the terminal output from Tier 1 confirms no native property controls the layout request, search the `.dwc-*-vars` style entry.
 * Modify the layout exclusively by overriding the specific active `--var` within that structural block.
 
-#### TIER 3: Custom Stylesheets
+#### TIER 3: Custom Stylesheets (Tuts)
 * This tier is restricted. You may write custom CSS properties to the custom stylesheet if and only if you have documented in your chat declaration that absolutely no native component property (Tier 1) or CSS variable (Tier 2) exposes control over that layout behavior.
 
 #### TIER 4: JavaScript Configuration Global Overrides
@@ -380,7 +416,7 @@ DWC Mega Menu:  etch.stylesheets.list().find(s => s.name === 'DWC Mega Menu').id
 
 **Correct workflow for a new mega menu template:**
 
-1. Create a new DWC Dropdown block with mega menu enabled:
+1. Create a new DWC Dropdown block with mega menu enabled. **You MUST include the `etch/slot-content` children in the `children` array** — a component created with `children: []` has no accessible slots in the same script (slots only appear after `saveAsync()`). Pass at least a placeholder child inside each slot you intend to populate:
 
 ```js
 const newDropdownId = etch.blocks.create({
@@ -388,16 +424,36 @@ const newDropdownId = etch.blocks.create({
   version: 1,
   context: { name: 'My New Mega Menu' },
   options: {},
-  children: [],
   componentId: 1299,
   attributes: {
     text: 'Nav Label',
-    megaMenu: '{{\"enable\":\"{true}\",\"width\":\"1360\"}}',
-  }
+    megaMenu: '{{\"enable\":\"{true}\",\"width\":\"#dwc-header\"}}',
+  },
+  children: [
+    {
+      type: 'etch/slot-content', version: 1, context: {},
+      slotName: 'Mega_Menu_Content',
+      children: [
+        // placeholder — will be replaced with the styled panel via replace()
+        { type: 'etch/element', version: 1, context: {}, options: {}, tag: 'div', attributes: {}, children: [] }
+      ]
+    },
+    {
+      type: 'etch/slot-content', version: 1, context: {},
+      slotName: 'Nested_Dropdown_Content',
+      children: []
+    }
+  ]
 }, parentNavBlockId, insertIndex);
+
+// Slots now exist — find the placeholder and replace() with the styled panel
+const ddBlock = etch.blocks.getJson(newDropdownId);
+const megaSlot = ddBlock.children.find(c => c.slotName === 'Mega_Menu_Content');
+const phId = megaSlot.children[0].id;
+etch.blocks.replace(phId, buildPanel(columns)); // replace() persists styles[] correctly
 ```
 
-2. Find the content slot-content child and build the inner structure fresh using `etch.blocks.create()`, passing your template class names and style entry IDs **directly in the block JSON** — they are set correctly at creation time with no retrofitting needed.
+2. Find the content slot-content child and build the inner structure fresh using `replace()`, passing your template class names and style entry IDs **directly in the block JSON** — they are set correctly at creation time with no retrofitting needed.
 
 > **Slot selection — pick by `slotName`, not by index.** Every `etch/slot-content` block has a top-level `slotName` field. Never rely on child order.
 >
@@ -494,7 +550,7 @@ await etch.saveAsync();
 * **Link style entries must always set both `color` and `&:hover { color: ... }` explicitly** — prevents global/theme `a` styles from bleeding in. Minimum: `color: white; &:hover { color: white; }`.
 * **Use `to-rem()` for all px values** in style entry CSS — e.g. `to-rem(14px)`, `to-rem(20px)`. Style entries go through `CssProcessor::preprocess_css()` which handles the conversion. Never write raw rem values like `0.875rem`; write `to-rem(14px)` instead. Exceptions: aspect ratios, `z-index`, `opacity`, unitless values, and `calc()` expressions where mixing units is intentional.
 * **If ACSS (AutomaticCSS) skills are available, prefer ACSS tokens and utility patterns** over the default styling approach above.
-* **Never put mega menu CSS in the global stylesheet** — use style entries only.
+* **Never put mega menu CSS in the global tuts stylesheet** — use style entries only.
 
 Only duplicate an existing mega menu if you need to copy content (not structure/styles), and plan to keep the same class names as the source.
 
@@ -537,7 +593,7 @@ etch.blocks.addClass(blockId, 'new-css-class-name');     // adds class to HTML o
 
 `addClass` will add the correct HTML class but will NOT wire the new style entry ID into `styles[]`. See Section 6.
 
-**Step 3 — Work around the styles\[] gap using the stylesheet:** Because `addClass` does not update `styles[]`, the new style entries' CSS will not be output by PHP on the frontend. The workaround: put ALL the new template's CSS in the stylesheet instead of relying on per-block style entries. The stylesheet is always output and applies by CSS selector regardless of `styles[]`.
+**Step 3 — Work around the styles\[] gap using the tuts stylesheet:** Because `addClass` does not update `styles[]`, the new style entries' CSS will not be output by PHP on the frontend. The workaround: put ALL the new template's CSS in the tuts stylesheet instead of relying on per-block style entries. The tuts stylesheet is always output and applies by CSS selector regardless of `styles[]`.
 
 ```js
 await etch.stylesheets.appendAsync('5378835', '.mega-menu-revo__nav-group { ... }');
@@ -567,8 +623,8 @@ row below is a prop or a CSS-variable override — **none** of it needs hand-wri
 | dropdown content opens downward | `general.submenuReveal: expand` (1299); mobile equivalent `mobile.submenuReveal: Expand` (Nav) |
 | mobile menu expands down + fade | `mobile.slideInDirection: expand down` + `mobile.submenuSlideExtras.fadeItemsOnSlide` (Nav) |
 | desktop dropdown height transitions smoothly | `animation.adaptiveHeight {true}` (Nav) — mutually exclusive with `animation.stripeStyle` |
-| whitish blurred backdrop | confirm a desktop-dropdown backdrop prop in the live schema first; the `backdrop.*` group is the **mobile-menu** backdrop, so a desktop dropdown overlay may need a `.dwc-*-vars` variable instead |
-| full-width panel, inner = content width | `megaMenu.enable {true}`, width via `dropdown.globalMegaMenuWidth: #dwc-header` (resolves to the header width — **never `100vw`/`%`**, they add the scrollbar width and cause horizontal overflow), inner via `megaMenu.innerWidth` / `dropdown.globalInnerWidth` |
+| whitish blurred backdrop | `backdrop.navBackdropBackgroundColor` (colour/opacity) + `backdrop.navBackdropBlur` (blur intensity) on the DWC Nav. These props control the overlay that appears behind dropdown content when it opens — on both desktop and mobile. |
+| full-width panel, inner = content width | `megaMenu.enable {true}`, width via `dropdown.globalMegaMenuWidth: #dwc-header` for full-width headers — or **`.dwc-nest-header`** when using overlay header with a constrained width (the inner wrap is what carries the constrained width, not `#dwc-header`). **Never `100vw`/`%`**. Inner content width via `megaMenu.innerWidth` / `dropdown.globalInnerWidth` |
 | no item hover background | already default; if present, `--dropdown-item-hover-bg: transparent` in `.dwc-dropdown-items-vars` |
 | hover colour = darker black | `--menu-item-hover-clr` in `.dwc-top-level-items-vars` (no `!important`) |
 | use the Apple logo | locate the logo block and set its image `src` / inline SVG |
@@ -611,8 +667,8 @@ ratio (props-first, CSS-variable rarely, global stylesheet never) is what a corr
 | Add a new prop to a component                                                      | `etch.components.updateAsync(id, { properties: [...existing, newProp] })` — see Section 3                                                                                                                                                                                                                |
 | Use a nav item as an icon button (e.g. cart, account)                              | Set `general.appearance` → `Icon` on DWC Dropdown, enable `general.useCustomSvg`, paste SVG into `general.customSvg`. **Requires "Allow unsafe HTML" to be enabled in Etch settings.** When `useCustomSvg` is on, the arrow automatically disappears.                                                    |
 | Put icon-appearance dropdowns (search/cart) on the right                           | **Default — do nothing.** Trailing icon-appearance DWC Dropdowns are right-aligned automatically. Do **NOT** set `lastItemIsButton` for them (that is a DWC **Menu Item** CTA feature — see gotchas).                                                                                                     |
-| Left/centre-align the other items while icons stay right                           | Set `menuMode.nonButtonItemsAlignment` → `Left` / `Center` (with `menuMode.lastItemIsButton` set to the icon count to mark the trailing items). For icon dropdowns this only sets alignment — it does **not** make them CTA buttons.                                                                       |
-| Make a real pill CTA button in the nav                                              | Use a **DWC Menu Item** with `general.appearance` → `button` as the last item + `menuMode.lastItemIsButton`. The `--menu-cta-*` vars style it. (Icon-appearance dropdowns cannot be CTA buttons.)                                                                                                          |
+| Left/centre-align the other items while icons stay right                           | Set `menuMode.nonButtonItemsAlignment` → **`left`** / **`center`** (lowercase — capital `Left` silently fails). Needs `lastItemIsButton` set. This prop is condition-nested inside `menuMode` and requires a recursive schema search to find its stored values.                                                                       |
+| Make a real pill CTA button in the nav                                              | Use a **DWC Menu Item** as the last item + `menuMode.lastItemIsButton`. Each CTA position has its **own independent variable set** in `.dwc-top-level-items-vars`: `--menu-cta-*` (last item), `--menu-cta-2-*` (second-to-last), `--menu-cta-3-*` (third-to-last). Style each button differently — e.g. filled vs outlined — purely through these vars. **Never reach for the tuts stylesheet** to differentiate CTA buttons; use the per-position var sets instead. (Icon-appearance dropdowns cannot be CTA buttons.)                                                                                                          |
 | Break an icon button dropdown out to the header on mobile (sits next to hamburger) | `megaMenu.enable` must be `true` first — `megaMenu.breakout` is only available when mega menu is enabled. Then toggle `megaMenu.breakout` → `true`. Uses the default mobile breakpoint. For a plain icon button with no panel, use DWC Menu Item + `Content` slot + `relocation.mode: breakout` instead. |
 
 ***
@@ -736,7 +792,7 @@ await etch.saveAsync();
 
 Then add the CSS rule consuming the variable via `etch.stylesheets.appendAsync()` (see below).
 
-### Append to the stylesheet
+### Append to the tuts stylesheet
 
 ```js
 const css = `
@@ -829,7 +885,7 @@ await etch.components.updateAsync(1300, { blocks: comp.blocks });
 | `overlay.overlayHeaderWidth`            | overlay      | `--overlay-header-width`     | Width of overlay container                                                          |
 | `overlay.overlayHeaderBackground`       | overlay      | `--overlay-header-bg`        | Default (unscrolled) bg. **Prop-driven → `!important`**                             |
 | `overlay.overlayHeaderActiveBackground` | overlay      | `--overlay-header-bg-active` | Bg when user hovers a nav item or dropdown opens. **Prop-driven → `!important`**    |
-| `overlay.overlayHeaderBlur`             | overlay      | `--overlay-header-blur`      | Backdrop blur intensity                                                             |
+| `overlay.overlayHeaderBlur`             | overlay      | `--overlay-header-blur`      | Backdrop-filter blur on the header overlay element (frosted glass header bar)       |
 | `overlay.overlayHeaderRadius`           | overlay      | `--overlay-header-radius`    | Border radius                                                                       |
 | `overlay.overlayHeaderInset`            | overlay      | `--overlay-header-inset`     | Offset from viewport edges                                                          |
 | `overlay.removeInsetTop`                | overlay      | —                            | Removes top gap                                                                     |
@@ -849,8 +905,8 @@ await etch.components.updateAsync(1300, { blocks: comp.blocks });
 | `menuMode.offcanvasMode`                            | menuMode      | Sidebar on all viewports                                                                                                                                                                                                                                     |
 | `menuMode.flyoutOffcanvas`                          | menuMode      | Desktop-like flyout in offcanvas mode                                                                                                                                                                                                                        |
 | `menuMode.flyoutOnHover`                            | menuMode      | Hover opens dropdowns in offcanvas on desktop                                                                                                                                                                                                                |
-| `menuMode.lastItemIsButton`                         | menuMode      | Select: `false` / `true` (1 CTA) / `true-2` / `true-3`. **CTA-button styling (`--menu-cta-*`) only applies to DWC *Menu Item* last items — NOT to icon/button-appearance DWC Dropdowns.** For trailing icon dropdowns this does nothing but enable `nonButtonItemsAlignment`; do not use it to right-align them (that's default). |
-| `menuMode.nonButtonItemsAlignment`                  | menuMode      | Left/Center alignment of the non-button items (needs `lastItemIsButton` set). Trailing icon-appearance dropdowns are right-aligned by default regardless.                                                                                                     |
+| `menuMode.lastItemIsButton`                         | menuMode      | Select: `false` / `true` (1 CTA) / `true-2` / `true-3`. **CTA-button styling only applies to DWC *Menu Item* last items — NOT to icon/button-appearance DWC Dropdowns.** Each CTA position has its **own independent variable set** in `.dwc-top-level-items-vars` — `--menu-cta-*` (last), `--menu-cta-2-*` (second-to-last), `--menu-cta-3-*` (third-to-last) — so two or three buttons can be styled completely differently (e.g. filled vs outlined) using only CSS vars. Never use the tuts stylesheet to differentiate CTA buttons. For trailing icon dropdowns this prop does nothing but enable `nonButtonItemsAlignment`; do not use it to right-align them (that's default). |
+| `menuMode.nonButtonItemsAlignment`                  | menuMode      | Stored values: `left` / `center` (lowercase — `Left` silently fails). Needs `lastItemIsButton` set. **⚠ Condition-nested prop** — lives inside the `lastItem` condition inside `menuMode`; a shallow `menuMode.properties` read misses it. Use a recursive schema search to discover it. Trailing icon-appearance dropdowns are right-aligned by default regardless.                                                                                                     |
 | `mobile.previewMobileMenu`                          | mobile        | Builder preview only (renamed from openMobileMenu)                                                                                                                                                                                                           |
 | `mobile.mobileBreakpoint`                           | mobile        | Default: `1200px`                                                                                                                                                                                                                                            |
 | `mobile.mobileMenuWidth`                            | mobile        | Width of sidebar panel                                                                                                                                                                                                                                       |
@@ -874,7 +930,7 @@ await etch.components.updateAsync(1300, { blocks: comp.blocks });
 | `dropdown.dropdownContentBorderSize`                | dropdown      | Border thickness                                                                                                                                                                                                                                             |
 | `dropdown.dropdownContentBorderColor`               | dropdown      | Border colour                                                                                                                                                                                                                                                |
 | `dropdown.globalNestedDropdownWidth`                | dropdown      | Default flyout width. Overridden per-dropdown                                                                                                                                                                                                                |
-| `dropdown.globalMegaMenuWidth`                      | dropdown      | Default mega menu width. Accepts CSS value, CSS var, **class name**, or **element ID** (resolves that element's width). For full-width, use **`#dwc-header`** (or the `header` tag) — it matches the header exactly. **Never `100vw`/`%`**: `100vw` includes the scrollbar width → horizontal overflow; `%` resolves relative to the parent nav item. Fixed values like `1200px` are also fine |
+| `dropdown.globalMegaMenuWidth`                      | dropdown      | Default mega menu width. Accepts CSS value, CSS var, **class name**, or **element ID** (resolves that element's width). For full-width, use **`#dwc-header`** (or the `header` tag) — it matches the header exactly. **Never `100vw`/`%`**: `100vw` includes the scrollbar width → horizontal overflow; `%` resolves relative to the parent nav item. Fixed values like `1200px` are also fine. ⚠ **Overlay header caveat:** when `overlay.overlayHeader` is enabled with a constrained width (not full-width), `#dwc-header` resolves to the full viewport width — NOT the constrained header width. The constrained width is applied to the inner wrap, not the outer header element. Use **`.dwc-nest-header`** instead — this is always the selector for the header inner wrap and correctly resolves to the overlay-constrained width. |
 | `dropdown.globalInnerWidth`                         | dropdown      | Max inner content width inside mega menus                                                                                                                                                                                                                    |
 | `dropdown.dropdownVerticalAlignment`                | dropdown      | CSS selector — aligns dropdown top to the bottom of that element. Default: `.dwc-nest-header`                                                                                                                                                                |
 | `dropdown.dropdownOffsetGap`                        | dropdown      | Gap between nav bar and top-level dropdown panels                                                                                                                                                                                                            |
@@ -883,11 +939,13 @@ await etch.components.updateAsync(1300, { blocks: comp.blocks });
 | `dropdown.arrowVisibilty`                           | dropdown      | Default / Hide / Hide on Mobile / Hide on Desktop                                                                                                                                                                                                            |
 | `interactionUx.dropdownTriggerMode`                 | interactionUx | Global trigger: Hover or Click / Hover only / Click only                                                                                                                                                                                                     |
 | `interactionUx.nestedDropdownActiveOverlay`         | interactionUx | Dims parent content when nested opens                                                                                                                                                                                                                        |
+| `interactionUx.nestedDropdownActiveOverlayColor`    | interactionUx | Colour and opacity of the dim overlay when a nested dropdown opens                                                                                                                                                                                           |
+| `interactionUx.nestedDropdownInactiveBlur`          | interactionUx | Blurs inactive parent dropdown content while a nested panel is open                                                                                                                                                                                          |
 | `interactionUx.parentRelativeNestedDropdown`        | interactionUx | Positions nested panels relative to parent item                                                                                                                                                                                                              |
 | `interactionUx.menuItemHoverEffect`                 | interactionUx | Default / Text Roll (desktop only)                                                                                                                                                                                                                           |
-| `backdrop.hideNavBackdrop`                          | backdrop      | Removes mobile menu backdrop                                                                                                                                                                                                                                 |
-| `backdrop.navBackdropBlur`                          | backdrop      | Backdrop blur                                                                                                                                                                                                                                                |
-| `backdrop.navBackdropBackgroundColor`               | backdrop      | Backdrop colour/opacity                                                                                                                                                                                                                                      |
+| `backdrop.hideNavBackdrop`                          | backdrop      | Removes the overlay that appears when dropdown content opens                                                                                                                                                                                                 |
+| `backdrop.navBackdropBlur`                          | backdrop      | Blur intensity of the scrim that appears over the page when dropdowns open                                                                                                                                                                                   |
+| `backdrop.navBackdropBackgroundColor`               | backdrop      | Colour and opacity of the scrim that appears over the page when dropdowns open                                                                                                                                                                               |
 | `logo.centeredLogo`                                 | logo          | Splits items either side of logo                                                                                                                                                                                                                             |
 | `logo.centerGuide`                                  | logo          | Debug visual guide (admin only)                                                                                                                                                                                                                              |
 | `logo.mobileLogoSize`                               | logo          | Logo size in mobile menu                                                                                                                                                                                                                                     |
@@ -910,7 +968,26 @@ await etch.components.updateAsync(1300, { blocks: comp.blocks });
 | `megaMenu.enable`                   | Switches to full-width mega menu layout. Stored as `"{true}"`/`"{false}"` string — same as all boolean group props (NOT an actual boolean)                                                                              |
 | `megaMenu.width`                    | Panel width — CSS value, CSS var, class name, or element ID. For full-width use **`#dwc-header`** (or `header` tag). **Never `100vw`/`%`** — `100vw` adds the scrollbar width (horizontal overflow); `%` resolves relative to the parent dropdown item. `1200px` etc. also fine |
 | `megaMenu.innerWidth`               | Max inner content width. Default: `100%`                                                                                                                                            |
-| `megaMenu.breakout`                 | Moves mega menu into header area on mobile (uses global mobile breakpoint). Stored as `{true}`/`{false}` string                                                                     |
+| `megaMenu.breakout`                 | Moves mega menu item into header area on mobile (uses global mobile breakpoint). Stored as `{true}`/`{false}` string                                                                |
+
+> **⚠ Common agent mistake — enabling mega menu on an existing dropdown.**
+> `megaMenu` is a **group prop** encoded as a `{{...}}` string. You cannot set sub-keys individually with `setAttribute`. Always read the full group, mutate, and write back:
+> ```js
+> // CORRECT
+> const mm = getGroup(dropdownId, 'megaMenu');
+> mm.enable = '{true}';
+> mm.width  = '#dwc-header';
+> setGroup(dropdownId, 'megaMenu', mm);
+> await etch.saveAsync();
+>
+> // WRONG — throws INVALID_ARGUMENT (no prop named "megaMenu.enable" exists)
+> // etch.blocks.setAttribute(dropdownId, 'megaMenu.enable', '{true}');
+> ```
+> For a **new** dropdown block, pass the encoded group in `create()` attributes:
+> ```js
+> attributes: { megaMenu: '{{' + JSON.stringify({ enable:'{true}', width:'#dwc-header', breakout:'{false}' }) + '}}' }
+> ```
+
 | `general.contentAlignment`          | Stored values: `default` / `center` / `left` / `right`                                                                                                                              |
 | `general.visibility`                | Stored values: `Default` / `hide-on-desktop` / `hide-on-mobile` / `hide-on-both`                                                                                                    |
 | `general.appearance`                | Stored values: `default` / `button` / `icon` — **all lowercase**. Using `Icon` or `Button` (capital) silently fails                                                                 |
@@ -1134,11 +1211,21 @@ Always pair them — never leave a menu stuck open at the end of a session.
 
 This applies mid-task, not just at session start. Reading docs once at the beginning creates awareness — it does not replace consulting them at each decision point during execution.
 
+### Never set a prop to its default value
+
+If a prop's default is already what you want, leave it unset. Setting a prop to its default adds noise to the component's attribute store and makes it harder to read which settings are intentionally customised. Before setting any prop, check its default value — if they match, skip it. Example: `dropdown.dropdownOffsetGap` defaults to `0px`; setting it to `0` is redundant and should be omitted.
+
+### Global vs local props — always prefer global for consistent behavior
+
+When a prop has both a **global** (nav-level) and a **local** (per-dropdown) version, **always use the global prop** if you want the same value across all dropdowns. Never configure the same prop individually on each dropdown — it creates maintenance overhead and the local value silently overrides the global. Only set a local override when a specific dropdown genuinely needs a different value from the rest.
+
+Examples: `dropdown.globalMegaMenuWidth` (nav) vs `megaMenu.width` (per-dropdown) — `dropdown.globalNestedDropdownWidth` (nav) vs `nestedDropdown.width` (per-dropdown). This principle applies to any prop pair that has both a global and a local equivalent.
+
 ### Customization hierarchy — always try in this order
 
 1. **Component props** — if a prop exists for what you want, use it
 2. **CSS variable classes** — if no prop exists but a CSS variable does, override it in the relevant style entry
-3. **Custom stylesheet** — for CSS _properties_ (like `border-bottom`, `backdrop-filter`) that cannot be expressed as variable overrides
+3. **Custom stylesheet (tuts)** — for CSS _properties_ (like `border-bottom`, `backdrop-filter`) that cannot be expressed as variable overrides
 4. **JavaScript API** — absolute last resort. Only when props, CSS variables, and stylesheet rules cannot achieve the result
 
 ### Persistence model
@@ -1154,14 +1241,18 @@ This applies mid-task, not just at session start. Reading docs once at the begin
 
 ### DO NOT
 
+> ⛔ **CRITICAL — READ BEFORE WRITING ANY `create()` CALL FOR A COMPONENT BLOCK**
+> A DWC component block (`etch/component`) created with `children: []` has **no accessible slots in the same script**. Slot children only materialise after `saveAsync()` and a reload. If you need to access a slot immediately (to populate a mega menu panel, for example), you **must** include the `etch/slot-content` children in the `children` array at create time — with at least a placeholder element inside each slot you intend to populate. Then call `etch.blocks.getJson(newId)` to retrieve the slot, and `replace()` the placeholder with your styled content. The block type `etch/slot-content` is a valid authoring type (it is listed in the full `type` union in "Block node shape"). Passing `children: []` and then trying to find a slot child in the same script will always return `undefined`.
+
 * **DO NOT** set `dropdown.dropdownContentBorderSize` to `0` or any value below `1px` — use `1px` as the minimum; set `dropdownContentBorderColor` to `transparent` if you want an invisible border
-* **DO NOT** use `%` or `100vw` for `megaMenu.width` / `globalMegaMenuWidth`. `%` resolves relative to the parent dropdown item; `100vw` includes the scrollbar width and causes horizontal overflow. **For full-width, use `#dwc-header` (or the `header` tag)** so the panel matches the header exactly; a fixed `px` value or `.class`/`#id` reference also works.
-* **DO NOT** use capitalised select values for `general.appearance`, `general.visibility`, or `general.submenuReveal` — the stored values are lowercase (`icon`, `hide-on-desktop`, `slide`). Capitalised values silently fail (the component ignores them and falls back to default)
+* **DO NOT** use `%` or `100vw` for `megaMenu.width` / `globalMegaMenuWidth`. `%` resolves relative to the parent dropdown item; `100vw` includes the scrollbar width and causes horizontal overflow. **For full-width headers, use `#dwc-header` (or the `header` tag)**. **For overlay headers with a constrained width, use `.dwc-nest-header`** — `.dwc-nest-header` is always the header inner wrap selector and is the element that actually carries the overlay-constrained width. Using `#dwc-header` with a constrained overlay header will make panels span the full viewport width instead of the header width.
+* **DO NOT** guess select prop values from their UI label — the stored value is always the right-hand side of the ` : ` separator in `selectOptionsString` (e.g. `"Left : left"` stores `left`, not `Left`; `"Hover only : hover"` stores `hover`). When there is no ` : `, the stored value equals the label. **Always inspect `selectOptionsString` before setting any select prop.** Using a label instead of its stored value silently fails — the component ignores it and falls back to the default.
 * **DO NOT** use `menuMode.lastItemIsButton` to make an icon/cart/search button or to right-align it. **`lastItemIsButton` + the `--menu-cta-*` CTA styling only work on DWC *Menu Item* last items, not on DWC *Dropdown* items** (even with `general.appearance: button`/`icon`). For a dropdown-as-icon/button, use the dropdown's own `general.appearance` (`icon`/`button`); trailing icon dropdowns are **right-aligned by default** (no `lastItemIsButton` needed). For dropdowns, `lastItemIsButton` only enables `nonButtonItemsAlignment` (left/center of the other items). *(Confirmed by testing — this exception is not stated in the official component documentation.)*
 * **DO NOT** modify selector strings in special styles blocks — only add values inside `{ }`
 * **DO NOT** use raw `rgba()` — use `color-mix(in oklch, ...)`
 * **DO NOT** use `replace()` — use `replaceAll()` (CSS blocks contain both commented and active declarations)
 * **DO NOT** pass multi-line scripts inline — use `-f file.js`
+* **DO NOT** wrap connector scripts in an IIFE (`(async () => { ... })()`). The connector already executes the script body as an async function — an IIFE returns a Promise object, not its resolved value, causing the eval to return `null`. Always write top-level `await` and `return` directly.
 * **DO NOT** call `saveAsync` after `components.*` or `stylesheets.*`
 * **DO NOT** style mega menu content via a custom stylesheet — use props
 * **DO NOT** use `{propKey}` in component edit mode bindings — use `{props.propKey}`
@@ -1182,9 +1273,9 @@ This applies mid-task, not just at session start. Reading docs once at the begin
 * **NEVER use `replace()` to edit an already-populated block — it resets EVERY attribute on EVERY node in the subtree**, silently wiping user edits (a swapped image `src`, a changed link, a renamed class). To change copy in place, locate the `etch/text` node and call `etch.blocks.setText(textNodeId, 'new text')` — then `await etch.saveAsync()`. Only use `replace()` to populate an empty placeholder or when you intend to rebuild the whole subtree from scratch. Walk to the text node via the parent element's class: `el.children.find(c => c.type==='etch/text')` (for mixed content like a heading with `<em>`, set each text node individually — the first text node, the `<em>`'s inner text node, and the trailing text node).
 * **Recovering a value clobbered by `replace()` (or any bad edit) — `etch.history` is read-recoverable.** It exposes `undo()`, `redo()`, `canUndo()`, `canRedo()` (both return `void` — do NOT await). Pattern: call `etch.history.undo()` repeatedly, reading `etch.blocks.getTree()` after each step until the lost value reappears, capture it, then call `etch.history.redo()` the SAME number of times to return to the current state — reading between steps does not mutate or save. **Caveat: undo/redo did NOT cleanly round-trip a `replace()` in practice** (text reverted while the recovered image stuck). So use history only to _read back_ the lost value, then re-apply it explicitly with `setAttribute`/`setText` — never rely on redo alone to restore the full prior state.
 * **`etch.blocks.addClass(id, className)` and `removeClass` take CSS CLASS NAME STRINGS — not style entry IDs.** They modify the HTML `class` attribute only. `addClass` does NOT wire the block's `styles[]` array to an existing style entry — it just appends the string to the class attribute. `removeClass` removes the class string AND (by looking up a style entry with that CSS selector) removes the matching style entry ID from `styles[]`.
-* **The `styles[]` array and the HTML `class` attribute are independent** for `addClass`/`removeClass` operations. PHP uses `styles[]` to decide which style-entry CSS to include in the page `<style>` tag. The `class` attribute is the rendered HTML class. `addClass` changes only the HTML class; `removeClass` changes both. **Exception: `etch.styles.update(id, { selector })` — renaming a style entry selector automatically updates the `class` attribute on every block that references that entry in `styles[]`**, because the rendered class is derived from the style entry selectors in `styles[]`. This is the clean path for a pure rename with no duplication (see "Renaming classes on existing blocks" in Section 2).
+* **The `styles[]` array and the HTML `class` attribute are independent.** PHP uses `styles[]` to decide which style-entry CSS to include in the page `<style>` tag. The `class` attribute is the rendered HTML class. Changing one does not automatically change the other.
 * **To change which style entries apply to a block:** Use `removeClass(id, 'old-css-class')` (removes the class AND the matching style ID from `styles[]`), then `addClass(id, 'new-css-class')` (adds the class to HTML; but this does NOT add the matching style entry ID to `styles[]`). Result: HTML class is correct, but `styles[]` no longer references the new style entry.
-* **Workaround for styles\[] not updating:** Put the CSS in the global stylesheet (always output by PHP) instead of relying on per-block `styles[]`. This avoids the issue entirely — the stylesheet CSS applies by CSS selector regardless of `styles[]`.
+* **Workaround for styles\[] not updating:** Put the CSS in the global tuts stylesheet (always output by PHP) instead of relying on per-block `styles[]`. This avoids the issue entirely — the tuts stylesheet CSS applies by CSS selector regardless of `styles[]`.
 * **`setAttribute(id, 'class', value)` does NOT reliably persist the class.** The HTML class attribute is reconstructed from the `styles[]` array on save/reload. Always use `addClass`/`removeClass` to modify classes — never `setAttribute` for the `class` key.
 * **Block IDs change on every page reload** — always rediscover by walking `etch.blocks.getTree()`. Never hardcode IDs across sessions or after a reload.
 * **`getGroup` returns `undefined` if the group attribute doesn't exist yet on the block** — calling `.slice()` on it will throw. Always guard: `const group = etch.blocks.getAttribute(bid, key) ? getGroup(bid, key) : {};`. `setGroup` has no such problem — it creates the attribute if absent. For group props that may not be initialised (e.g. `inBuilder` on a freshly created dropdown), call `setGroup` directly without reading first.
@@ -1211,7 +1302,20 @@ etch.styles.list().find(s => s.selector === '.dwc-header-vars').id
 
 ### `etch.styles` API shape
 
-`etch.styles.list()` returns `{ id, selector, type, collection, css }`. The CSS is in the `.css` string field. Update with `etch.styles.update(id, { css: newCssString })`.
+```js
+// CSS rules (buffered — needs saveAsync)
+etch.styles.list(filter?)              // [{ id, selector, type, collection, css }]; filter: { type? }
+etch.styles.create(selector, cssStr)   // returns new id (CSS STRING only — not an object)
+etch.styles.update(id, { css })        // patch css and/or selector
+etch.styles.delete(id)                 // remove a rule
+
+// :root CSS custom properties (buffered — needs saveAsync)
+// ⚠ First arg is always the VARIABLE NAME, not a style entry ID
+etch.styles.setVariable('--var', value, collection?)
+etch.styles.getVariable('--var', collection?)
+etch.styles.listVariables(collection?)   // Record<string, string>
+etch.styles.removeVariable('--var', collection?)
+```
 
 ***
 
