@@ -165,7 +165,22 @@ This skills file lives in a folder called `MMPro Etch Docs`.
 
 **Step 2 — Developer session only:** Do not create or update `mmpro-user-context.md`. The dev context file is the only context file for developer sessions.
 
-**Step 2 — User session only:** Look for `mmpro-user-context.md` in the **same folder as this file**. If it exists, read it silently — it contains saved templates. If not found, skip and continue. Do not touch the dev context file.
+**Step 2 — User session only:** Look for `mmpro-user-context.md` in the **same folder as this file**. If it exists, read it silently — it contains saved templates and preferences. If not found, **create it immediately** with the following starter structure and inform the user it has been created:
+
+```md
+# MMPro User Context
+
+## Preferences
+
+
+## Saved Templates
+
+
+## Session Notes
+
+```
+
+Do not touch the dev context file. At the end of every user session, update `mmpro-user-context.md` with any new preferences discovered, templates built, or useful things learned about the user's setup — without being asked.
 
 **Step 3 — Load API reference (both sessions).** Check for the cheatsheet at `../ETCH-DEV-API/etch-connector-cheatsheet.md`. If not found locally, WebFetch the following before writing any scripts:
 - `https://docs.etchwp.com/public-api/types-reference.html` — block JSON shapes (`etch/svg`, `etch/element`, `etch/text`, etc.)

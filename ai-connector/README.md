@@ -61,19 +61,92 @@ The agent will run the command, detect your Etch Builder tab, confirm it's conne
 
 ***
 
-## Using the AI
+## What you can do
 
-Once connected, just describe what you want:
+Once connected, describe what you want in plain English. Here are some examples of what the agent can help with.
 
-> *"Make the header transparent on load with a white blur when a dropdown opens"*
+***
 
-> *"Add a mega menu to the Shop nav item with a 4-column grid"*
+### Recreate a navigation from a reference site
 
-> *"Move the search icon outside the mobile menu, next to the hamburger"*
+You can ask the agent to build a navigation inspired by any website.
 
-> *"Change the nav item colour to dark gray, hover to black"*
+> *"Build me a navigation like Stripe's — transparent header on load, full-width mega menus with a subtle fade-in, search and login icons on the right, hamburger on mobile."*
 
-The agent will confirm your intent before making any structural changes, and will back up your layout before a full rebuild.
+> *"Recreate the Apple navigation — items centered with the logo, dropdowns on hover, full-width panel, smooth height transition between open dropdowns, no hover background on items."*
+
+**For best results:**
+
+* Attach a **screenshot** of the navigation you want to recreate
+* Describe the **behaviour** — hover or click to open, animations, sticky or overlay
+* Describe the **appearance** — colours, layout, spacing, mobile behaviour
+* Mention specific details — icon buttons, CTA buttons, backdrop blur, centered logo
+
+The agent maps your description to the available props and CSS variables and builds it without writing unnecessary custom CSS.
+
+***
+
+### Style and appearance
+
+> *"Change the nav item colour to white, hover to light gray. Dropdown panel background dark navy."*
+
+> *"Add a frosted glass effect to the header when a dropdown opens."*
+
+> *"Make the last nav item a pill CTA button with a blue background."*
+
+***
+
+### Mega menus
+
+> *"Add a mega menu to the Services nav item — 3 columns, each with an icon, title, and description."*
+
+> *"Make the mega menu full width and match the header width."*
+
+***
+
+### Header behaviour
+
+> *"Make the header transparent on load and switch to white with a shadow after scrolling."*
+
+> *"Hide the header on scroll down, show it on scroll up."*
+
+> *"Sticky header with a smaller height after scrolling."*
+
+***
+
+### Mobile menu
+
+> *"Slide the mobile menu in from the right with a fade on the items."*
+
+> *"Move the search and cart icons outside the mobile menu so they sit next to the hamburger."*
+
+> *"Use a fullscreen mobile menu that opens over the header."*
+
+***
+
+### Accessibility
+
+> *"Configure the skip links with advanced parameters — add one for the main content and one for the footer navigation."*
+
+***
+
+The agent will always confirm your intent before making structural changes, and will back up your layout before a full rebuild.
+
+***
+
+## Your context file
+
+The agent supports a personal context file called `mmpro-user-context.md`, stored in the same folder as your Skills File. At the start of each session, if the file exists, the agent reads it silently — giving it a head start on your preferences, saved templates, and anything useful from previous sessions.
+
+If the file doesn't exist yet, the agent creates it automatically on your first session and will let you know. It then updates it at the end of every session with anything new it learned about your setup — without you having to ask.
+
+**You can also prompt it directly:**
+
+* *"Save this mega menu layout to my context file so I can reuse it."*
+* *"Update my context file — I always want mega menus to use `#dwc-header` for width."*
+* *"Update the context file with anything new you learned about my setup."*
+
+Keep the Skills File in a consistent project folder so the context file persists between sessions and grows more useful over time.
 
 ***
 
@@ -83,6 +156,7 @@ The agent will confirm your intent before making any structural changes, and wil
 * **Keep the agent session open** — closing it disconnects the connector.
 * **One tab at a time** — connect to one Etch Builder tab per site.
 * **Session recovery** — if the agent loses the connection mid-session, check that the Etch Builder tab is still open. You usually don't need to reconnect.
+* **Not happy with the result?** Before any full rebuild, the agent automatically backs up your header. If you're not satisfied, just ask: *"Restore my header from the backup"* — the agent will revert to the saved version.
 
 ***
 
