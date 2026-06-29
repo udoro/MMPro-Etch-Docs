@@ -1,3 +1,3 @@
 # Table of contents
 
-* [AI Skills Reference](README.md)
+* [AI Connector](README.md)
