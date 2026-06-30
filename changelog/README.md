@@ -16,6 +16,7 @@ icon: arrows-retweet
 * Enhanced keyboard navigation for mega menu links.
 * Mega Menu Dropdown "Breakout" feature: move dropdown panels out of the menu on mobile, useful for elements such as account icon buttons.
 * Support for `last-item-is-button alignment` via attributes `data-is-cta="left"` and `data-is-cta="center"` on a custom CTA link.
+* Liquid Glass effect on header: creates an immersive, glass-like digital backdrop where on-screen elements dynamically bend, refract, and morph in response to scroll motion.
 
 ### Improved
 
@@ -24,6 +25,7 @@ icon: arrows-retweet
 * Refined dropdown arrow visibility.
 * NotebookLM docs updated with Markdown-based source files for improved AI readability and content processing.
 * Keyboard focus styles refined.
+* Mobile toggle now opens mobile menu inside Etch
 * Several edge-case bug fixes.
 
 ***
