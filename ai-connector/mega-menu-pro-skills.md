@@ -11,12 +11,13 @@ Standalone reference for configuring DWC Mega Menu Pro + Header Builder in Etch 
 You must execute these steps sequentially. You are strictly forbidden from modifying any workspace files or generating styling code until Steps 1 through 4 are successfully completed and validated via terminal logs.
 
 ### 0. Skill File First
-1. Read this entire skill file before writing or executing any edits.
-2. If the task involves grouped component props (`megaMenu`, `general`, `inBuilder`, `classes`, `relocation`, etc.), do not use direct `setAttribute` or raw serialized strings until you have confirmed the exact helper from this skill file.
-3. Use the documented helper functions for grouped props: `getGroup(bid, key)` and `setGroup(bid, key, obj)`.
-4. Never delete or remove a native grouped prop from a DWC component as a cleanup step. If a grouped prop exists, leave it disabled rather than removing it.
-5. Delete temporary connector scripts immediately after the task is complete and the changes are verified. Do not leave generated `*.js` eval files in the workspace.
-6. If the skill file does not show a helper for the requested prop, stop and do not mutate grouped props until the correct pattern is confirmed.
+1. **Read this entire skill file before writing or executing any edits — no exceptions for length.** This file is long enough that a single `Read` call will return a `[Truncated: PARTIAL view]` notice instead of the full content. If you see that notice, Step 0 is NOT complete — continue reading with `offset`/`limit` until you reach the final line and no truncation notice remains. Do not proceed to Step 1 (Connect & Preflight Gate) on a partial read, even if the visible portion looks sufficient for the task at hand.
+2. **File read confirmation (mandatory):** Before proceeding past Step 0, state in chat: `"Skill file read: lines 1-[N] of [N], complete."` (substitute the real total line count). If you cannot truthfully make that statement, you have not satisfied Step 0 — go back and finish reading.
+3. If the task involves grouped component props (`megaMenu`, `general`, `inBuilder`, `classes`, `relocation`, etc.), do not use direct `setAttribute` or raw serialized strings until you have confirmed the exact helper from this skill file.
+4. Use the documented helper functions for grouped props: `getGroup(bid, key)` and `setGroup(bid, key, obj)`.
+5. Never delete or remove a native grouped prop from a DWC component as a cleanup step. If a grouped prop exists, leave it disabled rather than removing it.
+6. Delete temporary connector scripts immediately after the task is complete and the changes are verified. Do not leave generated `*.js` eval files in the workspace.
+7. If the skill file does not show a helper for the requested prop, stop and do not mutate grouped props until the correct pattern is confirmed.
 
 ---
 
@@ -75,6 +76,7 @@ Before invoking any file editing or code generation tools, you must present the 
   - **(a) Restyle / adjust existing items** (retain nav items, alter look/behavior).
   - **(b) Full destructive rebuild from scratch** (wipe active items, build fresh).
 * If a visual asset or screenshot is provided, you must explicitly state how you intend to match it and ask if existing layout content must be cleared first.
+* **Base class name approval (mandatory):** If the task requires choosing a new base CSS class name — building a new mega menu from scratch, or renaming an existing panel's class family without the user specifying the target name — you must ask the user what they want it called before writing any code. You may suggest 2–3 reasonable options, but the user must explicitly approve a suggestion or provide their own name. Never invent and apply a base class name unilaterally.
 * **The Backup Invariant (Strictly Mandatory for Option B):** If option (b) is selected, you are strictly forbidden from running any destructive code until you generate a temporary script, execute the snippet below via the connector, and save the returned JSON payload to a local backup file (`dwc-header-backup.json`):
   ```js
   const headerBlock = findBlock(etch.blocks.getTree(), compId('DWC Header'));
@@ -181,6 +183,13 @@ This skills file lives in a folder called `MMPro Etch Docs`.
 ```
 
 Do not touch the dev context file. At the end of every user session, update `mmpro-user-context.md` with any new preferences discovered, templates built, or useful things learned about the user's setup — without being asked.
+
+**Precedence rule (both sessions):** If the active context file (dev context, or `mmpro-user-context.md`)
+contains a saved preference that conflicts with a default or convention documented elsewhere in this
+skills file — e.g. a different naming convention, default class prefix, or workflow preference — the
+context file's saved preference always wins. When this happens, explicitly tell the user you're applying
+their saved preference instead of the skill file's default (e.g. "Using your saved naming preference from
+context instead of the default convention"), so they understand why behavior differs from what's documented.
 
 **Step 3 — Load API reference (both sessions).** Check for the cheatsheet at `../ETCH-DEV-API/etch-connector-cheatsheet.md`. If not found locally, WebFetch the following before writing any scripts:
 - `https://docs.etchwp.com/public-api/types-reference.html` — block JSON shapes (`etch/svg`, `etch/element`, `etch/text`, etc.)
@@ -289,7 +298,7 @@ await etch.blocks.pasteAsync(payload, targetId?, index?) // re-maps them to fres
 etch.blocks.select(id) / deselect() / getSelectedId()
 etch.blocks.setText(id, text) / setAttribute(id, key, val) / getAttribute(id, key)
 etch.blocks.removeAttribute(id, key)
-etch.blocks.rename(id, name)
+etch.blocks.rename(id, name)                 // nice-name shown in structure panel — see Section 2 "Renaming block nice-names"
 etch.blocks.addClass(id, cls) / removeClass(id, cls) / hasClass(id, cls)  // class STRINGS, not style IDs
 etch.blocks.enterComponentEditMode(id) / saveComponentEditModeAsync()
 etch.blocks.exitComponentEditMode(options?)  // options: { revert?: boolean } — pass revert:true to discard
@@ -583,9 +592,95 @@ await etch.saveAsync();
 
 The `removeClass`/`addClass` + tuts-stylesheet workaround in the section below is only needed **after `duplicate()`**, where blocks share style entry IDs with the source and renaming those entries would affect both.
 
+### Renaming block nice-names to match renamed classes
+
+Whenever you rename a BEM class family (the subsection above), also rename every affected
+block's nice-name (`context.name` — the label shown in Etch's structure/layers panel) so the
+panel stays readable. Renaming a style entry's `selector` does **not** touch `context.name`;
+these are two separate fields and must be updated separately.
+
+* **Base block** (the one carrying the full base class) gets the Title Case base class name:
+  `.mega-menu-apple` becomes `"Mega Menu Apple"`.
+* **Every nested BEM sub-element** gets ONLY its element-role part, Title Cased — no base
+  prefix repeated (nesting in the structure panel already shows the parent): `.mega-menu-apple__col`
+  becomes `"Col"`, `.mega-menu-apple__col-heading` becomes `"Col Heading"`, `.mega-menu-revo__item-icon`
+  becomes `"Item Icon"`.
+* **Sibling blocks sharing one class** (e.g. repeated card/item blocks from a loop or manual
+  duplication) all get the IDENTICAL generic name — never number instances ("Item 1", "Item 2").
+* **Always use the generic BEM-derived name, even over a more descriptive existing name.**
+  A link block named "AppleCare+" or "Newsroom" still becomes `"Link"`. Content-specific
+  names go stale when content changes; generic structural names stay correct.
+
+```js
+// className -> nice name: strip the BEM base, Title Case what's left; base class itself
+// becomes the full Title Case base name.
+function bemToNiceName(className, baseClass) {
+  if (className === baseClass) {
+    return baseClass.replace(/^\./, '').split('-').map(w => w[0].toUpperCase() + w.slice(1)).join(' ');
+  }
+  const part = className.replace(baseClass, '').replace(/^(__|--)/, ''); // e.g. "col-heading"
+  return part.split('-').map(w => w[0].toUpperCase() + w.slice(1)).join(' ');
+}
+
+// Apply alongside the style-entry rename — one rename() per block, same script:
+await etch.styles.update(baseStyleId, { selector: newBaseClass });
+etch.blocks.rename(baseBlockId, bemToNiceName(newBaseClass, newBaseClass));
+// repeat per BEM sub-element block:
+etch.styles.update(colHeadingStyleId, { selector: newBaseClass + '__col-heading' });
+etch.blocks.rename(colHeadingBlockId, bemToNiceName(newBaseClass + '__col-heading', newBaseClass));
+await etch.saveAsync();
+```
+
+### Building a themed variant (e.g. light/dark) of an existing panel
+
+To add a recolored sibling of an existing mega-menu panel (e.g. a light-theme duplicate sitting next
+to a dark original in the same `Mega_Menu_Content` slot) with **independently editable** CSS — not a
+visual clone that shares the source's live styles:
+
+1. **Do not use `copy()`/`pasteAsync()`** — confirmed above to reuse style-entry ids, not duplicate them.
+2. Pick a BEM **modifier** suffix for the new base class (e.g. `--light`) — confirm the exact name with
+   the user per the Base class name approval gate.
+3. **Discovery — don't dump the full tree by default.** If your clone is programmatic (step 5 reads
+   `getJson()` live and clones at runtime), you don't need the panel's content pre-loaded into your own
+   context — only the style entries (`selector`+`css`) for the colors you're deciding by hand. A full
+   content dump (text/image/SVG values inline) is only needed when you're hand-authoring new JSON
+   yourself, e.g. a brand-new panel from a content brief.
+   - **But first run a cheap structural skim** — walk the tree and collect only
+     `{ type, tag, class, slotName, componentId, hasScript: !!n.script }` per node (omit `text`/long
+     `attributes`). This confirms a generic recursive clone is safe to trust. If every node is plain
+     `etch/element`/`etch/text`, proceed with style-entries-only. If the skim finds a `componentId`,
+     `slotName`, or `script` anywhere in the subtree, your clone function must explicitly handle that
+     field (a generic clone that only copies `type/tag/attributes/styles/children/text` will silently
+     drop it) — get the full dump for that node before writing the clone.
+   - When fetching CSS for multiple known-long entries (data-URI SVG masks, multi-stop gradients), fetch
+     them in one targeted query by id rather than grepping a giant dump with line-context limits — long
+     CSS strings get truncated/omitted by context-limited greps and you'll have to re-fetch anyway.
+4. For every style entry under the source's base class, `etch.styles.create()` a new entry: selector =
+   old selector with the base token replaced (`mega-menu-x__card` → `mega-menu-x--light__card`), css =
+   old css with the same base-token replace applied first (fixes any internal cross-refs like
+   `.mega-menu-x__item:hover &`), then apply your color overrides on top. Build an `oldStyleId → newStyleId` map.
+5. Recursively clone the live block tree (`getJson(panelId)`) into a fresh `create()`-ready JSON: drop
+   `id`/`parentId`, remap each node's `class` attribute (same base-token replace) and `styles[]` (via the
+   id map from step 4), keep everything else (tag, text, image `src`, SVG content, content text) identical
+   if the brief asks for "same content, recolored only".
+6. `etch.blocks.create(newTree, megaSlotId, originalIndex + 1)` — insert as the next sibling in the same
+   slot, never a new dropdown. Set the cloned root's `context.name` to `<original name> Light`; leave
+   nested nice-names as cloned (they're already correct per the BEM nice-name convention above).
+7. **Batch every target panel into one script with one trailing `await etch.saveAsync()`** — don't run a
+   separate `eval` call per panel. A `menus = [{ oldBase, newBase, panelId, slotId, cssOverrides }, ...]`
+   config array looped through a single shared clone function is one round trip instead of N, and avoids
+   re-pasting the same clone helper into N near-identical files.
+8. Re-run the collision check from "Renaming classes" to confirm no pre-existing entries share the new
+   modifier'd selectors.
+
+Color mapping that worked well in practice: white/light text (`#fff`, `color-mix(in oklch, white N%, ...)`)
+→ `#1d1d1f` / `color-mix(in oklch, #1d1d1f N%, ...)`; saturated dark background gradients → very light
+pastel tints of the same hue; gold/tan brand accents (`#d9b06a`, `#e7c98a`) generally read fine on white
+as-is — only darken them if used as default-state link/CTA text needing contrast.
+
 ### If you must duplicate and rename classes
 
-> **⚠ VERIFY (Etch 1.5.4+) — `copy()`/`pasteAsync()` may replace this whole workaround.** Etch 1.5.4 added `etch.blocks.copy(blockId)` → `CopyObject` and `await etch.blocks.pasteAsync(payload, targetId?, index?)`. Unlike `duplicate()`, paste **bundles the referenced global styles, loops, and components and re-creates them with fresh ids** — exactly the `styles[]`/class-rename pain the steps below work around. It never touches the system clipboard, so it works in connector scripts. **Not yet confirmed on a live MMPro install** — before trusting it for mega-menu duplication, test whether the re-mapped style entries keep working class names and whether component-backed blocks (DWC Dropdown etc.) survive the round-trip. Until verified here (confirmed-only rule), keep using the manual process below.
+> **✅ CONFIRMED (Etch 1.5.4, tested live) — `copy()`/`pasteAsync()` does NOT create fresh style-entry ids.** Etch 1.5.4 added `etch.blocks.copy(blockId)` → `CopyObject` and `await etch.blocks.pasteAsync(payload, targetId?, index?)`. Verified via the Appendix A.6 snippet on a live MMPro install: a pasted block's `styles[]` array contained the **exact same style-entry ids** as the source (`idsRemapped: false`) — paste reuses existing style entries by id, it does not duplicate them. This matches the "Performance Thresholds" note in Connector quick-start, not the hope this warning used to express. **Do not use `copy()`/`pasteAsync()` to clone a styled panel you intend to recolor or restyle independently** — the clone shares live CSS with the source, so editing either one edits both. Use the manual process below (or build-from-scratch with fresh style entries) whenever the clone needs independent styling.
 
 If the user explicitly asks to duplicate, follow this safe process to rename classes without breaking rendering. Read Section 6 (Rules & gotchas) for the full API behaviour details before starting.
 
@@ -1296,6 +1391,8 @@ Examples: `dropdown.globalMegaMenuWidth` (nav) vs `megaMenu.width` (per-dropdown
 * **`getGroup` returns `undefined` if the group attribute doesn't exist yet on the block** — calling `.slice()` on it will throw. Always guard: `const group = etch.blocks.getAttribute(bid, key) ? getGroup(bid, key) : {};`. `setGroup` has no such problem — it creates the attribute if absent. For group props that may not be initialised (e.g. `inBuilder` on a freshly created dropdown), call `setGroup` directly without reading first.
 * **Never `replace()` a populated block** — it resets every attribute on every node, wiping user edits. Edit content in place with `etch.blocks.setText(textNodeId, ...)` + `saveAsync()`. Includes the text-node walk pattern and the mixed-content (heading with `<em>`) note.
 * **History recovery** — `etch.history.undo()`/`redo()` (return void, not async) can read back a clobbered value, but doesn't reliably round-trip a `replace()`, so always re-apply the recovered value explicitly with `setAttribute`/`setText` rather than trusting redo.
+* **DO NOT** leave a block's nice-name (`context.name`) stale after renaming its class — rename it too via `etch.blocks.rename(id, name)`. Use the generic BEM-derived name (base class Title Cased for the base block, element-role-only Title Cased for sub-elements, identical name across sibling instances) even if the block currently holds a more descriptive content-specific name — generic structural names stay correct as content changes; descriptive ones go stale.
+* **`403 rest_cookie_invalid_nonce` on `saveAsync()` (or any `etch.*` write) means the user's WordPress session has logged out** — it is not a connector bug. Stop immediately, tell the user plainly, and ask them to log back into WordPress, refresh the Etch builder tab, then reconnect (re-run `serve` if the connection dropped). **Critically: any buffered call you assumed succeeded right before the failed `saveAsync()` (e.g. a `delete()` or `update()`) did NOT actually persist** — after reconnecting, re-read live state via `getTree()`/`getJson()` before trusting that a pre-error mutation took effect, rather than assuming it did.
 
 ### Adding a new prop — full flow
 
