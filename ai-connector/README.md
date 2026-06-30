@@ -43,11 +43,21 @@ The AI Connector lets you control **Mega Menu Pro + Header Builder** through a c
 3. Click the **AI sparkles button** in the lower-left settings bar
 4. Select **"Connect external AI agent"**
 
-### Step 2 — Load the Skills File
+### Step 2 — Load the Skills Package
 
-The Skills File teaches your AI agent how Mega Menu Pro works. Download it and place it in the folder you'll open in your IDE, or attach it at the start of each agent session.
+The Skills Package teaches your AI agent how Mega Menu Pro works.
 
-[Download the MMPro Skills File](https://github.com/udoro/MMPro-Etch-Docs/blob/main/ai-connector/mega-menu-pro-skills.md)
+**Recommended:** clone or download this whole repository, then point your agent at
+`ai-connector/mmpro-skills/mega-menu-pro-skills.md`. This gives the agent the main skills file, the
+lookup-only reference file, and the full component prop docs in `components/` — all working together.
+
+[Download this repository](https://github.com/udoro/MMPro-Etch-Docs/archive/refs/heads/main.zip)
+
+**Just want the skills file on its own?** Browse to the
+[`mmpro-skills` folder](https://github.com/udoro/MMPro-Etch-Docs/tree/main/ai-connector/mmpro-skills) and
+grab `mega-menu-pro-skills.md` (plus its reference-file companion if you want it). It still works without
+the local `components/` folder — the agent falls back to fetching the same docs from this live GitBook
+site when it needs them.
 
 ### Step 3 — Connect
 
