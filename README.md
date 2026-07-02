@@ -19,7 +19,7 @@ icon: pen-to-square
 | [DWC Dropdown](components/dwc-dropdown.md)           | A single top-level nav item with a dropdown or mega menu panel                                                                        |
 | [DWC Menu Item](components/dwc-menu-item.md)         | A plain nav link — supports badges, visibility rules, and responsive relocation                                                       |
 | [DWC Mobile Toggle](components/dwc-mobile-toggle.md) | The hamburger button that opens and closes the mobile menu                                                                            |
-| [AI Connector](ai-connector/README.md)               | Control MMPro through a conversational AI agent — setup guide, requirements, and the Skills File your agent needs to load                |
+| [AI Connector](https://design-with-cracka.gitbook.io/megamenupro/ai-connector) | Control MMPro through a conversational AI agent — setup guide, requirements, and the Skills File your agent needs to load |
 
 ***
 
