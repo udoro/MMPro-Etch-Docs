@@ -296,7 +296,7 @@ npx @digital-gravy/etch-connector eval -t "your-site.com" --timeout 60000 -f scr
 ```js
 Object.keys(etch)
 // ["blocks", "loops", "styles", "stylesheets", "components",
-//  "navigation", "fields", "ui", "history",
+//  "navigation", "fields", "ui", "history", "skills", "ai",
 //  "saveAsync", "apiVersion", "version"]
 ```
 
