@@ -144,7 +144,17 @@ is unchanged from the main file except where noted.
 > ```
 > For a **new** dropdown block, pass the encoded group in `create()` attributes:
 > ```js
-> attributes: { megaMenu: '{{' + JSON.stringify({ enable:'{true}', width:'#dwc-header', breakout:'{false}' }) + '}}' }
+> // CORRECT — one extra brace layer, same as setGroup. JSON.stringify(obj) already
+> // supplies its own object braces, so wrapping with only a single '{'...'}' gives the
+> // correct total of two braces on each side: '{{"enable":...}}'.
+> attributes: { megaMenu: '{' + JSON.stringify({ enable:'{true}', width:'#dwc-header', breakout:'{false}' }) + '}' }
+>
+> // WRONG — do NOT do this. '{{' + JSON.stringify(obj) + '}}' produces THREE braces on
+> // each side (JSON.stringify's own object braces plus two more), which Etch does not
+> // recognize as the group — megaMenu.enable silently never takes effect and the panel
+> // never renders. Confirmed live 2026-07: a batch of 13 new dropdown blocks built with
+> // the triple-brace form all failed to render mega-menu content until re-encoded.
+> // attributes: { megaMenu: '{{' + JSON.stringify({ enable:'{true}', width:'#dwc-header', breakout:'{false}' }) + '}}' }
 > ```
 
 | `general.contentAlignment`          | Stored values: `default` / `center` / `left` / `right`                                                                                                                              |
