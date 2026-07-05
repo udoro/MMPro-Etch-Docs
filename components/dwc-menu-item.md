@@ -52,9 +52,9 @@ Relocation moves a nav item to a different location in the DOM when the viewport
 
 > **Note:** Relocation moves items _out of_ the nav. To move an element from elsewhere in the page _into_ the mobile menu, use the `data-breakin` attribute directly on that element instead (e.g. `data-breakin="480"`). Items moved this way are placed inside the `.breakin-container` in the mobile menu.
 
-| Setting  | Description                                                                                                                                                                          |
-| -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| **Mode** | Choose how this item relocates: **Breakout** moves it out of the nav list into the outer header area; **Breakinto** moves it into any CSS selector you specify anywhere on the page. |
+| Setting  | Description                                                                                                                                                                                                                                                     |
+| -------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Mode** | Choose how this item relocates: **Breakout** moves it out of the nav list into the outer header area; **Breakinto** moves it into any CSS selector you specify anywhere on the page; **Breakin** moves it directly into the mobile menu footer's `.breakin-container`. |
 
 **Breakout** — moves the item out of the nav list into the outer header area at the mobile breakpoint:
 
@@ -67,6 +67,8 @@ Relocation moves a nav item to a different location in the DOM when the viewport
 | Setting                              | Description                                                                                                                                                                                                                                                                                                                                                                                                                         |
 | ------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | **Container Selector \| Breakpoint** | The CSS selector of the target container, optionally followed by a pipe and a breakpoint value. Example: `#my-div \| 767` moves the item into `#my-div` at viewports ≤ 767 px. Omit the breakpoint to use the global mobile breakpoint. You can also apply this behaviour to _any_ element on the page (not just menu items) by adding the attribute `data-breakinto=".container-selector \| breakpoint"` directly to that element. |
+
+**Breakin** — moves the item directly into the mobile menu footer's `.breakin-container` at the mobile breakpoint; no further settings — equivalent to using `data-breakin` directly on this item.
 
 ### Styling
 

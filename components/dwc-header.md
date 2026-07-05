@@ -38,6 +38,20 @@ The outermost wrapper of the entire header. It controls sticky behaviour, overla
 | **Overlay Header Shadow**            | Box shadow on the overlay container.                                                                                                                                                                                                                                                                                                 |
 | **Offset Section Padding**           | Automatically adds top padding to the first section on the page so its content is not hidden beneath the header. To opt a specific section out of this padding, add the attribute `data-no-padding` to that section.                                                                                                                 |
 
+### Liquid Glass
+
+Creates an immersive, glass-like digital backdrop where on-screen elements dynamically bend, refract, and morph in response to motion. Mutually exclusive with **Overlay Header Blur** — enabling Liquid Glass suppresses the overlay's `backdrop-filter` blur rule on both desktop and mobile.
+
+| Setting            | Description                                                                                                                                                                              |
+| ------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| **Enable**          | Turns on the liquid-glass effect on the header. When active, this replaces the standard Overlay Header Blur backdrop-filter — the two are mutually exclusive.                            |
+| **Distortion**      | Controls warp strength of the glass refraction. Range 20–80. Higher = more distortion (thick glass); lower = subtle. Default: `50`.                                                      |
+| **Surface Depth**   | Creates color fringing (chromatic aberration). Higher = more rainbow separation at edges. Default: `5`.                                                                                   |
+| **Shininess**       | Controls reflection sharpness. Lower = crisper reflections, higher = softer, frosted, blurry. Default: `7`.                                                                               |
+| **Saturate**        | Adjusts color saturation of the glass background. `0` completely desaturates, `1` leaves colors unchanged, above `1` super-saturates for much more vibrant colors. Default: `1.4`.        |
+| **Border**          | Border style applied to the liquid-glass surface. Default: `1px solid rgba(255, 255, 255, 0.3)`.                                                                                          |
+| **Box Shadow**      | Shadow applied to the liquid-glass surface; overrides Overlay Header Shadow when active. Value is controlled by the `--liquid-glass-shadow` CSS variable in `.dwc-header-vars`.          |
+
 ### Accessibility
 
 | Setting                        | Description                                                                                                                                                                                                                                                                                                                                                                                  |
@@ -169,6 +183,14 @@ The `.dwc-header-vars` class is already applied to the **DWC Header** component 
   --adaptive-height-border: 1px solid var(--dropdown-content-border-color);
   --adaptive-height-shadow: 0 0 30px rgb(39 50 59 / 10%);
   --stripe-border-radius: 1rem;  /* border radius of the stripe element */
+}
+```
+
+### Liquid Glass
+
+```css
+.dwc-header-vars {
+  --liquid-glass-shadow: 0 4px 24px rgba(0, 0, 0, 0.15); /* box shadow applied when Liquid Glass is enabled; overrides Overlay Header Shadow */
 }
 ```
 
