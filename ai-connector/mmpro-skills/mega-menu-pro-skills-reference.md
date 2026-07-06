@@ -31,6 +31,7 @@ is unchanged from the main file except where noted.
 | Prop key                                | Group        | CSS variable                 | Notes                                                                               |
 | --------------------------------------- | ------------ | ---------------------------- | ----------------------------------------------------------------------------------- |
 | `headerBackgroundColor`                 | top          | `--header-bg`                | Base header background                                                              |
+| `headerBlur`                            | top          | `--header-blur`              | Backdrop-filter blur on the header (frosted glass header bar). Default: `10px`      |
 | `darkBackgroundPreview`                 | top          | —                            | Builder only. Darkens canvas for white-item testing                                 |
 | `sticky.stickyHeader`                   | sticky       | —                            | Enables sticky. Add `data-no-sticky` to a section to disable per-page               |
 | `sticky.scrollDownVisibility`           | sticky       | —                            | hide-row-1/2/3, show-row-1/2/3, hide-all-rows, Default                              |
@@ -44,7 +45,6 @@ is unchanged from the main file except where noted.
 | `overlay.overlayHeaderWidth`            | overlay      | `--overlay-header-width`     | Width of overlay container                                                          |
 | `overlay.overlayHeaderBackground`       | overlay      | `--overlay-header-bg`        | Default (unscrolled) bg. **Prop-driven → `!important`**                             |
 | `overlay.overlayHeaderActiveBackground` | overlay      | `--overlay-header-bg-active` | Bg when user hovers a nav item or dropdown opens. **Prop-driven → `!important`**    |
-| `overlay.overlayHeaderBlur`             | overlay      | `--overlay-header-blur`      | Backdrop-filter blur on the header overlay element (frosted glass header bar)       |
 | `overlay.overlayHeaderRadius`           | overlay      | `--overlay-header-radius`    | Border radius                                                                       |
 | `overlay.overlayHeaderInset`            | overlay      | `--overlay-header-inset`     | Offset from viewport edges                                                          |
 | `overlay.removeInsetTop`                | overlay      | —                            | Removes top gap                                                                     |

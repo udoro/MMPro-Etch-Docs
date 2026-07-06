@@ -66,10 +66,9 @@ Verification source: LIVE STATE only
 - The user has not confirmed intent on a visual/structural change
 - A script creates/replaces classed content but built its own node JSON instead of using the
   Section 3 `el()` helper, or scaled to multiple blocks before round-trip-verifying `class` +
-  `styles[]` on one node first (confirmed live 2026-07: a batch of 13 panels was built with
-  `styles[]` set but `attributes.class` omitted — every node saved successfully with no error,
-  and the omission was only caught when the user visually inspected the live site; nothing in
-  the API response would have revealed it without an explicit `getJson` round-trip check)
+  `styles[]` on one node first — a node with `styles[]` set but `attributes.class` omitted saves
+  successfully with no error; nothing in the API response reveals the omission without an
+  explicit `getJson` round-trip check
 - N similar real content blocks (repeated panels, cards, CTAs, etc.) are being created/replaced
   without following Appendix A.3a (build item 1, round-trip-verify it, only then write items 2–N)
 - A "survey the current tree" script calls plain `getJson`/`getTree` for a full-subtree dump
@@ -124,7 +123,7 @@ You are strictly forbidden from skipping down this hierarchy. Reaching for a raw
 
 > **Doc-first fast path (try before the full dump below):** Check the component doc — `./components/` next to this file (bundled at release time), or the live GitBook URL if that's missing (see "Before you start") — for the prop's key, type, and select options. If the doc directly covers the exact prop/value needed, skip the full dump and instead run **one targeted live check** — e.g. `etch.components.getJson(RESOLVED_ID).properties.find(p => p.key === 'the.one.key')`, or `etch.blocks.getAttribute(blockId, 'group')` for a block's current value — to confirm that single key/value before writing.
 >
-> **Fall back to the full dump instead of the fast path when:** the doc doesn't cover the prop; a select prop's option list looks short or generic (docs have been found stale here — confirmed live 2026-07, `dwc-nav.md`'s Slide In Direction row listed 3 options where the live schema had 7, including the exact one a task needed); the doc's guidance conflicts with a gotcha already recorded in Section 6 (confirmed live 2026-07, `dwc-nav.md`'s Global Mega Menu Width row lists `100vw` as a valid example value, which Section 6 explicitly bans — never trust a doc example over a recorded gotcha); or this is the first time this session touching this component's props at all.
+> **Fall back to the full dump instead of the fast path when:** the doc doesn't cover the prop; a select prop's option list looks short or generic (docs can be stale here — e.g. `dwc-nav.md`'s Slide In Direction row has listed only 3 options where the live schema had 7, including the exact one a task needed); the doc's guidance conflicts with a gotcha already recorded in Section 6 (e.g. `dwc-nav.md`'s Global Mega Menu Width row lists `100vw` as a valid example value, which Section 6 explicitly bans — never trust a doc example over a recorded gotcha); or this is the first time this session touching this component's props at all.
 >
 > **The targeted check is still mandatory, never optional** — a doc being current today doesn't guarantee it stays current after the next plugin version. Doc-first shortens the round trip; it does not replace verification.
 
@@ -310,7 +309,7 @@ npx @digital-gravy/etch-connector eval -t "your-site.com" --timeout 60000 -f scr
 - **Tab Targeting Rules:** The `-t` parameter is optional when only one tab is actively connected. If multiple tabs are open, the `-t` parameter is strictly mandatory.
 - **⚠ Timeout Warning (Non-Aborting State):** A timed-out eval does NOT abort the in-page script. The connector stops *waiting* at `--timeout`, but your `async` code keeps running in the builder. A long per-item loop (e.g., delete-all + paste 10) can keep mutating the layout *after* you get a "timed out" error — producing duplicates or partial states. Always re-read the active state before retrying; do not blindly re-run the code payload.
 - **Batching Rule:** Batch mutations into one single script with a single `await etch.saveAsync()` at the end — do not run individual saves per item. Keep loops short and pass a generous `--timeout` parameter (e.g., 150000) for multi-item builds.
-- **Performance Thresholds:** `blocks.copy()` / `pasteAsync()` of a full mega menu is heavy (~10s each) because it bundles the whole subtree + every referenced style entry. While great for cloning *one* styled panel, building *many* clean items from scratch via `create()` for lightweight blocks is far faster and avoids dragging demo content. (Confirmed: paste reuses existing style entries by id rather than duplicating them.)
+- **Performance Thresholds:** `blocks.copy()` / `pasteAsync()` of a full mega menu is heavy (~10s each) because it bundles the whole subtree + every referenced style entry. While great for cloning *one* styled panel, building *many* clean items from scratch via `create()` for lightweight blocks is far faster and avoids dragging demo content.
 
 ### Execution Context & Boundaries
 
@@ -395,7 +394,7 @@ CDP mode connects to Chrome's DevTools directly (bypassing the Etch tab) so the 
 
 **Prerequisite:** Chrome must be running with remote debugging: `chrome --remote-debugging-port=9222`. Add `--cdp` to each command.
 
-> **Don't assume CDP is available — ask first, don't set it up unprompted.** The flag only takes effect on a fresh Chrome launch; an already-running Chrome ignores it, so enabling CDP means fully quitting the user's Chrome (losing their normal profile/session state, e.g. the WordPress login used to test the site) and relaunching with the flag. For at least one confirmed setup (2026-07) this tradeoff wasn't worth it and CDP was declined. If a CDP command fails with "cannot reach Chrome remote debugging," don't tell the user to relaunch Chrome by default — ask whether they want to set up CDP for this session, and if not, fall back to attribute-level round-trip verification (`getJson`/`getAttribute` before/after) as the primary verification method instead of visual screenshots.
+> **Don't assume CDP is available — ask first, don't set it up unprompted.** The flag only takes effect on a fresh Chrome launch; an already-running Chrome ignores it, so enabling CDP means fully quitting the user's Chrome (losing their normal profile/session state, e.g. the WordPress login used to test the site) and relaunching with the flag. If a CDP command fails with "cannot reach Chrome remote debugging," don't tell the user to relaunch Chrome by default — ask whether they want to set up CDP for this session, and if not, fall back to attribute-level round-trip verification (`getJson`/`getAttribute` before/after) as the primary verification method instead of visual screenshots.
 
 ```bash
 # Screenshot (whole page or one element)
@@ -435,6 +434,11 @@ When you discover something new while working — a pattern that worked, a gotch
 
 **How:** One line or a short code block. No prose. Confirmed working only — no speculation.
 
+State findings as a direct rule, not a story. Do **not** write "Confirmed live [date]: an agent
+did X and it broke because Y" — write the rule and, if useful, the concrete symptom, as plain
+present-tense fact. No dates, no "confirmed live," no project names, no "an earlier version of
+this doc said."
+
 **What NOT to add:** Task-specific context, anything already in the component docs, anything unconfirmed.
 
 ***
@@ -442,8 +446,8 @@ When you discover something new while working — a pattern that worked, a gotch
 ## 1. Site config
 
 **Everything here is site-specific — resolve it at runtime, never hardcode.** Both DWC component IDs
-**and** style-entry IDs vary per install (observed: components `1298–1302` on one site, `758–762` on
-another; toggle-vars `reiqdv9` on one, `2j8195b` on another). Assuming fixed numbers is the #1 cause
+**and** style-entry IDs vary per install (e.g. components `1298–1302` on one site, `758–762` on
+another; toggle-vars `reiqdv9` on one, `2j8195b` on another) — assuming fixed numbers is the #1 cause
 of "the menu looks custom / I can't find the header" failures.
 
 ### Resolve DWC component IDs by NAME — do this first, every session
@@ -570,44 +574,49 @@ etch.blocks.replace(phId, buildPanel(columns)); // replace() persists styles[] c
 
 3. **Do NOT use `etch.blocks.create()` for class/styles** — classes set via `attributes.class` in `create()` JSON are NOT persisted (they're stripped on save/reload because the class attribute is coupled to `styles[]`). Use the workflow below instead.
 
-**Correct workflow — `replace()` + single BEM parent style entry:**
+**Correct workflow — `replace()` + one style entry per element class:**
+
+> **One style entry per BEM element class — never one nested "parent" entry for the whole
+> component.** If unsure whether a site already has a convention, check `etch.styles.list()` for
+> any existing BEM classes on that install before assuming.
 
 ```js
-// Step A: Create ONE BEM parent style entry with ALL nested CSS
-const bemStyleId = etch.styles.create('.mega-menu-revo-2', `
+// Step A: Create ONE style entry PER element class (not one nested parent entry)
+const STYLE_ID = {};
+STYLE_ID['mega-menu-revo-2'] = etch.styles.create('.mega-menu-revo-2', `
   display: flex;
   flex-direction: column;
   gap: 12px;
   padding: 1.25rem;
   background: #3520c0;
-
-  &__cards-grid {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 10px;
-  }
-
-  &__card {
-    position: relative;
-    ...
-    &:hover .mega-menu-revo-2__card-img { transform: translateY(-20px); }
-  }
+`);
+STYLE_ID['mega-menu-revo-2__cards-grid'] = etch.styles.create('.mega-menu-revo-2__cards-grid', `
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
 
   @container (width < 900px) {
-    &__cards-grid { grid-template-columns: repeat(2, 1fr); }
+    grid-template-columns: repeat(2, 1fr);
   }
 `);
+STYLE_ID['mega-menu-revo-2__card'] = etch.styles.create('.mega-menu-revo-2__card', `
+  position: relative;
 
-// Step B: Build the block tree (no classes yet) using create() or getJson()
-// Step C: Replace the top-level container with fixed JSON — replace() DOES persist styles[]
+  &:hover .mega-menu-revo-2__card-img { transform: translateY(-20px); }
+`);
+
+// Step B: Build the block tree with the Section 3 `el()` helper — every classed node gets
+// BOTH attributes.class AND styles: [styleId] together, not just the top-level container.
+// Step C: Replace the top-level container with the built JSON — replace() persists styles[]
+// correctly on every node in the tree, not just the root.
 const newId = etch.blocks.replace(ciBlockId, {
   type: 'etch/element', version: 1, context: { name: 'Mega Menu Revo 2' }, options: {},
   tag: 'div',
   attributes: { class: 'mega-menu-revo-2' },
-  styles: [bemStyleId],   // — only the TOP block needs the style entry
+  styles: [STYLE_ID['mega-menu-revo-2']],
   children: [
-    // child blocks: set BEM classes in attributes, leave styles: []
-    // Etch auto-creates empty phantom style entries for child classes — harmless
+    // each child block needs its OWN class + matching styles: [styleId] too — e.g.
+    // { tag: 'div', attributes: { class: 'mega-menu-revo-2__cards-grid' }, styles: [STYLE_ID['mega-menu-revo-2__cards-grid']], children: [...] }
   ]
 });
 await etch.saveAsync();
@@ -616,9 +625,10 @@ await etch.saveAsync();
 **Key rules:**
 
 * **One style entry per element class** (e.g. `.mega-menu-revo-2__card` gets its own style entry with its own CSS).
-* Within each element's style entry, nesting is allowed and preferred for: `@container`, pseudo-elements (`&::before`), states (`&:hover`), and child tag selectors (`& span`, `& img`, `& svg`, `& svg path`, `& path`).
+* Within each element's OWN style entry, nesting is allowed and preferred for: `@container`, pseudo-elements (`&::before`), states (`&:hover`), and child tag selectors (`& span`, `& img`, `& svg`, `& svg path`, `& path`).
 * **Responsive: ALWAYS use `@container`, NEVER `@media`.** The mega menu content div is already declared as a container (`container-type` is set on it by the component), so any element inside a mega menu can use `@container (width < 900px) { ... }` directly. **Do NOT add `container-type` to your own wrapper** (e.g. `.mm-features`) — it's redundant and, worse, it would make your wrapper the query target instead of the full content div. Breakpoints query the mega menu content width, not the viewport. Convert range/`max-width` forms too: `@media (max-width: 1100px)` → `@container (width < 1100px)`.
-* Do **NOT** nest sub-classes (`&__card`) inside a parent's style entry — each sub-class lives in its own entry.
+* Do **NOT** nest sub-classes (`&__card`) inside a *different* class's style entry — each sub-class gets its own `etch.styles.create()` call and lives in its own entry.
+* **Every classed node needs BOTH `attributes.class` AND a matching `styles: [styleId]`** — not just the top-level container. Use the Section 3 `el()` helper so both are always set together; see the "Building classed content for new blocks" gotcha for the failure mode when one is set without the other.
 * Every block needs the matching style entry ID in its `styles[]` array — use `replace()` to set this (see Step C below), passing `styles: [styleId]` for each block in the JSON tree.
 * `replace()` propagates `styles[]` correctly to all nested children in the JSON tree.
 * **Grid best practice:** always use `repeat(auto-fit, minmax(min(to-rem(260px), 100%), 1fr))` — never hardcode `1fr 1fr 1.2fr` or similar. `min()` prevents overflow in narrow containers; `auto-fit` collapses columns naturally without manual breakpoints.
@@ -635,9 +645,8 @@ Only duplicate an existing mega menu if you need to copy content (not structure/
 > on the live site — it describes what happens when you rename a style entry's selector that a
 > block already references. It does **NOT** mean a brand-new node passed to `create()`/`replace()`
 > can omit `attributes.class` and rely on `styles[]` alone — a fresh node needs both set together
-> (see "Building classed content for new blocks" in Section 3). Confirmed live 2026-07: reading
-> this paragraph in isolation led an agent to build 13 new panels with `styles[]` only, no
-> `attributes.class` — they saved with no error and rendered with zero CSS.
+> (see "Building classed content for new blocks" in Section 3). A node built with `styles[]` only
+> and no `attributes.class` saves with no error and renders with zero CSS.
 
 If the blocks already have their own unique style entries (built from scratch, not duplicated), a pure rename only requires updating the style entry selectors — no block-level changes needed. A block's rendered `class` attribute is derived from its `styles[]` entries' selectors, so renaming a selector automatically reflects on every block that references that entry:
 
@@ -696,7 +705,7 @@ To add a recolored sibling of an existing mega-menu panel (e.g. a light-theme du
 to a dark original in the same `Mega_Menu_Content` slot) with **independently editable** CSS — not a
 visual clone that shares the source's live styles:
 
-1. **Do not use `copy()`/`pasteAsync()`** — confirmed above to reuse style-entry ids, not duplicate them.
+1. **Do not use `copy()`/`pasteAsync()`** — it reuses style-entry ids rather than duplicating them (see "If you must duplicate and rename classes" below).
 2. Pick a BEM **modifier** suffix for the new base class (e.g. `--light`) — confirm the exact name with
    the user per the Base class name approval gate.
 3. **Discovery — don't dump the full tree by default.** If your clone is programmatic (step 5 reads
@@ -739,7 +748,7 @@ as-is — only darken them if used as default-state link/CTA text needing contra
 
 ### If you must duplicate and rename classes
 
-> **✅ CONFIRMED (Etch 1.5.4, tested live) — `copy()`/`pasteAsync()` does NOT create fresh style-entry ids.** Etch 1.5.4 added `etch.blocks.copy(blockId)` → `CopyObject` and `await etch.blocks.pasteAsync(payload, targetId?, index?)`. Verified via the Appendix A.6 snippet on a live MMPro install: a pasted block's `styles[]` array contained the **exact same style-entry ids** as the source (`idsRemapped: false`) — paste reuses existing style entries by id, it does not duplicate them. This matches the "Performance Thresholds" note in Connector quick-start, not the hope this warning used to express. **Do not use `copy()`/`pasteAsync()` to clone a styled panel you intend to recolor or restyle independently** — the clone shares live CSS with the source, so editing either one edits both. Use the manual process below (or build-from-scratch with fresh style entries) whenever the clone needs independent styling.
+> **`copy()`/`pasteAsync()` does NOT create fresh style-entry ids.** `etch.blocks.copy(blockId)` → `CopyObject` and `await etch.blocks.pasteAsync(payload, targetId?, index?)` re-map block ids, but a pasted block's `styles[]` array keeps the **exact same style-entry ids** as the source (`idsRemapped: false`) — paste reuses existing style entries, it does not duplicate them. **Do not use `copy()`/`pasteAsync()` to clone a styled panel you intend to recolor or restyle independently** — the clone shares live CSS with the source, so editing either one edits both. Use the manual process below (or build-from-scratch with fresh style entries) whenever the clone needs independent styling. (To verify this on a given Etch version: run the Appendix A.6 snippet and compare `styles[]` on the source vs. the pasted block.)
 
 If the user explicitly asks to duplicate, follow this safe process to rename classes without breaking rendering. Read Section 6 (Rules & gotchas) for the full API behaviour details before starting.
 
@@ -811,7 +820,7 @@ ratio (props-first, CSS-variable rarely, global stylesheet never) is what a corr
 | Change header bg after scrolling                                                   | `sticky.stickyHeaderBackground` prop → CSS `--header-bg-sticky`                                                                                                                                                                                                                                          |
 | Make header transparent on load                                                    | `overlay.overlayHeaderBackground` prop → set to `transparent`                                                                                                                                                                                                                                            |
 | Change header bg when hovering a nav item                                          | `overlay.overlayHeaderActiveBackground` prop → CSS `--overlay-header-bg-active`                                                                                                                                                                                                                          |
-| Add frosted glass / backdrop blur                                                  | `overlay.overlayHeaderBlur` prop                                                                                                                                                                                                                                                                         |
+| Add frosted glass / backdrop blur                                                  | `headerBlur` prop → CSS `--header-blur`                                                                                                                                                                                                                                                                  |
 | Make header stick on scroll                                                        | `sticky.stickyHeader` prop → `{true}`                                                                                                                                                                                                                                                                    |
 | Unlock before/after scroll CSS hooks                                               | `sticky.stickyHeader` + `sticky.specialStickyOverlayStyles` + `overlay.overlayHeader` — all `{true}`                                                                                                                                                                                                     |
 | Style nav items differently before/after scroll                                    | Use special styles blocks in `.dwc-top-level-items-vars`                                                                                                                                                                                                                                                 |
@@ -838,7 +847,7 @@ ratio (props-first, CSS-variable rarely, global stylesheet never) is what a corr
 | Put icon-appearance dropdowns (search/cart) on the right                           | **Default — do nothing.** Trailing icon-appearance DWC Dropdowns are right-aligned automatically. Do **NOT** set `lastItemIsButton` for them (that is a DWC **Menu Item** CTA feature — see gotchas).                                                                                                     |
 | Left/centre-align the other items while icons stay right                           | Set `menuMode.nonButtonItemsAlignment` → **`left`** / **`center`** (lowercase — capital `Left` silently fails). Needs `lastItemIsButton` set. This prop is condition-nested inside `menuMode` and requires a recursive schema search to find its stored values.                                                                       |
 | Make a real pill CTA button in the nav                                              | Use a **DWC Menu Item** as the last item + `menuMode.lastItemIsButton`. Each CTA position has its **own independent variable set** in `.dwc-top-level-items-vars`: `--menu-cta-*` (last item), `--menu-cta-2-*` (second-to-last), `--menu-cta-3-*` (third-to-last). Style each button differently — e.g. filled vs outlined — purely through these vars. **Never reach for the tuts stylesheet** to differentiate CTA buttons; use the per-position var sets instead. (Icon-appearance dropdowns cannot be CTA buttons.)                                                                                                          |
-| Break an icon button dropdown out to the header on mobile (sits next to hamburger) | `megaMenu.enable` must be `true` first — `megaMenu.breakout` is only available when mega menu is enabled. Then toggle `megaMenu.breakout` → `true`. Uses the default mobile breakpoint. For a plain icon button with no panel, use DWC Menu Item + `Content` slot + `relocation.mode: breakout` instead. **Also explicitly set this Dropdown's own `general.submenuReveal` → `'expand'` (or `'slide'`, whichever direction you actually want)** — `breakout` only relocates the `<li>` in the DOM (`ResponsiveRelocationSystem`); it does NOT change how the dropdown's own panel opens. Left at `"default"`, a **broken-out** dropdown does NOT dynamically inherit whatever `mobile.submenuReveal` is currently set to on DWC Nav — `default` resolves to `'slide'` unconditionally once the item is relocated outside the nav, regardless of the Nav's own setting. Confirmed live 2026-07: an Apple-style nav had Nav `mobile.submenuReveal: 'slide'` and Search/Bag left at `general.submenuReveal: 'default'` — panels slid in from the side instead of opening downward. Setting the Nav to `'expand'` would NOT have fixed it either, since breakout dropdowns don't track the Nav's value — only an explicit per-dropdown override does. No error anywhere; only caught when directly asked "how do you get a dropdown to open downward on mobile." |
+| Break an icon button dropdown out to the header on mobile (sits next to hamburger) | `megaMenu.enable` must be `true` first — `megaMenu.breakout` is only available when mega menu is enabled. Then toggle `megaMenu.breakout` → `true`. Uses the default mobile breakpoint. For a plain icon button with no panel, use DWC Menu Item + `Content` slot + `relocation.mode: breakout` instead. **Also explicitly set this Dropdown's own `general.submenuReveal` → `'expand'` (or `'slide'`, whichever direction you actually want)** — `breakout` only relocates the `<li>` in the DOM (`ResponsiveRelocationSystem`); it does NOT change how the dropdown's own panel opens. Left at `"default"`, a **broken-out** dropdown does NOT dynamically inherit whatever `mobile.submenuReveal` is currently set to on DWC Nav — `default` resolves to `'slide'` unconditionally once the item is relocated outside the nav, regardless of the Nav's own setting. Setting the Nav to `'expand'` will NOT fix this, since breakout dropdowns don't track the Nav's value — only an explicit per-dropdown override does. No error is thrown either way. |
 
 ***
 
@@ -884,13 +893,13 @@ function extractBlock(css, marker) {
 }
 // New-block group attributes (create()/replace() JSON) use the SAME encoding as setGroup —
 // one extra brace layer, NOT two. Do not hand-roll '{{' + JSON.stringify(obj) + '}}' — that's
-// a triple-brace bug (confirmed live 2026-07: silently made megaMenu.enable never take effect).
+// a triple-brace bug that silently makes megaMenu.enable never take effect, with no error thrown.
 function groupAttr(obj) { return '{' + JSON.stringify(obj) + '}'; }
 ```
 
 ### Building classed content for new blocks (create()/replace()) — use this exact helper
 
-**Confirmed live 2026-07 (do not deviate from this pattern):** a brand-new node handed to
+**Do not deviate from this pattern:** a brand-new node handed to
 `create()`/`replace()` needs **both** `attributes.class` (the literal class-name string) AND
 `styles: [styleId]` (pointing at the matching style entry) set together on every node that has
 a class. Neither field alone is enough — a node with only `styles: [...]` and no `attributes.class`
@@ -1097,17 +1106,13 @@ Every group attribute (`megaMenu`, `general`, `mobile`, `inBuilder`, nested grou
 `mobile.submenuSlideExtras`, etc.) is stored as `'{' + JSON.stringify(obj) + '}'` — ONE
 extra `{`/`}` wrap around the JSON object string, giving exactly **two** braces total on
 each side (`{{"enable":"{true}",...}}`). This is what `setGroup`/`getGroup` (Core helpers,
-Section 3) do, and it's what live data actually contains (confirmed by inspecting existing
-attributes such as `mobile.submenuSlideExtras: "{{\"fadeItemsOnSlide\":\"{false}\"}}"`).
+Section 3) do — e.g. `mobile.submenuSlideExtras: "{{\"fadeItemsOnSlide\":\"{false}\"}}"`.
 
 **Do not write `'{{' + JSON.stringify(obj) + '}}'` for a new block's group attribute** —
 `JSON.stringify(obj)` already supplies the object's own `{`/`}`, so adding two more braces
 produces **three** total on each side. Etch does not recognize a triple-brace-wrapped group:
 `megaMenu.enable` silently never evaluates true, and the mega-menu panel never renders, with
-no error thrown anywhere. Confirmed live 2026-07: a batch of 13 new DWC Dropdown blocks built
-with the triple-brace form all had fully correct slot content but rendered with no mega-menu
-panel at all, until every `megaMenu`/`general` attribute was re-set with the correct
-single-wrap encoding via `setAttribute` + `saveAsync`.
+no error thrown anywhere.
 
 Always build new-block group attributes with the same helper used for existing blocks:
 ```js
@@ -1169,7 +1174,7 @@ Examples: `dropdown.globalMegaMenuWidth` (nav) vs `megaMenu.width` (per-dropdown
 * **DO NOT** set `dropdown.dropdownContentBorderSize` to `0` or any value below `1px` — use `1px` as the minimum; set `dropdownContentBorderColor` to `transparent` if you want an invisible border
 * **DO NOT** use `%` or `100vw` for `megaMenu.width` / `globalMegaMenuWidth`. `%` resolves relative to the parent dropdown item; `100vw` includes the scrollbar width and causes horizontal overflow. **For full-width headers, use `#dwc-header` (or the `header` tag)**. **For overlay headers with a constrained width, use `.dwc-nest-header`** — `.dwc-nest-header` is always the header inner wrap selector and is the element that actually carries the overlay-constrained width. Using `#dwc-header` with a constrained overlay header will make panels span the full viewport width instead of the header width.
 * **DO NOT** guess select prop values from their UI label — the stored value is always the right-hand side of the ` : ` separator in `selectOptionsString` (e.g. `"Left : left"` stores `left`, not `Left`; `"Hover only : hover"` stores `hover`). When there is no ` : `, the stored value equals the label. **Always inspect `selectOptionsString` before setting any select prop.** Using a label instead of its stored value silently fails — the component ignores it and falls back to the default.
-* **DO NOT** use `menuMode.lastItemIsButton` to make an icon/cart/search button or to right-align it. **`lastItemIsButton` + the `--menu-cta-*` CTA styling only work on DWC *Menu Item* last items, not on DWC *Dropdown* items** (even with `general.appearance: button`/`icon`). For a dropdown-as-icon/button, use the dropdown's own `general.appearance` (`icon`/`button`); trailing icon dropdowns are **right-aligned by default** (no `lastItemIsButton` needed). For dropdowns, `lastItemIsButton` only enables `nonButtonItemsAlignment` (left/center of the other items). *(Confirmed by testing — this exception is not stated in the official component documentation.)*
+* **DO NOT** use `menuMode.lastItemIsButton` to make an icon/cart/search button or to right-align it. **`lastItemIsButton` + the `--menu-cta-*` CTA styling only work on DWC *Menu Item* last items, not on DWC *Dropdown* items** (even with `general.appearance: button`/`icon`). For a dropdown-as-icon/button, use the dropdown's own `general.appearance` (`icon`/`button`); trailing icon dropdowns are **right-aligned by default** (no `lastItemIsButton` needed). For dropdowns, `lastItemIsButton` only enables `nonButtonItemsAlignment` (left/center of the other items). *(Not stated in the official component documentation.)*
 * **DO NOT** modify selector strings in special styles blocks — only add values inside `{ }`
 * **DO NOT** use raw `rgba()` — use `color-mix(in oklch, ...)`
 * **DO NOT** use `replace()` — use `replaceAll()` (CSS blocks contain both commented and active declarations)
@@ -1189,7 +1194,7 @@ Examples: `dropdown.globalMegaMenuWidth` (nav) vs `megaMenu.width` (per-dropdown
 * **`etch.styles.create(selector, css)` — second arg is a CSS STRING only.** Do NOT pass an object `{ css, type, collection }`. Passing an object stores it as the `css` value; when PHP's `CssProcessor::preprocess_css()` receives an array instead of a string it causes a WordPress critical error on the frontend.
 * **`styles` is not part of `BlockPatch` and cannot be set via `etch.blocks.update()`.** `BlockPatch` only accepts `{ name?, hidden?, attributes?, text? }`. The `styles` array is read-only on `PublicBlockJson`; wire it at creation time via `replace()` with `styles: [styleId]` in the JSON, or use `addClass`/`removeClass`.
 * **A DWC Dropdown's content slots are identified by a top-level `slotName` field, not by child index.** The two `etch/slot-content` children are `Mega_Menu_Content` and `Nested_Dropdown_Content`. `options`/`context` are empty on these — read `child.slotName`. Always select with `.find(c => c.slotName === 'Mega_Menu_Content')`.
-* **Inline SVG data-URIs in `content`, `mask`/`-webkit-mask`, or `background` MUST be percent-encoded — never use `data:image/svg+xml;utf8,<svg…>` with raw markup.** The `;utf8,` form with unescaped `<`, `>`, spaces, and quotes silently fails to load in Chrome (the Etch builder), so a `content: url(...)` pseudo-element renders nothing and a mask shows nothing — with no error. Encode with `'data:image/svg+xml,' + encodeURIComponent(svg)` (a standard JS built-in, allowed in safe mode). This is exactly why the icon masks in `.mm-features__item-icon` render but a hand-written `;utf8,` `::before` did not. Use single quotes inside the SVG so the encoded string has no `"` to clash with the `url("…")` wrapper.
+* **Inline SVG data-URIs in `content`, `mask`/`-webkit-mask`, or `background` MUST be percent-encoded — never use `data:image/svg+xml;utf8,<svg…>` with raw markup.** The `;utf8,` form with unescaped `<`, `>`, spaces, and quotes silently fails to load in Chrome (the Etch builder), so a `content: url(...)` pseudo-element renders nothing and a mask shows nothing — with no error. Encode with `'data:image/svg+xml,' + encodeURIComponent(svg)` (a standard JS built-in, allowed in safe mode). Use single quotes inside the SVG so the encoded string has no `"` to clash with the `url("…")` wrapper.
 * **Every node in `create()`/`replace()` block JSON needs a `children` array — including `etch/text` nodes.** Text nodes are `{ type:'etch/text', version:1, context:{name:'Text'}, options:{}, text:'...', children:[] }`. Omitting `children:[]` on a text node fails validation with `expected array, received undefined`. Element text content lives in child `etch/text` nodes, not a `text` attribute (that attribute is for components like Menu Item labels). Inline tags like `<em>`/`<span>` are plain `etch/element` nodes (no class/styles needed) wrapping their own text node — style them from the parent's entry via `& em` / `& span`.
 * **`create()` accepts `null` (or an omitted `parentId`) to insert at the document root.** Inserting under a parent that can't contain the block — a text block, a void element like `img`, or a text container handed a block-level child — throws `WRONG_BLOCK_TYPE`. The same rule applies to `move()` (the block is left in place) and to indexed `pasteAsync()`.
 * **NEVER use `replace()` to edit an already-populated block — it resets EVERY attribute on EVERY node in the subtree**, silently wiping user edits (a swapped image `src`, a changed link, a renamed class). To change copy in place, locate the `etch/text` node and call `etch.blocks.setText(textNodeId, 'new text')` — then `await etch.saveAsync()`. Only use `replace()` to populate an empty placeholder or when you intend to rebuild the whole subtree from scratch. Walk to the text node via the parent element's class: `el.children.find(c => c.type==='etch/text')` (for mixed content like a heading with `<em>`, set each text node individually — the first text node, the `<em>`'s inner text node, and the trailing text node).
@@ -1204,14 +1209,14 @@ Examples: `dropdown.globalMegaMenuWidth` (nav) vs `megaMenu.width` (per-dropdown
 * **Never `replace()` a populated block** — it resets every attribute on every node, wiping user edits. Edit content in place with `etch.blocks.setText(textNodeId, ...)` + `saveAsync()`. Includes the text-node walk pattern and the mixed-content (heading with `<em>`) note.
 * **History recovery** — `etch.history.undo()`/`redo()` (return void, not async) can read back a clobbered value, but doesn't reliably round-trip a `replace()`, so always re-apply the recovered value explicitly with `setAttribute`/`setText` rather than trusting redo.
 * **DO NOT** leave a block's nice-name (`context.name`) stale after renaming its class — rename it too via `etch.blocks.rename(id, name)`. Use the generic BEM-derived name (base class Title Cased for the base block, element-role-only Title Cased for sub-elements, identical name across sibling instances) even if the block currently holds a more descriptive content-specific name — generic structural names stay correct as content changes; descriptive ones go stale.
-* **A `"condition"`-type wrapper in the schema is UI-only and flattens away — but a `"group"`-type wrapper nested behind a condition is a REAL nesting level. Check `type.specialized` on the wrapper node itself before assuming either way; don't guess from key-path shape alone.** `etch.components.getJson()` shows nested paths like `megaMenu.megaMenu.breakout` or `sticky.stickyEnabled.stickyHeaderBackground` — the middle segment (`type.specialized: "condition"`) only controls when the field shows in the properties panel, so the actual stored attribute is flat: `{ enable, width, breakout }` at the top level of the group object. **This does NOT generalize to every nested-looking path.** `mobile.submenuSlideExtras` is a `type.specialized: "group"` node (sitting behind its own condition wrapper) — its children (`submenuSlideoutDistance`, `submenuSlideoutOpacity`, `fadeItemsOnSlide`) are genuinely nested *inside* `submenuSlideExtras`, not flat siblings under `mobile`. Confirmed live 2026-07 (Apple-style nav build): `fadeItemsOnSlide` was correctly nested (`mobile.submenuSlideExtras: '{"fadeItemsOnSlide":"{true}"}'`), but `submenuSlideoutDistance`/`submenuSlideoutOpacity` were mistakenly set as flat `mobile.*` siblings — round-tripped fine via `getAttribute`/`JSON.parse` (looked correct), saved with no error, but the component never reads that flat location, so the live render silently kept using the 100%/opacity-1 defaults. Only caught by checking the raw distributable component JSON's actual `properties` nesting (`dwc-header-backup.json`), which showed `submenuSlideoutDistance`/`submenuSlideoutOpacity`/`fadeItemsOnSlide` all as siblings **inside** `submenuSlideExtras`'s own `"properties"` array. **Before writing to any prop reached via a multi-segment path, verify each segment's `type.specialized` individually — `condition` flattens, `group` nests — rather than pattern-matching against the one other example you've already confirmed.** Correct write: `setGroup(navId, 'mobile', { ...mobileGroup, submenuSlideExtras: groupAttr({ submenuSlideoutDistance: '60%', submenuSlideoutOpacity: '0', fadeItemsOnSlide: '{true}' }) })`.
+* **A `"condition"`-type wrapper in the schema is UI-only and flattens away — but a `"group"`-type wrapper nested behind a condition is a REAL nesting level. Check `type.specialized` on the wrapper node itself before assuming either way; don't guess from key-path shape alone.** `etch.components.getJson()` shows nested paths like `megaMenu.megaMenu.breakout` or `sticky.stickyEnabled.stickyHeaderBackground` — the middle segment (`type.specialized: "condition"`) only controls when the field shows in the properties panel, so the actual stored attribute is flat: `{ enable, width, breakout }` at the top level of the group object. **This does NOT generalize to every nested-looking path.** `mobile.submenuSlideExtras` is a `type.specialized: "group"` node (sitting behind its own condition wrapper) — its children (`submenuSlideoutDistance`, `submenuSlideoutOpacity`, `fadeItemsOnSlide`) are genuinely nested *inside* `submenuSlideExtras`, not flat siblings under `mobile`. Setting `submenuSlideoutDistance`/`submenuSlideoutOpacity` as flat `mobile.*` siblings round-trips fine via `getAttribute`/`JSON.parse` (looks correct) and saves with no error, but the component never reads that flat location — the live render silently keeps using the 100%/opacity-1 defaults. The only reliable check is the raw distributable component JSON's actual `properties` nesting (e.g. `dwc-header-backup.json`), which shows `submenuSlideoutDistance`/`submenuSlideoutOpacity`/`fadeItemsOnSlide` all as siblings **inside** `submenuSlideExtras`'s own `"properties"` array. **Before writing to any prop reached via a multi-segment path, verify each segment's `type.specialized` individually — `condition` flattens, `group` nests — rather than pattern-matching against one other example.** Correct write: `setGroup(navId, 'mobile', { ...mobileGroup, submenuSlideExtras: groupAttr({ submenuSlideoutDistance: '60%', submenuSlideoutOpacity: '0', fadeItemsOnSlide: '{true}' }) })`.
 * **Mega-menu Dropdown breakout items use `[data-breakout-mega="true"]`, NOT `[data-breakout]`.** `[data-breakout]` is the attribute used by DWC Menu Item's `relocation.mode=breakout` and the logo breakout feature — a CSS rule written against `[data-breakout]` for a `megaMenu.breakout` icon-appearance Dropdown will silently match nothing. The distributable stylesheet's own CSS never references `data-breakout-mega` (no rule needs it), so searching stylesheet text for "breakout" surfaces only the unrelated attribute and will not reveal this one. Trace to the component's actual rendered output (CDP `html` command, or the component's own `script.code`) instead of an adjacent-looking selector.
-* **`megaMenu.breakout` relocates the `<li>` in the DOM — it does NOT set the dropdown's own opening direction, and does NOT dynamically track DWC Nav's `mobile.submenuReveal`.** `ResponsiveRelocationSystem` (DOM move) and the dropdown's own reveal logic are separate systems (see `javascript-api.md`'s systems table). A broken-out Dropdown left at `general.submenuReveal: 'default'` resolves to `'slide'` unconditionally once relocated outside the nav — **not** whatever the Nav is currently set to. Confirmed live 2026-07 (Apple-style nav build): changing the Nav's `mobile.submenuReveal` would not have fixed a breakout icon stuck sliding in from the side; only an explicit `general.submenuReveal: 'expand'` on that specific Dropdown does. **Always explicitly set `general.submenuReveal` on a breakout Dropdown** (`'expand'` for downward, `'slide'` for from-the-side) rather than leaving it at `'default'`.
+* **`megaMenu.breakout` relocates the `<li>` in the DOM — it does NOT set the dropdown's own opening direction, and does NOT dynamically track DWC Nav's `mobile.submenuReveal`.** `ResponsiveRelocationSystem` (DOM move) and the dropdown's own reveal logic are separate systems (see `javascript-api.md`'s systems table). A broken-out Dropdown left at `general.submenuReveal: 'default'` resolves to `'slide'` unconditionally once relocated outside the nav — **not** whatever the Nav is currently set to; changing the Nav's `mobile.submenuReveal` will not fix a breakout icon stuck sliding in from the side, only an explicit `general.submenuReveal: 'expand'` on that specific Dropdown does. **Always explicitly set `general.submenuReveal` on a breakout Dropdown** (`'expand'` for downward, `'slide'` for from-the-side) rather than leaving it at `'default'`.
 * **To hide/fade a breakout dropdown's icon, target the toggle BUTTON inside it, not the dropdown `<li>` wrapper — and remember `.dwc-open` only fires for the MOBILE MENU, not for a breakout dropdown opening its own panel.** Two separate mistakes here:
   1. The `<li>` carries `[data-breakout-mega='true']`, but the actual visible/interactive element is a child `.dwc-submenu-toggle` (same child selector the icon-appearance CSS uses: `&[appearance='icon'] > .dwc-submenu-toggle`). Applying `opacity`/`pointer-events` to `[data-breakout-mega='true']` itself hides the wrong layer.
   2. `.dwc-open` is added when the **mobile hamburger drawer** opens — it does NOT appear when a breakout dropdown (e.g. a relocated Search/Bag icon) opens **its own panel**; that's a completely different open state, since the item no longer lives inside the mobile menu subtree at all. That case instead adds `.open` to the breakout `<li>` itself: `[data-breakout-mega='true'].open`. If you only fade on `:has(.dwc-open)`, opening a breakout dropdown's own panel won't trigger the fade at all.
 
-  A third mistake compounds these: **`[data-breakout-mega='true'].open` fires whenever that dropdown's own panel opens, at ANY viewport — not just mobile.** Without scoping, clicking a breakout icon's own panel on *desktop* fades that same icon out (since opening it adds `.open` regardless of breakpoint), even though the whole "fade icon on open" requirement is mobile-only. Confirmed live 2026-07: the first version of this fix had no `html.dwc-mobile` scoping at all, so it silently also broke desktop (icon vanished on desktop click). Must wrap in the plugin's own mobile-scope convention (same one used in `.dwc-top-level-items-vars`'s "MOBILE ONLY STYLES" block):
+  A third mistake compounds these: **`[data-breakout-mega='true'].open` fires whenever that dropdown's own panel opens, at ANY viewport — not just mobile.** Without scoping, clicking a breakout icon's own panel on *desktop* fades that same icon out (since opening it adds `.open` regardless of breakpoint), even though the whole "fade icon on open" requirement is mobile-only — unscoped CSS silently breaks desktop too (icon vanishes on desktop click). Must wrap in the plugin's own mobile-scope convention (same one used in `.dwc-top-level-items-vars`'s "MOBILE ONLY STYLES" block):
 
   ```css
   html.dwc-mobile .dwc-nest-header__container:has(.dwc-open, [data-breakout-mega='true'].open) [data-breakout-mega='true'] > .dwc-submenu-toggle {
@@ -1221,9 +1226,9 @@ Examples: `dropdown.globalMegaMenuWidth` (nav) vs `megaMenu.width` (per-dropdown
     opacity: 1; /* desktop: never affected by open state */
   }
   ```
-* **`etch.stylesheets` has no `update()` — only `list()` and `appendAsync()`.** To fix CSS already appended to a stylesheet, append a corrective rule rather than trying to edit in place; the old dead rule is harmless if it never matched anything. (`etch.styles.update(id, {...})` exists but is a different namespace — style *entries*, not whole stylesheets.) *(Caveat, added on integration review: Etch's public API reference — `ETCH-DEV-API/docs/public-api/stylesheets.md` — documents `etch.stylesheets.updateAsync()`/`createAsync()`/`deleteAsync()` as real methods with working examples. This gotcha may reflect a connector-specific proxy limitation rather than a genuinely missing method — re-verify live with a quick `typeof etch.stylesheets.updateAsync` check next time before trusting either claim.)*
+* **`etch.stylesheets` has no `update()` — only `list()` and `appendAsync()`.** To fix CSS already appended to a stylesheet, append a corrective rule rather than trying to edit in place; the old dead rule is harmless if it never matched anything. (`etch.styles.update(id, {...})` exists but is a different namespace — style *entries*, not whole stylesheets.) *(Note: Etch's public API reference — `ETCH-DEV-API/docs/public-api/stylesheets.md` — documents `etch.stylesheets.updateAsync()`/`createAsync()`/`deleteAsync()` as real methods with working examples, which may reflect a connector-specific proxy limitation rather than a genuinely missing method. Re-verify live with a quick `typeof etch.stylesheets.updateAsync` check before trusting either claim.)*
 * **`403 rest_cookie_invalid_nonce` on `saveAsync()` (or any `etch.*` write) means the user's WordPress session has logged out** — it is not a connector bug. Stop immediately, tell the user plainly, and ask them to log back into WordPress, refresh the Etch builder tab, then reconnect (re-run `serve` if the connection dropped). **Critically: any buffered call you assumed succeeded right before the failed `saveAsync()` (e.g. a `delete()` or `update()`) did NOT actually persist** — after reconnecting, re-read live state via `getTree()`/`getJson()` before trusting that a pre-error mutation took effect, rather than assuming it did.
-* **A sticky header's translucent/blurred-on-scroll look does NOT require `sticky.specialStickyOverlayStyles` or any `.dwc-header-vars` special-styles-block CSS.** `overlay.overlayHeader: {true}` + `overlay.overlayHeaderBackground` (translucent value) + `overlay.overlayHeaderBlur` on the DWC Header, combined with `sticky.stickyHeader: {true}`, is sufficient on its own (confirmed live 2026-07 building an Apple-style nav) — the overlay background/blur only visually engages once the header is in its stuck/sticky state. This contradicts the literal reading of the "Unlock before/after scroll CSS hooks" row in Section 2's "I want to" table (which implies `specialStickyOverlayStyles` is required); that prop is only needed for *further* per-state fine-tuning (e.g. differentiating hover-open vs not), not for the basic translucent-on-scroll effect. Try the simple 3-prop combo first before reaching for the special-styles scaffold.
+* **A sticky header's translucent/blurred-on-scroll look does NOT require `sticky.specialStickyOverlayStyles` or any `.dwc-header-vars` special-styles-block CSS.** `overlay.overlayHeader: {true}` + `overlay.overlayHeaderBackground` (translucent value) + `headerBlur` on the DWC Header, combined with `sticky.stickyHeader: {true}`, is sufficient on its own — the overlay background/blur only visually engages once the header is in its stuck/sticky state. This contradicts the literal reading of the "Unlock before/after scroll CSS hooks" row in Section 2's "I want to" table (which implies `specialStickyOverlayStyles` is required); that prop is only needed for *further* per-state fine-tuning (e.g. differentiating hover-open vs not), not for the basic translucent-on-scroll effect. Try the simple 3-prop combo first before reaching for the special-styles scaffold.
 
 
 ## Appendix A — Authoring payloads, temp-script lifecycle, and quick verification (required)
@@ -1290,11 +1295,10 @@ A.3 above validates node **shape** (schema acceptance) with a throwaway placehol
 separate, additional requirement for a different failure mode: when the task is N blocks sharing
 one real content template (e.g. a set of mega-menu panels, a row of cards, repeated CTA items),
 schema-valid shape is not the same as "actually renders correctly with the intended classes,
-styles, and group attributes." Confirmed live 2026-07: a batch of 13 mega-menu panels all passed
-shape validation and saved with no errors, yet two separate defects (malformed group-attribute
-encoding, missing `attributes.class`) went undetected across the entire batch — because the
-verification that existed only checked "did the API call throw," not "does this specific node
-now have the fields I intended."
+styles, and group attributes." Passing shape validation and saving with no errors does not rule
+out defects like malformed group-attribute encoding or a missing `attributes.class` — both can
+go undetected across an entire batch, because "did the API call throw" is not the same check as
+"does this specific node now have the fields I intended."
 
 **Required sequence:**
 1. Build and save the **first real item** only (not a throwaway placeholder — the actual first
