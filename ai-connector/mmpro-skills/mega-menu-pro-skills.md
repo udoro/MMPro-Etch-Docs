@@ -195,10 +195,12 @@ Only after making this declaration may you move to overriding a `--var` in the `
 ## Before you start
 
 This skills file lives in `MMPro Etch Docs/ai-connector/mmpro-skills/`, alongside its reference-file
-companion. The full component prop docs (`components/`) are NOT bundled here — they're kept single-source
-at the repo root (`../../components/`), since that's also where the live GitBook site publishes them from.
-If you only downloaded this `mmpro-skills` folder on its own, `components/` won't be present; fall back to
-the live GitBook URL in Section 4 (reference file) when that happens.
+companion. The full component prop docs (`components/`) are kept single-source at the repo root
+(`../../components/`), since that's also where the live GitBook site publishes them from — this repo does
+not duplicate them into `mmpro-skills/`. If you installed via `npx mmpro-agentic-skills-etch`, `components/`
+ships alongside the skills file (one level up, `../components/`) and will be present. If you only grabbed
+the `mmpro-skills` folder on its own some other way, `components/` may not be present; fall back to the
+live GitBook URL in Section 4 (reference file) when that happens.
 
 **Step 1 — Check for developer context file** at `../../MMPRO ETCH/mmpro-dev-context.md` (two levels up). If it exists, read it silently — this is a **developer session**. If not found, this is a **user session**.
 

@@ -45,19 +45,27 @@ The AI Connector lets you control **Mega Menu Pro + Header Builder** through a c
 
 ### Step 2 — Load the Skills Package
 
-The Skills Package teaches your AI agent how Mega Menu Pro works.
+The Skills Package teaches your AI agent how Mega Menu Pro works. In your project folder, run:
 
-**Recommended:** clone or download this whole repository, then point your agent at
-`ai-connector/mmpro-skills/mega-menu-pro-skills.md`. This gives the agent the main skills file, the
-lookup-only reference file, and the full component prop docs in `components/` — all working together.
+```
+npx mmpro-agentic-skills-etch
+```
 
-[Download this repository](https://github.com/udoro/MMPro-Etch-Docs/archive/refs/heads/main.zip)
+This installs `mmpro-skills/mega-menu-pro-skills.md`, its lookup-only reference-file companion, and the
+full component prop docs in `components/` — all working together, with no manual download needed. Point
+your agent at `mmpro-skills/mega-menu-pro-skills.md` to load it.
 
-**Just want the skills file on its own?** Browse to the
-[`mmpro-skills` folder](https://github.com/udoro/MMPro-Etch-Docs/tree/main/ai-connector/mmpro-skills) and
-grab `mega-menu-pro-skills.md` (plus its reference-file companion if you want it). It still works without
-the local `components/` folder — the agent falls back to fetching the same docs from this live GitBook
-site when it needs them.
+**Already have files installed and want to update them?** Re-run with `--force`:
+
+```
+npx mmpro-agentic-skills-etch --force
+```
+
+**Prefer a manual download?** [Download this repository](https://github.com/udoro/MMPro-Etch-Docs/archive/refs/heads/main.zip)
+and point your agent at `ai-connector/mmpro-skills/mega-menu-pro-skills.md`, or browse to the
+[`mmpro-skills` folder](https://github.com/udoro/MMPro-Etch-Docs/tree/main/ai-connector/mmpro-skills) for
+just the skills file on its own — it still works without the local `components/` folder, falling back to
+fetching the same docs from this live GitBook site when it needs them.
 
 ### Step 3 — Connect
 
