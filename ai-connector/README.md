@@ -45,17 +45,21 @@ The AI Connector lets you control **Mega Menu Pro + Header Builder** through a c
 
 ### Step 2 — Load the Skills Package
 
-The Skills Package teaches your AI agent how Mega Menu Pro works. In your project folder, run:
+The Skills Package teaches your AI agent how Mega Menu Pro works.
+
+1. Create a new folder for your project (e.g. `Mega Menu Pro`) — this is where the installer will place all the skills files.
+2. Open that folder in your IDE (e.g. VS Code) and start an AI agent session there.
+3. Paste the following command into the chat and send it:
 
 ```
 npx mmpro-agentic-skills-etch
 ```
 
-This installs `mmpro-skills/mega-menu-pro-skills.md`, its lookup-only reference-file companion, and the
+The agent will run the command, which installs `mmpro-skills/mega-menu-pro-skills.md`, its lookup-only reference-file companion, and the
 full component prop docs in `components/` — all working together, with no manual download needed. Point
 your agent at `mmpro-skills/mega-menu-pro-skills.md` to load it.
 
-**Already have files installed and want to update them?** Re-run with `--force`:
+**Already have files installed and want to update them?** Paste this into the chat instead:
 
 ```
 npx mmpro-agentic-skills-etch --force
