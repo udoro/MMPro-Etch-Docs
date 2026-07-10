@@ -6,7 +6,7 @@ icon: arrows-retweet
 
 > Update Mega Menu Pro + Header Builder using the [Updater](https://etch.designwithcracka.com/mmpro-updater/).
 
-## Version 1.2 - Coming Soon
+## Version 1.2 - July 10, 2026
 
 ### New
 
