@@ -15,12 +15,16 @@ A top-level navigation item that contains a dropdown panel. The panel can be a s
 | Setting                   | Description                                                                                                                                            |
 | ------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | **Text**                  | The label shown on the toggle button in the nav.                                                                                                       |
+| **Link Parent Item**      | Makes the parent item itself a link, for a section that has its own landing page as well as a submenu (e.g. a **Models** item that both links to the models archive and drops down the individual models). The label renders as an `<a class="dwc-dropdown-parent-link">` instead of a `<span>`: clicking the text goes to the linked page, while the chevron opens the dropdown. |
+| **URL**                   | Destination for the parent item. Only shown when **Link Parent Item** is enabled. Left at the default `#`, the item keeps ordinary toggle behaviour, so set a real URL for the link to do anything. |
 | **Dropdown Trigger Mode** | Per-item override for how this dropdown opens: **Hover**, **Click**, or **Both**. Overrides the global setting on DWC Nav.                             |
 | **Visibility**            | Show or hide this item at specific breakpoints (desktop only, mobile only, or always visible).                                                         |
 | **Appearance**            | Visual style of the toggle button: **default** (link), **button**, or **icon**. This is how you turn a dropdown into a button or an icon (e.g. a search or cart icon) â€” set it here, **not** via DWC Nav's _Last Item is Button_ (that CTA styling applies to DWC Menu Items only, not dropdowns). Trailing icon/button-appearance dropdowns are **right-aligned in the nav by default**. |
 | **No Arrow**              | Hides the chevron/arrow indicator on this item's toggle button.                                                                                        |
 | **Use Custom SVG**        | Replaces the default chevron with a custom SVG icon. **Note:** requires the **Allow "unsafe" HTML** option to be enabled in the Etch builder settings. |
 | **Custom SVG**            | Paste your SVG code directly into this field. Only active when **Use Custom SVG** is enabled.                                                          |
+
+> **Note:** With **Link Parent Item** enabled, the text and the chevron become two separate targets, in every trigger mode and on both desktop and mobile: clicking or tapping the label navigates, and the chevron (plus the empty space in the toggle row) opens the panel. Hover-to-open still works on desktop under **Hover** and **Both**. Because the label no longer toggles the panel, avoid pairing this with **No Arrow** - the row's empty space still opens the dropdown, but nothing is left to show users that it can.
 
 ### Nested Dropdown
 

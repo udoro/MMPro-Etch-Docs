@@ -6,6 +6,26 @@ icon: arrows-retweet
 
 > Update Mega Menu Pro + Header Builder using the [Updater](https://etch.designwithcracka.com/mmpro-updater/).
 
+## Version 1.2.1 - August 14, 2026
+
+_Update path from v1.2: CSS & Component_
+
+### New
+
+* **New props** (DWC Dropdown) — **Link Parent Item**: the parent menu item links to its own page while the chevron opens the dropdown. Set the destination in the paired **URL** field.
+* 10 new Mega Menu Starter Templates.
+
+### Improved
+
+* Keyboard focus style is now customisable via ACSS `--focus-width`, `--focus-color` and `--focus-offset`.
+* JavaScript and CSS are now minified.
+
+### Fixes
+
+* General bug fixes and refinements.
+
+***
+
 ## Version 1.2 - July 10, 2026
 
 ### New
