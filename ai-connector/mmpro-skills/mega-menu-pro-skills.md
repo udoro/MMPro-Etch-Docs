@@ -233,7 +233,7 @@ context instead of the default convention"), so they understand why behavior dif
 **Step 3 — Load API reference (both sessions).** Check for the cheatsheet at `../../ETCH-DEV-API/etch-connector-cheatsheet.md`. If not found locally, WebFetch the following before writing any scripts:
 - `https://docs.etchwp.com/public-api/types-reference.html` — block JSON shapes (`etch/svg`, `etch/element`, `etch/text`, etc.)
 - `https://docs.etchwp.com/public-api/components.html` — component property types, especially `ConditionComponentProperty` (has nested `properties` children that a shallow schema read will miss)
-- `https://design-with-cracka.gitbook.io/etchmegamenupro` — complete DWC Mega Menu Pro prop reference per component. The repo's `components/` folder (`../../components/` from this file, if present) and Section 4 in the reference file cover the same ground locally — prefer those before fetching live, and only fetch per-component pages here for a prop not already in either, or if `components/` isn't present locally.
+- `https://design-with-cracka.gitbook.io/megamenupro` — complete DWC Mega Menu Pro prop reference per component. The repo's `components/` folder (`../../components/` from this file, if present) and Section 4 in the reference file cover the same ground locally — prefer those before fetching live, and only fetch per-component pages here for a prop not already in either, or if `components/` isn't present locally.
 
 Pay particular attention to: block JSON shapes (`etch/svg` stores `src` in `attributes`, not top-level), `ConditionComponentProperty` nested `properties`, the `{{...}}` group encoding rules, and the full prop list for each DWC component.
 

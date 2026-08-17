@@ -22,7 +22,7 @@ is unchanged from the main file except where noted.
 > duplicated here. If it's missing, use the online reference below instead.
 >
 > **Full reference (online):** if the local docs aren't available or don't cover a setting, read the
-> official docs at <https://design-with-cracka.gitbook.io/etchmegamenupro> (per-component pages: DWC
+> official docs at <https://design-with-cracka.gitbook.io/megamenupro> (per-component pages: DWC
 > Header, DWC Nav, DWC Dropdown, DWC Menu Item, DWC Mobile Toggle). Cross-component exceptions (e.g.
 > CTA/`lastItemIsButton` styling is DWC Menu Item-only) are in Section 6 (in the main file).
 
