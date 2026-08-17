@@ -13,7 +13,7 @@ _Update path from v1.2: CSS & Component_
 ### New
 
 * **New props** (DWC Dropdown) — **Link Parent Item**: the parent menu item links to its own page while the chevron opens the dropdown. Set the destination in the paired **URL** field.
-* 10 new Mega Menu Starter Templates.
+* 10 new **Mega Menu Starter Templates**.
 
 ### Improved
 

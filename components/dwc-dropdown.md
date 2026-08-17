@@ -26,6 +26,8 @@ A top-level navigation item that contains a dropdown panel. The panel can be a s
 
 > **Note:** With **Link Parent Item** enabled, the text and the chevron become two separate targets, in every trigger mode and on both desktop and mobile: clicking or tapping the label navigates, and the chevron (plus the empty space in the toggle row) opens the panel. Hover-to-open still works on desktop under **Hover** and **Both**. Because the label no longer toggles the panel, avoid pairing this with **No Arrow** - the row's empty space still opens the dropdown, but nothing is left to show users that it can.
 
+> **Recommended:** for most menus, a plain link as the first item inside the dropdown - "All Products", "View all", or similar - is the better user experience. It is more discoverable than a label that both navigates and toggles, and it does not ask people to hit a small chevron on touch screens. Reach for **Link Parent Item** when you specifically want the parent item itself to be the link.
+
 ### Nested Dropdown
 
 Settings that apply when this item contains a standard nested/flyout dropdown.
