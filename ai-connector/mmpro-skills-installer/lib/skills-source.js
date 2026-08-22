@@ -4,7 +4,7 @@
 // time) import this, so the two paths cannot drift in how they rewrite links.
 
 export const REPO = "udoro/MMPro-Etch-Docs";
-export const DEFAULT_REF = "master";
+export const DEFAULT_REF = "main";
 export const DOCS_URL = "https://design-with-cracka.gitbook.io/megamenupro";
 
 // Where things live in the docs repo.
