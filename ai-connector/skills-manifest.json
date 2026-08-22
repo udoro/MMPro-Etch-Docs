@@ -1,0 +1,35 @@
+{
+  "generated": "2026-08-22",
+  "skills": [
+    {
+      "repo": "ai-connector/mmpro-skills/mega-menu-pro-skills-reference.md",
+      "out": "mmpro-skills/mega-menu-pro-skills-reference.md"
+    },
+    {
+      "repo": "ai-connector/mmpro-skills/mega-menu-pro-skills.md",
+      "out": "mmpro-skills/mega-menu-pro-skills.md"
+    }
+  ],
+  "components": [
+    {
+      "repo": "components/dwc-dropdown.md",
+      "out": "components/dwc-dropdown.md"
+    },
+    {
+      "repo": "components/dwc-header.md",
+      "out": "components/dwc-header.md"
+    },
+    {
+      "repo": "components/dwc-menu-item.md",
+      "out": "components/dwc-menu-item.md"
+    },
+    {
+      "repo": "components/dwc-mobile-toggle.md",
+      "out": "components/dwc-mobile-toggle.md"
+    },
+    {
+      "repo": "components/dwc-nav.md",
+      "out": "components/dwc-nav.md"
+    }
+  ]
+}
