@@ -1,72 +1,72 @@
-// Stage the two A/B run folders from their sources. Idempotent — run it immediately
-// before each test run, after any edit to either version.
+// Stage skills versions into throwaway run folders, one per arm.
 //
-// Why run folders exist at all: the skills file orders the agent to create
-// `mmpro-user-context.md` in its own folder and to append learnings back into itself.
-// Pointed at a source folder, a test agent edits the thing under test. Pointed at a run
-// folder, it writes into a throwaway.
+// Why this exists: the skills file tells an agent to write findings back into
+// itself and to create mmpro-user-context.md beside it. Pointed at the real
+// mmpro-skills/ folder, an agent edits the thing under test. Pointed at a run
+// folder, it writes into a copy that is recreated before every run.
 //
-// The folders must also be SYMMETRIC. Anything present for one arm and not the other is a
-// variable. That means: exactly two files each, no README, no verify.mjs, and no string
-// telling the agent it is reading a candidate or that a comparison is running.
+// The folders must also be SYMMETRIC. Anything present for one arm and not the
+// other is a variable you did not mean to introduce: no README describing the
+// experiment, no leftover context file, and nothing in the text that tells an
+// agent it is reading a candidate.
+//
+// Usage:
+//   node stage-run-folders.mjs                       # stage mmpro-skills alone
+//   node stage-run-folders.mjs mmpro-skills my-candidate
+//
+// Each named folder is copied to <name>-run.
 
+import { readFileSync, writeFileSync, rmSync, mkdirSync, readdirSync, existsSync, statSync } from 'node:fs';
+import { join } from 'node:path';
 import { AI_CONNECTOR } from './config.mjs';
-import { readFileSync, writeFileSync, rmSync, mkdirSync, readdirSync } from 'node:fs';
-import * as fs from 'node:fs';
 
-const BASE = AI_CONNECTOR + '/';
-const CORE = 'mega-menu-pro-skills.md';
-const REF = 'mega-menu-pro-skills-reference.md';
-// v1 is now a small entry file plus a build file plus the reference. v2 is
-// unchanged (two files); it is a decided negative result and is not being
-// developed further, so parity is deliberately broken here.
-const BUILD = 'mega-menu-pro-skills-build.md';
+const args = process.argv.slice(2);
+const sources = args.length ? args : ['mmpro-skills'];
 
-// [source folder, run folder, text substitutions applied to the copy]
-const ARMS = [
-  ['mmpro-skills', 'mmpro-skills-v1-run', []],
-  ['mmpro-skills-v2', 'mmpro-skills-v2-run', [
-    ['# AI Skills Reference (v2 candidate)', '# AI Skills Reference'],
-    ['# AI Skills Reference — Lookup Companion (v2 candidate)', '# AI Skills Reference — Lookup Companion'],
-    // Keeps the rationale, drops the "this replaced X" framing that reveals a predecessor.
-    [`The rule this replaced was "re-read all 1,383 lines before any edit". That rule existed for a real
-reason: agents read the skills once, then drift back onto general web-development instinct as a
-session runs, and start guessing facts they had already been told. Reading once was demonstrably not
-enough, and the full re-read is what stopped it.`,
-     `You re-ground yourself in this file before every mutation, and that requirement exists for a real
-reason: agents read the skills once, then drift back onto general web-development instinct as a
-session runs, and start guessing facts they had already been told. Reading once is demonstrably not
-enough. Re-grounding is what stops it.`],
-  ]],
-];
+// Anything that would tell an agent it is being tested rather than used.
+const LEAKS = [/\(v\d+ candidate\)/i, /\bA\/B\b/, /\bArm [AB]\b/, /candidate, not in use/i];
 
-// Any of these surviving into a run folder would tell the agent it is being tested.
-const LEAKS = [/v2 candidate/i, /\bA\/B\b/, /\bArm [AB]\b/, /mmpro-skills-v2/];
+// Strip a parenthetical version marker from a heading, e.g.
+// "# AI Skills Reference (v2 candidate)" -> "# AI Skills Reference".
+const neutralise = (text) => text.replace(/^(#{1,3} .*?)\s*\(v\d+ candidate\)\s*$/gim, '$1');
 
-for (const [src, run, subs] of ARMS) {
-  // Delete the FILES, not the directory. OneDrive keeps a handle on synced
-  // folders and rmSync on the directory itself intermittently throws EPERM,
-  // which silently leaves the previous run's files in place.
-  mkdirSync(BASE + run, { recursive: true });
-  for (const f of readdirSync(BASE + run)) rmSync(BASE + run + "/" + f, { recursive: true, force: true });
+for (const src of sources) {
+  const from = join(AI_CONNECTOR, src);
+  const to = join(AI_CONNECTOR, `${src}-run`);
 
-  const files = fs.existsSync(BASE + src + '/' + BUILD) ? [CORE, REF, BUILD] : [CORE, REF];
-  for (const file of files) {
-    let text = readFileSync(BASE + src + '/' + file, 'utf8');
-    for (const [from, to] of subs) {
-      // Only the substitutions belonging to this file will match; that is expected.
-      if (text.includes(from)) text = text.split(from).join(to);
-    }
-    for (const re of LEAKS) {
-      const hit = text.match(re);
-      if (hit) throw new Error(`${run}/${file}: leaked "${hit[0]}" — neutralise it in ARMS`);
-    }
-    writeFileSync(BASE + run + '/' + file, text);
+  if (!existsSync(from) || !statSync(from).isDirectory()) {
+    throw new Error(`no such skills folder: ${from}`);
   }
 
-  const got = readdirSync(BASE + run);
-  if (got.length !== files.length) throw new Error(`${run}: expected ${files.length} files, found ${got.join(', ')}`);
-  console.log(`${run.padEnd(20)} <- ${src.padEnd(16)} ${got.join(', ')}`);
+  // Delete the FILES, not the directory. Cloud-synced folders (OneDrive and the
+  // like) hold a handle on the directory and rmSync on it throws EPERM
+  // intermittently, which silently leaves the previous run's files in place.
+  mkdirSync(to, { recursive: true });
+  for (const f of readdirSync(to)) rmSync(join(to, f), { recursive: true, force: true });
+
+  const files = readdirSync(from).filter((f) => f.endsWith('.md'));
+  if (!files.length) throw new Error(`${src}: no markdown files to stage`);
+
+  for (const file of files) {
+    const text = neutralise(readFileSync(join(from, file), 'utf8'));
+    for (const re of LEAKS) {
+      const hit = text.match(re);
+      if (hit) throw new Error(`${src}-run/${file}: leaked "${hit[0]}"; neutralise it before staging`);
+    }
+    writeFileSync(join(to, file), text);
+  }
+
+  const got = readdirSync(to);
+  if (got.length !== files.length) {
+    throw new Error(`${src}-run: expected ${files.length} files, found ${got.join(', ')}`);
+  }
+  console.log(`${(src + '-run').padEnd(24)} <- ${src.padEnd(18)} ${got.join(', ')}`);
 }
 
-console.log('\nboth arms staged and symmetric.');
+if (sources.length > 1) {
+  const counts = sources.map((s) => readdirSync(join(AI_CONNECTOR, `${s}-run`)).length);
+  if (new Set(counts).size !== 1) {
+    throw new Error(`arms are asymmetric: ${sources.map((s, i) => `${s}=${counts[i]}`).join(', ')}`);
+  }
+  console.log('\nall arms staged and symmetric.');
+}

@@ -1,0 +1,3 @@
+# Run folders staged by tools/skills-eval/stage-run-folders.mjs. Derived from
+# the skills sources on demand; committing them creates copies that drift.
+ai-connector/*-run/
