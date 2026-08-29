@@ -16,7 +16,7 @@ The AI Connector lets you control **Mega Menu Pro + Header Builder** through a c
 
 | Agent | How to get it |
 |---|---|
-| [Claude Code](https://docs.anthropic.com/en/claude-code/getting-started) | VS Code / JetBrains extension, or CLI — use **Opus 4.8 or later** for best design output |
+| [Claude Code](https://docs.anthropic.com/en/claude-code/getting-started) | VS Code / JetBrains extension, or CLI — use **Opus 5 or later** for best design output |
 | [Cursor](https://www.cursor.com) | Standalone AI IDE with built-in agent mode |
 | [OpenAI Codex](https://openai.com/codex) | CLI agent |
 
