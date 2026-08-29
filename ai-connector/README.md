@@ -60,7 +60,7 @@ component prop docs in `components/`, with no manual download needed:
 
 | File | What it is |
 | --- | --- |
-| `mega-menu-pro-skills.md` | the entry point, short by design |
+| `mega-menu-pro-skills.md` | the file you point your agent at, short by design |
 | `mega-menu-pro-skills-build.md` | the full workflow, read when building |
 | `mega-menu-pro-skills-reference.md` | prop tables and lookups |
 
@@ -76,8 +76,8 @@ npx mmpro-agentic-skills-etch --force
 **Prefer a manual download?** [Download this repository](https://github.com/udoro/MMPro-Etch-Docs/archive/refs/heads/main.zip)
 and point your agent at `ai-connector/mmpro-skills/mega-menu-pro-skills.md`.
 
-Keep the `mmpro-skills` folder intact. The entry file is short on purpose and reads its two
-companions when it needs them. The `components/` folder is optional: without it the skills fall back
+Keep the `mmpro-skills` folder intact. `mega-menu-pro-skills.md` is short on purpose and reads the
+other two files when it needs them. The `components/` folder is optional: without it the skills fall back
 to fetching the same docs from this site.
 
 ### Step 3 — Connect
