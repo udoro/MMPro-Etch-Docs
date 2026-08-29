@@ -97,6 +97,11 @@ component** and treat live as authoritative for it.
 
 ### Running a script
 
+**Make yourself a working subdirectory** and keep every temporary script in it, then delete the
+directory when you are done. A shared working directory may hold other people's files, and a bare
+filename lands wherever the current directory happens to be, which on a workspace holding several
+projects is routinely the wrong repo.
+
 Write the script to a file with your file-writing tool, never a shell heredoc, then:
 
 ```

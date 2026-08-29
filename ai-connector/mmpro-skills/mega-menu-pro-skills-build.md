@@ -93,7 +93,16 @@ Before invoking any file editing or code generation tools, you must present the 
 * If a visual asset or screenshot is provided, you must explicitly state how you intend to match it and ask if existing layout content must be cleared first.
 * **Base class name approval (mandatory):** If the task requires choosing a new base CSS class name — building a new mega menu from scratch, or renaming an existing panel's class family without the user specifying the target name — you must ask the user what they want it called before writing any code. You may suggest 2–3 reasonable options, but the user must explicitly approve a suggestion or provide their own name. Never invent and apply a base class name unilaterally.
 * **Ambiguous-phrase resolution (mandatory when building from a free-form design/behavior brief):** Before writing any code, read the brief once specifically looking for phrases with more than one plausible technical reading — not just the (a)/(b) structural choice above. A vague sizing/width phrase, an unstated default/initial state, or two similarly-worded requirements that may or may not map to the same underlying control are all common shapes this takes. **Do not silently pick an interpretation and move on** — resolving that translation is the agent's job, not something a natural-language brief can be expected to spell out. List every such phrase you find and resolve them in the **same single `AskUserQuestion` batch** as the (a)/(b) structural choice and base-class-name approval above — one combined ask, not a drip of follow-ups.
-* **The Backup Invariant (Strictly Mandatory for Option B):** If option (b) is selected, you are strictly forbidden from running any destructive code until you generate a temporary script, execute the snippet below via the connector, and save the returned JSON payload to a local backup file (`dwc-header-backup.json`):
+* **The Backup Invariant (Strictly Mandatory for Option B):** If option (b) is selected, you are strictly forbidden from running any destructive code until you generate a temporary script, execute the snippet below via the connector, and save the returned JSON payload to a backup file.
+
+  **Write it inside the working subdirectory you created for this task, and tell the user the full
+  path.** The payload is around 600KB. Given a bare filename it lands in whatever directory happens to
+  be current, which on a workspace holding several projects is routinely the wrong repo. Name it for
+  the task rather than `dwc-header-backup.json`, so a second run cannot overwrite the first one's
+  backup without either of you noticing.
+
+  This is the only copy of what you are about to destroy, so it is also the one temporary file you do
+  **not** delete during cleanup. State where you left it in your final report.
   ```js
   const headerBlock = findBlock(etch.blocks.getTree(), compId('DWC Header'));
   return etch.blocks.copy(headerBlock.id); 
@@ -158,7 +167,7 @@ install-local, and three of the five placeholders in older copies are wrong on a
 
    **STEP 2: MANDATORY CLI RUN & DECLARATION** 
 You MUST run the temporary file via your terminal tools before generating any output code:
-`npx @digital-gravy/etch-connector eval -t "[your-active-tab-name]" -f inspect-schema.js`
+`npx @digital-gravy/etch-connector eval -t "[your-active-tab-name]" -f "C:/absolute/path/to/your-task-dir/inspect-schema.js"`
 
 Once executed, you MUST explicitly type out this exact declaration in the chat window using the real terminal output data before proceeding:
 "I have read the live schema for ID [insert ID]. The existing props are: [list relevant props found]. There is/is not a native prop for this request." 
