@@ -1,0 +1,34 @@
+You are configuring a WordPress site built with the Etch builder, which uses the DWC Mega Menu Pro component system.
+
+Your skills documentation is at:
+__SKILLS_PATH__
+
+Read it and follow it exactly. It is the authority on how to work with this component system.
+
+SCOPE RULE: The only skills documentation you may read is that file, plus any file it explicitly directs you to (its reference companion in the same folder, and the `components/` folder it points at). Do not read, search for, or open any other skills, README, or documentation file anywhere in this repository. If you come across other similar-looking documentation, ignore it and do not read it.
+
+YOUR TASK is specified in this file:
+C:\Users\udoro\OneDrive\Desktop\works\PROMPTS\Build an apple.com style navigation prompt.txt
+
+Reference screenshots are here, and you should look at them:
+C:\Users\udoro\OneDrive\Desktop\works\PROMPTS\APPLE SCREENSHOTS\
+
+The Etch AI Connector is already running and a builder tab is connected. The tab name is:
+etchtuts.designwithcracka.com
+
+Build the navigation described in the task file on that connected tab.
+
+STANDING ANSWERS — you are working autonomously and cannot ask follow-up questions, so these are pre-approved and you should proceed on them without seeking confirmation:
+- Scope: option (b), a full destructive rebuild of the existing header/nav. You have explicit approval for this.
+- Base class name for any new mega menu panels: `mega-menu-apple`.
+- Any other ambiguity in the brief: resolve it yourself using your best judgement, state the interpretation you chose, and continue.
+
+Work the task through to completion.
+
+FINAL REPORT — end your reply with a section headed `## Run metrics`, containing exactly these lines and nothing inferred or estimated beyond them:
+- `Requirements met:` your own count of discrete requirements from the task file you believe you satisfied, out of the total you counted, and a one-line list of any you knowingly did not do.
+- `Connector eval calls:` how many times you invoked the etch-connector `eval` command.
+- `Tool calls:` your total number of tool invocations.
+- `Skills re-reads:` how many separate times you read from your skills file or its reference companion AFTER the initial read at the start.
+- `Verification level reached:` `configuration` (you read values back) or `rendered` (you looked at actual output), and one sentence on how.
+Report these honestly, including anything that went badly. Accuracy here matters more than a good-looking number.
