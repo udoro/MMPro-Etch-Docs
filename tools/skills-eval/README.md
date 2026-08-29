@@ -135,13 +135,14 @@ live install always wins.
 
 ## Cleaning a component export
 
-`legacy-audit.mjs` lists stored values on blocks that no component declares any
-more. `clean-export.mjs` removes them from the demo content inside an export,
-and `verify-clean.mjs` proves the result differs from the original **only** by
-removals, with nothing added or altered.
+`clean-export.mjs` removes stored values from the demo content inside an export
+when no component declares them any more. Run it without `--write` first: it
+lists exactly what it would remove and changes nothing. `verify-clean.mjs` then
+proves the result differs from the original **only** by removals, with nothing
+added or altered.
 
 ```sh
-node legacy-audit.mjs "<export>.json" audit-baseline.json
+node clean-export.mjs "<export>.json"                                # dry run
 node clean-export.mjs "<export>.json" --write "<export>-clean.json"
 node verify-clean.mjs "<export>.json" "<export>-clean.json"
 ```
