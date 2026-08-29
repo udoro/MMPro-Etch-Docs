@@ -55,9 +55,17 @@ The Skills Package teaches your AI agent how Mega Menu Pro works.
 npx mmpro-agentic-skills-etch
 ```
 
-The agent will run the command, which installs `mmpro-skills/mega-menu-pro-skills.md`, its lookup-only reference-file companion, and the
-full component prop docs in `components/` — all working together, with no manual download needed. Point
-your agent at `mmpro-skills/mega-menu-pro-skills.md` to load it.
+The agent will run the command, which installs three skills files into `mmpro-skills/` plus the full
+component prop docs in `components/`, with no manual download needed:
+
+| File | What it is |
+| --- | --- |
+| `mega-menu-pro-skills.md` | the entry point, short by design |
+| `mega-menu-pro-skills-build.md` | the full workflow, read when building |
+| `mega-menu-pro-skills-reference.md` | prop tables and lookups |
+
+Point your agent at `mmpro-skills/mega-menu-pro-skills.md`. It reads the others when it needs them,
+so a small change no longer costs a full read of the documentation.
 
 **Already have files installed and want to update them?** Paste this into the chat instead:
 
@@ -66,10 +74,11 @@ npx mmpro-agentic-skills-etch --force
 ```
 
 **Prefer a manual download?** [Download this repository](https://github.com/udoro/MMPro-Etch-Docs/archive/refs/heads/main.zip)
-and point your agent at `ai-connector/mmpro-skills/mega-menu-pro-skills.md`, or browse to the
-[`mmpro-skills` folder](https://github.com/udoro/MMPro-Etch-Docs/tree/main/ai-connector/mmpro-skills) for
-just the skills file on its own — it still works without the local `components/` folder, falling back to
-fetching the same docs from this live GitBook site when it needs them.
+and point your agent at `ai-connector/mmpro-skills/mega-menu-pro-skills.md`.
+
+**Take all three files from the [`mmpro-skills` folder](https://github.com/udoro/MMPro-Etch-Docs/tree/main/ai-connector/mmpro-skills), not just the entry file.**
+On its own the entry file points at companions you would not have. The local `components/` folder is
+optional: without it the skills fall back to fetching the same docs from this GitBook site.
 
 ### Step 3 — Connect
 
