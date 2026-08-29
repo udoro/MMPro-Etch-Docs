@@ -1,6 +1,10 @@
 {
-  "generated": "2026-08-22",
+  "generated": "2026-08-29",
   "skills": [
+    {
+      "repo": "ai-connector/mmpro-skills/mega-menu-pro-skills-build.md",
+      "out": "mmpro-skills/mega-menu-pro-skills-build.md"
+    },
     {
       "repo": "ai-connector/mmpro-skills/mega-menu-pro-skills-reference.md",
       "out": "mmpro-skills/mega-menu-pro-skills-reference.md"
@@ -8,10 +12,6 @@
     {
       "repo": "ai-connector/mmpro-skills/mega-menu-pro-skills.md",
       "out": "mmpro-skills/mega-menu-pro-skills.md"
-    },
-    {
-      "repo": "ai-connector/mmpro-skills/mega-menu-pro-skills-build.md",
-      "out": "mmpro-skills/mega-menu-pro-skills-build.md"
     }
   ],
   "components": [
