@@ -8,6 +8,10 @@
     {
       "repo": "ai-connector/mmpro-skills/mega-menu-pro-skills.md",
       "out": "mmpro-skills/mega-menu-pro-skills.md"
+    },
+    {
+      "repo": "ai-connector/mmpro-skills/mega-menu-pro-skills-build.md",
+      "out": "mmpro-skills/mega-menu-pro-skills-build.md"
     }
   ],
   "components": [

@@ -6,6 +6,24 @@ icon: arrows-retweet
 
 > Update Mega Menu Pro + Header Builder using the [Updater](https://etch.designwithcracka.com/mmpro-updater/).
 
+## Version 1.2.2 - August 29, 2026
+
+_Update path from v1.2.1: CSS & Component_
+
+### Fixes
+
+* **Hover underline appeared on the last-item CTA in Safari and on iOS.** The button picked up an underline on hover that it should not have. Desktop Chrome, Edge and Firefox were unaffected.
+* General bug fixes and refinements.
+
+### AI Skills
+
+* The skills documentation is now a short entry file that routes to a full build reference, so a small correction to existing work no longer requires reading the whole document.
+* Agents check their work against the published page in their own headless browser, so they catch what only shows up once a page renders instead of reporting a change as done because the setting saved.
+* Added a complete reference of every setting and the exact values each one accepts. Agents check it against the version installed on your site before using it, so they no longer guess a setting name or spend time looking one up.
+* Agents now identify the DWC components correctly on every site. Previously they could act on the wrong ones, which was most likely on a site that had been updated from an older version.
+
+***
+
 ## Version 1.2.1 - August 14, 2026
 
 _Update path from v1.2: CSS & Component_

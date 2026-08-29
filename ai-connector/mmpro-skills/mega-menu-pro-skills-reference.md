@@ -13,224 +13,232 @@ is unchanged from the main file except where noted.
 
 ## 4. Prop reference
 
-> **Full reference (local, preferred):** this section is a quick-lookup summary. For exhaustive prop
-> descriptions, full slot documentation, and per-component examples, read this repo's `components/`
-> folder (`../../components/dwc-header.md`, `dwc-nav.md`, `dwc-dropdown.md`, `dwc-menu-item.md`,
-> `dwc-mobile-toggle.md`, relative to this file) — same props as below, with the prose this table omits.
-> **Not present if you only downloaded the `mmpro-skills` folder on its own** — it's the same folder
-> the live GitBook site's "Components" pages are published from, kept single-source there rather than
-> duplicated here. If it's missing, use the online reference below instead.
->
-> **Full reference (online):** if the local docs aren't available or don't cover a setting, read the
-> official docs at <https://design-with-cracka.gitbook.io/megamenupro> (per-component pages: DWC
-> Header, DWC Nav, DWC Dropdown, DWC Menu Item, DWC Mobile Toggle). Cross-component exceptions (e.g.
-> CTA/`lastItemIsButton` styling is DWC Menu Item-only) are in Section 6 (in the main file).
+Every settable prop on all five components. Generated from the Etch component export, so it matches
+the components the plugin ships. Do not hand-edit the generated block.
 
-### DWC Header (componentId 1302)
+**Reading the tables**
 
-| Prop key                                | Group        | CSS variable                 | Notes                                                                               |
-| --------------------------------------- | ------------ | ---------------------------- | ----------------------------------------------------------------------------------- |
-| `headerBackgroundColor`                 | top          | `--header-bg`                | Base header background                                                              |
-| `headerBlur`                            | top          | `--header-blur`              | Backdrop-filter blur on the header (frosted glass header bar). Default: `10px`      |
-| `darkBackgroundPreview`                 | top          | —                            | Builder only. Darkens canvas for white-item testing                                 |
-| `sticky.stickyHeader`                   | sticky       | —                            | Enables sticky. Add `data-no-sticky` to a section to disable per-page               |
-| `sticky.scrollDownVisibility`           | sticky       | —                            | hide-row-1/2/3, show-row-1/2/3, hide-all-rows, Default                              |
-| `sticky.scrollUpVisibility`             | sticky       | —                            | reverse, show-row-1/2/3, show-all-rows, Default                                     |
-| `sticky.scrollVisibilityDistance`       | sticky       | —                            | Scroll threshold. Supports px, rem, or plain number. Default: `200px`               |
-| `sticky.specialStickyOverlayStyles`     | sticky       | —                            | Unlocks special CSS hooks in all five style entries                                 |
-| `sticky.stickyHeaderBackground`         | sticky       | `--header-bg-sticky`         | Also auto-syncs `--overlay-header-bg` when scrolled. **Prop-driven → `!important`** |
-| `sticky.scrollMargin`                   | sticky       | `--dwc-scroll-margin`        | Anchor link offset. Default: `var(--dwc-header-div-height)`                         |
-| `overlay.overlayHeader`                 | overlay      | —                            | Floats header over content. Add `data-no-overlay` to disable per-page               |
-| `overlay.overlayHeaderMobile`           | overlay      | —                            | Extends overlay to mobile                                                           |
-| `overlay.overlayHeaderWidth`            | overlay      | `--overlay-header-width`     | Width of overlay container                                                          |
-| `overlay.overlayHeaderBackground`       | overlay      | `--overlay-header-bg`        | Default (unscrolled) bg. **Prop-driven → `!important`**                             |
-| `overlay.overlayHeaderActiveBackground` | overlay      | `--overlay-header-bg-active` | Bg when user hovers a nav item or dropdown opens. **Prop-driven → `!important`**    |
-| `overlay.overlayHeaderRadius`           | overlay      | `--overlay-header-radius`    | Border radius                                                                       |
-| `overlay.overlayHeaderInset`            | overlay      | `--overlay-header-inset`     | Offset from viewport edges                                                          |
-| `overlay.removeInsetTop`                | overlay      | —                            | Removes top gap                                                                     |
-| `overlay.overlayHeaderShadow`           | overlay      | `--overlay-header-shadow`    | Box shadow                                                                          |
-| `overlay.offsetSectionPadding`          | overlay      | —                            | Adds top padding to first section. Add `data-no-padding` to opt out                 |
-| `accessibilty.skipLink`                 | accessibilty | —                            | Select: Enable / Disable                                                            |
-| `accessibilty.customSkipLinkParameter`  | accessibilty | —                            | Format: `#selector \| Label`. Multiple: comma-separated. No ID? Use `main \| Label` |
+* **Path** is what you set, always fully flattened, e.g. `props.general.appearance`.
+* **Panel section headings are not path segments.** Etch's settings panel groups fields visually and
+  that grouping is not the API shape. Inside DWC Dropdown's single "General" panel section, **Text**
+  is `props.text` while **Appearance** is `props.general.appearance`. Nothing on screen
+  distinguishes them. Take the path from this table, never from a heading in `components/`.
+* **Paths are unique within a component, not across them.** `dropdownTriggerMode` is top-level on
+  DWC Dropdown and `interactionUx.dropdownTriggerMode` on DWC Nav.
+* **Attribute** is the `data-*` the prop writes onto the element, and is ground truth when a prop
+  and the rendered DOM disagree. `style only` means it writes no attribute.
+* **Default** is the component's own default. **Never set a prop to its default value.**
+* **Values** shows select options as `Label : stored-value` where the two differ. **Store the
+  right-hand side.** `Expand Down (from Header) : expand down` stores `expand down`.
+* **Shown when** records the panel condition. It affects only whether Etch displays the field.
+* **No component IDs appear here, deliberately.** They are install-local. Always resolve by name.
 
-### DWC Nav (componentId 1300)
+<!-- GENERATED:PROPS start -->
 
-| Prop key                                            | Group         | Notes                                                                                                                                                                                                                                                        |
-| --------------------------------------------------- | ------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `primaryColor`                                      | top           | CSS `--primary-clr` globally                                                                                                                                                                                                                                 |
-| `animation.stripeStyle`                             | animation     | Frontend only, no builder preview. **Mutually exclusive with adaptiveHeight**                                                                                                                                                                                |
-| `animation.adaptiveHeight`                          | animation     | Frontend only, no builder preview. **Mutually exclusive with stripeStyle**                                                                                                                                                                                   |
-| `animation.animateAdaptiveContent`                  | animation     | Only when adaptiveHeight is on                                                                                                                                                                                                                               |
-| `menuMode.offcanvasMode`                            | menuMode      | Sidebar on all viewports                                                                                                                                                                                                                                     |
-| `menuMode.flyoutOffcanvas`                          | menuMode      | Desktop-like flyout in offcanvas mode                                                                                                                                                                                                                        |
-| `menuMode.flyoutOnHover`                            | menuMode      | Hover opens dropdowns in offcanvas on desktop                                                                                                                                                                                                                |
-| `menuMode.lastItemIsButton`                         | menuMode      | Select: `false` / `true` (1 CTA) / `true-2` / `true-3`. **CTA-button styling only applies to DWC *Menu Item* last items — NOT to icon/button-appearance DWC Dropdowns.** Each CTA position has its **own independent variable set** in `.dwc-top-level-items-vars` — `--menu-cta-*` (last), `--menu-cta-2-*` (second-to-last), `--menu-cta-3-*` (third-to-last) — so two or three buttons can be styled completely differently (e.g. filled vs outlined) using only CSS vars. Never use the tuts stylesheet to differentiate CTA buttons. For trailing icon dropdowns this prop does nothing but enable `nonButtonItemsAlignment`; do not use it to right-align them (that's default). |
-| `menuMode.nonButtonItemsAlignment`                  | menuMode      | Stored values: `left` / `center` (lowercase — `Left` silently fails). Needs `lastItemIsButton` set. **⚠ Condition-nested prop** — lives inside the `lastItem` condition inside `menuMode`; a shallow `menuMode.properties` read misses it. Use a recursive schema search to discover it. Trailing icon-appearance dropdowns are right-aligned by default regardless.                                                                                                     |
-| `mobile.previewMobileMenu`                          | mobile        | Builder preview only (renamed from openMobileMenu)                                                                                                                                                                                                           |
-| `mobile.mobileBreakpoint`                           | mobile        | Default: `1200px`                                                                                                                                                                                                                                            |
-| `mobile.mobileMenuWidth`                            | mobile        | Width of sidebar panel                                                                                                                                                                                                                                       |
-| `mobile.mobileMenuBackground`                       | mobile        | Panel background                                                                                                                                                                                                                                             |
-| `mobile.slideInDirection`                           | mobile        | Right / Left / Top / Expand Down / Bottom / Right Top / Right Bottom                                                                                                                                                                                         |
-| `mobile.submenuReveal`                              | mobile        | Slide in / Expand                                                                                                                                                                                                                                            |
-| `mobile.submenuSlideExtras.submenuSlideoutDistance` | mobile        | **If < 100%, must set opacity to 0 to fully hide parent**                                                                                                                                                                                                    |
-| `mobile.submenuSlideExtras.submenuSlideoutOpacity`  | mobile        | Whether parent fades as it slides away                                                                                                                                                                                                                       |
-| `mobile.submenuSlideExtras.fadeItemsOnSlide`        | mobile        | Fades menu items during slide                                                                                                                                                                                                                                |
-| `mobile.mobileOffcanvasMenuSpeed`                   | mobile        | Animation speed multiplier                                                                                                                                                                                                                                   |
-| `mobile.fullscreenMobileMenu`                       | mobile        | Opens above header (fullscreen)                                                                                                                                                                                                                              |
-| `mobile.mobileTopBackground`                        | mobile        | Topbar bg — only when fullscreen ON or transparent mobile top OFF                                                                                                                                                                                            |
-| `mobile.transparentMobileTop`                       | mobile        | Only available when fullscreen is OFF                                                                                                                                                                                                                        |
-| `mobile.hideBackText`                               | mobile        | Back icon only, no text                                                                                                                                                                                                                                      |
-| `mobile.backTextMode`                               | mobile        | `back-to` = "Back to \[Parent]" / `title` = current dropdown name                                                                                                                                                                                            |
-| `mobile.backToHomeMenuText`                         | mobile        | Root-level "back to" text (back-to mode only). Default: `Main Menu`                                                                                                                                                                                          |
-| `mobile.removeMenuItemBorders`                      | mobile        | Strips divider lines in mobile menu                                                                                                                                                                                                                          |
-| `dropdown.dropdownContentShadow`                    | dropdown      | Box shadow on all panels                                                                                                                                                                                                                                     |
-| `dropdown.dropdownContentRadius`                    | dropdown      | Border radius on panels. Default: `0rem`                                                                                                                                                                                                                     |
-| `dropdown.blendOpenDropdowns`                       | dropdown      | Removes border radius between adjacent open dropdowns                                                                                                                                                                                                        |
-| `dropdown.dropdownContentBorderSize`                | dropdown      | Border thickness                                                                                                                                                                                                                                             |
-| `dropdown.dropdownContentBorderColor`               | dropdown      | Border colour                                                                                                                                                                                                                                                |
-| `dropdown.globalNestedDropdownWidth`                | dropdown      | Default flyout width. Overridden per-dropdown                                                                                                                                                                                                                |
-| `dropdown.globalMegaMenuWidth`                      | dropdown      | Default mega menu width. Accepts CSS value, CSS var, **class name**, or **element ID** (resolves that element's width). For full-width, use **`#dwc-header`** (or the `header` tag) — it matches the header exactly. **Never `100vw`/`%`**: `100vw` includes the scrollbar width → horizontal overflow; `%` resolves relative to the parent nav item. Fixed values like `1200px` are also fine. ⚠ **Overlay header caveat:** when `overlay.overlayHeader` is enabled with a constrained width (not full-width), `#dwc-header` resolves to the full viewport width — NOT the constrained header width. The constrained width is applied to the inner wrap, not the outer header element. Use **`.dwc-nest-header`** instead — this is always the selector for the header inner wrap and correctly resolves to the overlay-constrained width. |
-| `dropdown.globalInnerWidth`                         | dropdown      | Max inner content width inside mega menus                                                                                                                                                                                                                    |
-| `dropdown.dropdownVerticalAlignment`                | dropdown      | CSS selector — aligns dropdown top to the bottom of that element. Default: `.dwc-nest-header`                                                                                                                                                                |
-| `dropdown.dropdownOffsetGap`                        | dropdown      | Gap between nav bar and top-level dropdown panels                                                                                                                                                                                                            |
-| `dropdown.nestedDropdownOffsetGap`                  | dropdown      | Gap between nestable parent item and its flyout panel. **Prop-driven → `!important`**                                                                                                                                                                        |
-| `dropdown.caret`                                    | dropdown      | Small pointer beneath active nav item                                                                                                                                                                                                                        |
-| `dropdown.arrowVisibilty`                           | dropdown      | Default / Hide / Hide on Mobile / Hide on Desktop                                                                                                                                                                                                            |
-| `interactionUx.dropdownTriggerMode`                 | interactionUx | Global trigger: Hover or Click / Hover only / Click only                                                                                                                                                                                                     |
-| `interactionUx.nestedDropdownActiveOverlay`         | interactionUx | Dims parent content when nested opens                                                                                                                                                                                                                        |
-| `interactionUx.nestedDropdownActiveOverlayColor`    | interactionUx | Colour and opacity of the dim overlay when a nested dropdown opens                                                                                                                                                                                           |
-| `interactionUx.nestedDropdownInactiveBlur`          | interactionUx | Blurs inactive parent dropdown content while a nested panel is open                                                                                                                                                                                          |
-| `interactionUx.parentRelativeNestedDropdown`        | interactionUx | Positions nested panels relative to parent item                                                                                                                                                                                                              |
-| `interactionUx.menuItemHoverEffect`                 | interactionUx | Default / Text Roll (desktop only)                                                                                                                                                                                                                           |
-| `backdrop.hideNavBackdrop`                          | backdrop      | Removes the overlay that appears when dropdown content opens                                                                                                                                                                                                 |
-| `backdrop.navBackdropBlur`                          | backdrop      | Blur intensity of the scrim that appears over the page when dropdowns open                                                                                                                                                                                   |
-| `backdrop.navBackdropBackgroundColor`               | backdrop      | Colour and opacity of the scrim that appears over the page when dropdowns open                                                                                                                                                                               |
-| `logo.centeredLogo`                                 | logo          | Splits items either side of logo                                                                                                                                                                                                                             |
-| `logo.centerGuide`                                  | logo          | Debug visual guide (admin only)                                                                                                                                                                                                                              |
-| `logo.mobileLogoSize`                               | logo          | Logo size in mobile menu                                                                                                                                                                                                                                     |
-| `logo.hideMobileLogoInFullscreenMode`               | logo          | Hides logo when fullscreen menu active                                                                                                                                                                                                                       |
-| `buffer.dropdownBufferHeight`                       | buffer        | Invisible hover bridge below nav bar (prevents accidental dropdown close)                                                                                                                                                                                    |
-| `buffer.nestedDropdownBufferWidth`                  | buffer        | Invisible hover bridge beside nested panels                                                                                                                                                                                                                  |
-| `buffer.previewBufferZone`                          | buffer        | Builder only — padding so dropdowns show fully in canvas                                                                                                                                                                                                     |
+*Generated from Mega Menu Pro **1.2.2**. Paths, defaults and select values are properties of
+the plugin version, identical on every install of it. Component IDs are install-local and are
+deliberately absent: always resolve them by name.*
 
-### DWC Dropdown (componentId 1299)
+#### Schema fingerprints — check these before trusting the tables below
 
-| Prop key                            | Notes                                                                                                                                                                               |
-| ----------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `text`                              | Toggle button label                                                                                                                                                                 |
-| `linkParentItem`                    | Makes the parent item itself a link. Label renders as `<a class="dwc-dropdown-parent-link">` instead of `<span>`: the text navigates, the chevron opens the panel. All trigger modes, desktop + mobile |
-| `url`                               | Destination for the linked parent. **Flat key — `props.url`, NOT `rgbb061.url`** — the builder UI nests it under a "Link" condition group, but conditions add no path segment (only groups do). `#` (the default) keeps ordinary toggle behaviour |
-| `dropdownTriggerMode`               | Per-item override: both / hover / click                                                                                                                                             |
-| `inBuilder.keepOpen`                | Builder only — keeps panel open for styling                                                                                                                                         |
-| `nestedDropdown.width`              | Panel width (overrides global nested width)                                                                                                                                         |
-| `nestedDropdown.equalHeights`       | Forces all columns to same height                                                                                                                                                   |
-| `nestedDropdown.excludeEqualHeight` | Excludes block from equal-height calc                                                                                                                                               |
-| `nestedDropdown.parentRelative`     | Panel relative to toggle item, not full nav bar                                                                                                                                     |
-| `megaMenu.enable`                   | Switches to full-width mega menu layout. Stored as `"{true}"`/`"{false}"` string — same as all boolean group props (NOT an actual boolean)                                                                              |
-| `megaMenu.width`                    | Panel width — CSS value, CSS var, class name, or element ID. For full-width use **`#dwc-header`** (or `header` tag). **Never `100vw`/`%`** — `100vw` adds the scrollbar width (horizontal overflow); `%` resolves relative to the parent dropdown item. `1200px` etc. also fine |
-| `megaMenu.innerWidth`               | Max inner content width. Default: `100%`                                                                                                                                            |
-| `megaMenu.breakout`                 | Moves mega menu item into header area on mobile (uses global mobile breakpoint). Stored as `{true}`/`{false}` string                                                                |
+Run the fingerprint check in Section 3 (about 360 bytes returned) and compare per component.
+A match means this table describes the install exactly and you need no schema dump at all.
+A mismatch means the install differs from the version above: **dump only the components that
+disagree**, and treat the live schema as authoritative for those. Do not dump the ones that match.
 
-> **⚠ Common agent mistake — enabling mega menu on an existing dropdown.**
-> `megaMenu` is a **group prop** encoded as a `{{...}}` string. You cannot set sub-keys individually with `setAttribute`. Always read the full group, mutate, and write back:
-> ```js
-> // CORRECT
-> const mm = getGroup(dropdownId, 'megaMenu');
-> mm.enable = '{true}';
-> mm.width  = '#dwc-header';
-> setGroup(dropdownId, 'megaMenu', mm);
-> await etch.saveAsync();
->
-> // WRONG — throws INVALID_ARGUMENT (no prop named "megaMenu.enable" exists)
-> // etch.blocks.setAttribute(dropdownId, 'megaMenu.enable', '{true}');
-> ```
-> For a **new** dropdown block, pass the encoded group in `create()` attributes:
-> ```js
-> // CORRECT — one extra brace layer, same as setGroup. JSON.stringify(obj) already
-> // supplies its own object braces, so wrapping with only a single '{'...'}' gives the
-> // correct total of two braces on each side: '{{"enable":...}}'.
-> attributes: { megaMenu: '{' + JSON.stringify({ enable:'{true}', width:'#dwc-header', breakout:'{false}' }) + '}' }
->
-> // WRONG — do NOT do this. '{{' + JSON.stringify(obj) + '}}' produces THREE braces on
-> // each side (JSON.stringify's own object braces plus two more), which Etch does not
-> // recognize as the group — megaMenu.enable silently never takes effect and the panel
-> // never renders. Confirmed live 2026-07: a batch of 13 new dropdown blocks built with
-> // the triple-brace form all failed to render mega-menu content until re-encoded.
-> // attributes: { megaMenu: '{{' + JSON.stringify({ enable:'{true}', width:'#dwc-header', breakout:'{false}' }) + '}}' }
-> ```
+| Component | Fingerprint |
+| --- | --- |
+| DWC Menu Item | `16:ewqg76` |
+| DWC Dropdown | `22:1y5oqyo` |
+| DWC Nav | `56:1jaftl0` |
+| DWC Mobile Toggle | `26:quzir` |
+| DWC Header | `33:vskoe2` |
 
-| `general.contentAlignment`          | Stored values: `default` / `center` / `left` / `right`                                                                                                                              |
-| `general.visibility`                | Stored values: `Default` / `hide-on-desktop` / `hide-on-mobile` / `hide-on-both`                                                                                                    |
-| `general.appearance`                | Stored values: `default` / `button` / `icon` — **all lowercase**. Using `Icon` or `Button` (capital) silently fails                                                                 |
-| `general.noArrow`                   | Hides chevron. Stored as `{true}`/`{false}` string                                                                                                                                  |
-| `general.useCustomSvg`              | Custom SVG icon. Stored as `{true}`/`{false}` string. Requires "Allow unsafe HTML" in Etch settings                                                                                 |
-| `general.customSvg`                 | Raw SVG string — inject as inline HTML, no encoding needed                                                                                                                          |
-| `general.submenuReveal`             | Stored values: `default` / `expand` / `slide`                                                                                                                                       |
+### DWC Menu Item
 
-#### Styling a dropdown in icon / button appearance — `.dwc-dropdown-items-vars`
+| Prop | Path | Attribute | Default | Values / notes |
+| --- | --- | --- | --- | --- |
+| Open in new tab | `props.openInNewTab` | `data-open-new-tab` | `false` | `true` / `false` |
+| Text | `props.text` | style only | `Link Item` | Shown when `slots.Content.empty` |
+| Link to | `props.linkTo` | `href` | `#` | Shown when `slots.Content.empty` |
+| Text | `props.badge.text` | style only | `none` | Shown when `slots.Content.empty` |
+| Font Size | `props.badge.fontSize` | `style` | `0.75rem` | Shown when `props.badge.text !== "none"` |
+| Color | `props.badge.color` | `style` | `#fff` | Shown when `props.badge.text !== "none"` |
+| Background Color | `props.badge.backgroundColor` | `style` | `#000` | Shown when `props.badge.text !== "none"` |
+| Border Radius | `props.badge.borderRadius` | `style` | `0.5em` | Shown when `props.badge.text !== "none"` |
+| Padding | `props.badge.padding` | `style` | `0.1em 0.5em;` | Shown when `props.badge.text !== "none"` |
+| Gap | `props.badge.gap` | `style` | `1em` | Shown when `props.badge.text !== "none"` |
+| Mode | `props.relocation.mode` | style only | `none` | `none` / `Move to header on mobile : breakout` / `Move to a specific container on mobile : breakinto` / `Move to mobile menu footer : breakin` |
+| Return Breakpoint | `props.relocation.returnBreakpoint` | `data-breakout` |  | Item will move to the header at the Mobile Breakpoint. Set a lower breakpoint where the item returns to the mobile menu, for example, 480. Leave empty to keep the item in the header.. Shown when `props.relocation.mode === "breakout"` |
+| Container Selector \| Breakpoint | `props.relocation.containerSelectorBreakpoint` | `data-breakinto` |  | E.g. #my-div \| 767. NOTE: You can also move any element to any container - add the attribute 'data-breakinto = .container-selector \| breakpoint' to the target element.. Shown when `props.relocation.mode === "breakinto"` |
+| Visibility | `props.general.visibility` | `data-breakpoint-visibility` | `Default` | `Default` / `Hide on Desktop : hide-on-desktop` / `Hide on Mobile : hide-on-mobile` / `Hide on Both (not rendered) : hide-on-both` |
+| Link class | `props.classes.linkClass` | `class` | `dwce-text-link` |  |
+| Styling Classes | `props.classes.stylingClasses` | `class` | *(install-local style ids)* | Shown when `!props.classes` |
 
-A dropdown set to `general.appearance` = `icon` or `button` defaults to a **black pill background with a white glyph**. These values live inside **nested blocks** in `.dwc-dropdown-items-vars` (`&[appearance='icon']` / `&[appearance='button']`), **not** at the root — so `etch.styles.setVariable` can't reach them. Edit the block's CSS instead (read the entry, string-replace inside the target block, `etch.styles.update`):
+### DWC Dropdown
 
-```css
-/* inside .dwc-dropdown-items-vars */
-&[appearance='icon'] > .dwc-submenu-toggle {
-  --menu-item-bg: var(--black, #000);      /* the pill/circle background — transparent for a plain icon */
-  --menu-item-hover-bg: var(--black, #000);
-  --menu-item-clr: var(--white, #fff);
-  --icon-clr: var(--white, #fff);          /* glyph colour (SVG stroke) */
-  --icon-hover-clr: var(--white, #fff);
-  --icon-size: to-rem(14px);               /* glyph size */
-  --button-max-diameter: to-rem(45px);     /* tap-target diameter */
-  --menu-item-radius: 50vw;                /* 50vw = circle */
-}
-/* &[appearance='button'] block uses the same vars; --icon-size: 0 (text, not a glyph) */
-```
+| Prop | Path | Attribute | Default | Values / notes |
+| --- | --- | --- | --- | --- |
+| Text | `props.text` | style only | `Dropdown` |  |
+| Link Parent Item | `props.linkParentItem` | style only | `false` | `true` / `false` |
+| URL | `props.url` | `href` | `#` | Shown when `props.linkParentItem` |
+| Dropdown Trigger Mode | `props.dropdownTriggerMode` | `data-toggle` | `both` | `both` / `hover` / `click` |
+| Keep open | `props.inBuilder.keepOpen` | `data-keep-open` | `false` | `true` / `false` |
+| Width | `props.nestedDropdown.width` | `style` | `inherit` | Shown when `!props.megaMenu.enable` |
+| Equal Heights | `props.nestedDropdown.equalHeights` | `data-equal-dropdown-height` | `false` | `true` / `false`. Shown when `!props.megaMenu.enable` |
+| Exclude Equal Height | `props.nestedDropdown.excludeEqualHeight` | `data-exclude-from-equal-height` | `false` | `true` / `false`. Shown when `!props.megaMenu.enable` |
+| Parent Relative | `props.nestedDropdown.parentRelative` | `data-parent-relative-dropdown` | `false` | `true` / `false`. Shown when `!props.megaMenu.enable` |
+| Enable | `props.megaMenu.enable` | `data-megamenu` | `false` | `true` / `false` |
+| Width | `props.megaMenu.width` | `data-content-width` |  | E.g. 1200px, 100vw, var(--content-width), .class, #ID.. Shown when `props.megaMenu.enable` |
+| Inner Width | `props.megaMenu.innerWidth` | `style` | `inherit` | Mega Menu Content Width. Default is 100%.. Shown when `props.megaMenu.enable` |
+| Breakout | `props.megaMenu.breakout` | `data-breakout-mega` | `false` | `true` / `false`. Shown when `props.megaMenu.enable` |
+| Content Alignment | `props.general.contentAlignment` | `data-content-align` | `default` | `default` / `center` / `left` / `right` |
+| Visibility | `props.general.visibility` | `data-breakpoint-visibility` | `Default` | `Default` / `Hide on Desktop : hide-on-desktop` / `Hide on Mobile : hide-on-mobile` / `Hide on Both (not rendered) : hide-on-both` |
+| Appearance | `props.general.appearance` | `appearance` | `default` | `Default : default` / `Button : button` / `Icon : icon` |
+| No Arrow | `props.general.noArrow` | `data-no-arrow` | `false` | `true` / `false` |
+| Use Custom SVG | `props.general.useCustomSvg` | style only | `false` | `true` / `false` |
+| Custom SVG | `props.general.customSvg` | style only |  | Paste SVG code here. Shown when `props.general.useCustomSvg` |
+| Submenu  Reveal | `props.general.submenuReveal` | `data-submenu-reveal` | `default` | `Default : default` / `Expand : expand` / `Slide : slide` |
+| List item class | `props.classes.listItemClass` | `class` | `dwce-dropdown` |  |
+| Styling Classes | `props.classes.stylingClasses` | `class` | *(install-local style ids)* | Shown when `!props.classes` |
 
-Plain Apple-style icon (no bg, dark glyph): in the **`icon` block only**, set `--menu-item-bg`/`--menu-item-hover-bg` → `transparent` and `--icon-clr`/`--icon-hover-clr` → your dark colour. **Edit only the `icon` block** — the `button` block has identical variable names, so a global replace would hit both. This one change fixes desktop and the breakout icon colour on mobile together.
+### DWC Nav
 
-### DWC Menu Item (componentId 1298)
+| Prop | Path | Attribute | Default | Values / notes |
+| --- | --- | --- | --- | --- |
+| Primary Color | `props.primaryColor` | `style` | `var(--primary, crimson)` |  |
+| Stripe Style | `props.animation.stripeStyle` | `data-stripe-style` | `false` | `true` / `false` |
+| Adaptive Height | `props.animation.adaptiveHeight` | `data-adaptive-height` | `false` | `true` / `false` |
+| - Animate Adaptive Content | `props.animation.animateAdaptiveContent` | `data-animate-adaptive-content` | `false` | `true` / `false`. Shown when `props.animation.adaptiveHeight` |
+| Offcanvas Mode | `props.menuMode.offcanvasMode` | `data-offcanvas` | `false` | `true` / `false` |
+| - Flyout Offcanvas | `props.menuMode.flyoutOffcanvas` | `data-flyout-offcanvas` | `false` | `true` / `false`. Shown when `props.menuMode.offcanvasMode` |
+| - Flyout on Hover | `props.menuMode.flyoutOnHover` | `data-offcanvas-hover` | `false` | `true` / `false`. Shown when `props.menuMode.offcanvasMode` |
+| LAST ITEM is button | `props.menuMode.lastItemIsButton` | `data-last-item-is-button` | `false` | `None : false` / `Last Button : true` / `Last 2 Buttons : true-2` / `Last 3 Buttons : true-3` |
+| -- Non Button Items alignment | `props.menuMode.nonButtonItemsAlignment` | `data-last-item-is-button-alignment` | `Default` | `Default` / `Left : left` / `Center : center`. Shown when `props.menuMode.lastItemIsButton !== "false"` |
+| Preview Mobile Menu | `props.mobile.previewMobileMenu` | `data-open-mobile-menu` | `false` | `true` / `false` |
+| Mobile Breakpoint | `props.mobile.mobileBreakpoint` | `data-mobile-breakpoint` | `1200px` |  |
+| Mobile Menu Width | `props.mobile.mobileMenuWidth` | `style` | `450px` |  |
+| Mobile Menu Background | `props.mobile.mobileMenuBackground` | `style` | `var(--header-bg)` |  |
+| Slide in direction | `props.mobile.slideInDirection` | `data-slide-in-direction` | `right` | `Right : right` / `Left : left` / `Top : top` / `Expand Down (from Header) : expand down` / `Bottom : bottom` / `Right Top : right top` / `Right Bottom : right bottom` |
+| Submenu reveal | `props.mobile.submenuReveal` | `data-submenu-reveal` | `slide` | `Slide in : slide` / `Expand : expand` |
+| Submenu Slideout Distance | `props.mobile.submenuSlideExtras.submenuSlideoutDistance` | `style` | `100%` | Controls how far the submenu slides out of view. Opacity must be set to 0 if this value is less than 100%.. Shown when `props.mobile.submenuReveal !== "expand"` |
+| Submenu Slideout Opacity | `props.mobile.submenuSlideExtras.submenuSlideoutOpacity` | `style` | `1` | Set whether the submenu fades out while sliding away.. Shown when `props.mobile.submenuReveal !== "expand"` |
+| Fade Items on Slide | `props.mobile.submenuSlideExtras.fadeItemsOnSlide` | `data-fade-items-on-slide` | `false` | `true` / `false`. Shown when `props.mobile.submenuReveal !== "expand"` |
+| Mobile/Offcanvas Menu Speed | `props.mobile.mobileOffcanvasMenuSpeed` | `style` | `1.2` |  |
+| Fullscreen Mobile Menu | `props.mobile.fullscreenMobileMenu` | `data-fullscreen-mobile-menu` | `false` | `true` / `false` |
+| Mobile Top background | `props.mobile.mobileTopBackground` | `style` | `var(--header-bg)` | Topbar Background only applied when Fullscreen Mobile Menu is enabled or Transparent Mobile Top is disabled.. Shown when `props.mobile.fullscreenMobileMenu \|\| !props.mobile.transparentMobileTop` |
+| Transparent Mobile Top | `props.mobile.transparentMobileTop` | `data-mobile-top-transparent` | `true` | `true` / `false`. Shown when `!props.mobile.fullscreenMobileMenu` |
+| Hide Back Text | `props.mobile.hideBackText` | `data-hide-back-text` | `false` | `true` / `false` |
+| Back Text Mode | `props.mobile.backTextMode` | `data-back-text-mode` | `back-to` | `Back to : back-to` / `Title : title`. Shown when `!props.mobile.hideBackText` |
+| Back to Home Menu Text | `props.mobile.backToHomeMenuText` | `data-back-text` | `Main Menu` | When Back Text Mode is 'Back to', this controls the last panel back text that points to the home panel. Shown when `props.mobile.backTextMode === "back-to"` |
+| Remove Menu Item Borders | `props.mobile.removeMenuItemBorders` | `data-remove-borders` | `false` | `true` / `false` |
+| Dropdown Content Shadow | `props.dropdown.dropdownContentShadow` | `style` | `0px 5px 50px -10px rgb(0 0 0 / 20%)` |  |
+| Dropdown Content Radius | `props.dropdown.dropdownContentRadius` | `style` | `0rem` |  |
+| Blend Open dropdowns | `props.dropdown.blendOpenDropdowns` | `blend-dropdowns` | `true` | `true` / `false`. Shown when `props.dropdown.dropdownContentRadius !== "0rem"` |
+| Dropdown Content Border Size | `props.dropdown.dropdownContentBorderSize` | `style` | `1px` |  |
+| Dropdown Content Border Color | `props.dropdown.dropdownContentBorderColor` | `style` | `transparent` |  |
+| Global Nested Dropdown Width | `props.dropdown.globalNestedDropdownWidth` | `style` | `200px` | Overridden by individual Nested Dropdown width |
+| Global Mega Menu Width | `props.dropdown.globalMegaMenuWidth` | `data-global-content-width` |  | E.g. 1200px, 100vw, var(--content-width), .class, #ID. Overridden by individual Mega Menu Dropdown width |
+| Global Inner Width | `props.dropdown.globalInnerWidth` | `style` | `100%` |  |
+| Dropdown Vertical Alignment | `props.dropdown.dropdownVerticalAlignment` | `data-global-content-vertical` | `.dwc-nest-header` | Aligns dropdown top to the bottom of any selector |
+| Dropdown Offset Gap | `props.dropdown.dropdownOffsetGap` | `style` | `0px` | Gap between dropdown and navigation |
+| Nested Dropdown Offset Gap | `props.dropdown.nestedDropdownOffsetGap` | `style` | `0px` | Gap between nestable parent dropdown item and flyout content |
+| Caret | `props.dropdown.caret` | `data-caret` | `false` | `true` / `false` |
+| Arrow  Visibilty | `props.dropdown.arrowVisibilty` | `arrow-visibility` | `Default` | `Default` / `Hide` / `Hide on Mobile` / `Hide on Desktop` |
+| DROPDOWN Trigger Mode | `props.interactionUx.dropdownTriggerMode` | `data-toggle` | `both` | `Hover or Click : both` / `Hover only : hover` / `Click only : click` |
+| Nested Dropdown Active Overlay | `props.interactionUx.nestedDropdownActiveOverlay` | `nested-dropdown-active-overlay` | `true` | `true` / `false` |
+| - Nested Dropdown Active Overlay Color | `props.interactionUx.nestedDropdownActiveOverlayColor` | `style` | `rgb(30 50 100 / 10%)` | Shown when `props.interactionUx.nestedDropdownActiveOverlay` |
+| - Nested Dropdown Inactive Blur | `props.interactionUx.nestedDropdownInactiveBlur` | `style` | `0px` | Shown when `props.interactionUx.nestedDropdownActiveOverlay` |
+| Parent-Relative Nested Dropdown | `props.interactionUx.parentRelativeNestedDropdown` | `data-parent-relative-dropdown` | `false` | `true` / `false` |
+| Menu Item Hover Effect | `props.interactionUx.menuItemHoverEffect` | `data-hover-effect` | `Default` | `Default` / `Text Roll : roll` |
+| Hide Nav Backdrop | `props.backdrop.hideNavBackdrop` | `data-hide-overlay` | `false` | `true` / `false` |
+| Nav Backdrop Blur | `props.backdrop.navBackdropBlur` | `style` | `0px` | Shown when `!props.backdrop.hideNavBackdrop` |
+| Nav Backdrop Background Color | `props.backdrop.navBackdropBackgroundColor` | `style` | `rgba(0 0 0 /  30%)` | Shown when `!props.backdrop.hideNavBackdrop` |
+| Mobile Logo Size | `props.logo.mobileLogoSize` | `style` | `60px` |  |
+| Hide Mobile Logo (in fullscreen mode) | `props.logo.hideMobileLogoInFullscreenMode` | `data-hide-mobile-logo` | `false` | `true` / `false` |
+| Centered Logo | `props.logo.centeredLogo` | `data-centered-logo` | `false` | `true` / `false` |
+| Center Guide | `props.logo.centerGuide` | `data-center-guide` | `true` | `true` / `false`. Shown when `props.logo.centeredLogo` |
+| Dropdown Buffer Height | `props.buffer.dropdownBufferHeight` | `style` | `inherit` |  |
+| Nested Dropdown Buffer Width | `props.buffer.nestedDropdownBufferWidth` | `style` | `50px` |  |
+| Preview Buffer Zone | `props.buffer.previewBufferZone` | `preview-buffer` | `false` | `true` / `false` |
+| Styling Classes | `props.classes.stylingClasses` | `class` | *(install-local style ids)* | Shown when `!props.classes` |
 
-| Prop key                                 | Notes                                                                                                   |
-| ---------------------------------------- | ------------------------------------------------------------------------------------------------------- |
-| `openInNewTab`                           | Adds `target="_blank"` + `rel="noopener noreferrer"`                                                    |
-| `text`                                   | Link label                                                                                              |
-| `linkTo`                                 | URL                                                                                                     |
-| `badge.text`                             | Badge label. `none` = no badge                                                                          |
-| `relocation.mode`                        | none / breakout (to header area) / breakinto (to any container)                                         |
-| `relocation.returnBreakpoint`            | (breakout) Width below which item returns to mobile menu                                                |
-| `relocation.containerSelectorBreakpoint` | (breakinto) Format: `#selector \| breakpoint`. Also works via `data-breakinto` attribute on any element |
-| `general.visibility`                     | Default / Hide on Desktop / Hide on Mobile / Hide on Both                                               |
+### DWC Mobile Toggle
 
-> **Breakin (not a prop):** To move any element FROM the page INTO the mobile menu, add `data-breakin="480"` directly to that element. Items land in `.breakin-container` inside the nav.
+| Prop | Path | Attribute | Default | Values / notes |
+| --- | --- | --- | --- | --- |
+| Pill Toggle Size | `props.appearance.pillToggleSize` | `style` | `16px` | Shown when `props.appearance.pillShape && props.appearance.hamburgerIcon === "Default"` |
+| Size | `props.appearance.size` | `style` | `2.1875rem` | When Toggle Style is set to 'Pill', toggle size will be controlled by 'Pill Toggle Size' . Property: --toggle-size. Shown when `props.appearance.pillShape && props.appearance.hamburgerIcon !== "Default" \|\| (!props.appearance.pillShape)` |
+| Color | `props.appearance.color` | `style` | `var(--black, #000)` | --toggle-color |
+| Hover Color | `props.appearance.hoverColor` | `style` | `var(--primary, crimson)` | --toggle-hover-color |
+| Flip  | `props.appearance.flip` | `data-flip-toggle` | `false` | `true` / `false` |
+| Hamburger Icon | `props.appearance.hamburgerIcon` | `data-icon` | `Default` | `Default` / `two-line-squeeze` / `two-line-spin` / `two-line-collapse` / `three-line-spin` / `three-line-collapse` / `three-line-arrow` |
+| Toggle Style | `props.appearance.toggleStyle` | `data-toggle-style` | `Default` | `Default` / `Techno : techno`. Shown when `props.appearance.hamburgerIcon === "Default"` |
+| Pill Shape | `props.appearance.pillShape` | `data-pill` | `false` | `true` / `false` |
+| Pill Border | `props.appearance.pillBorder` | `style` | `solid rgb(0 0 0 / 21%) 1px` | Shown when `props.appearance.pillShape` |
+| Pill Background Color | `props.appearance.pillBackgroundColor` | `style` | `rgb(236 236 236)` | Shown when `props.appearance.pillShape` |
+| Pill Padding | `props.appearance.pillPadding` | `style` | `0.6rem 0.75rem` | Shown when `props.appearance.pillShape` |
+| Pill Radius | `props.appearance.pillRadius` | `style` | `50vw` | Shown when `props.appearance.pillShape` |
+| Pill Aspect Ratio | `props.appearance.pillAspectRatio` | `style` | `initial` | Shown when `props.appearance.pillShape` |
+| Equalize | `props.appearance.equalize` | `data-equalize` | `false` | `true` / `false`. Shown when `props.appearance.toggleStyle !== "techno"` |
+| Always Visible | `props.appearance.alwaysVisible` | `data-always-visible` | `false` | `true` / `false` |
+| Enable | `props.label.enable` | style only | `false` | `true` / `false` |
+| Text | `props.label.text` | `data-label` | `Open/Close` | `Open/Close` / `Menu`. Shown when `props.label.enable` |
+| Open Text | `props.label.openText` | style only | `Menu` | Shown when `props.label.enable` |
+| Close Text | `props.label.closeText` | `data-close-text` | `Close` | Shown when `props.label.text !== "Menu"` |
+| Font Size | `props.label.fontSize` | `style` | `1rem` | Shown when `props.label.enable` |
+| Color | `props.label.color` | `style` | `#000` | Shown when `props.label.enable` |
+| Gap | `props.label.gap` | `style` | `0.5rem` | Shown when `props.label.enable` |
+| Target Selector | `props.targetSelector` | `data-target-selector` |  | Adds the class .dwc-open to the specified selector. Useful for triggering custom elements. |
+| Aria Label | `props.ariaLabel` | `aria-label` | `Open Menu` |  |
+| Class | `props.class` | `class` | `dwce-toggle` |  |
+| Styling Class | `props.stylingClass` | `class` | *(install-local style ids)* | Shown when `!props.stylingClass` |
 
-### DWC Mobile Toggle (componentId 1301)
+### DWC Header
 
-| Prop key                         | CSS variable           | Notes                                                                                                                     |
-| -------------------------------- | ---------------------- | ------------------------------------------------------------------------------------------------------------------------- |
-| `appearance.size`                | `--toggle-size`        | Overall size. When pill is on, icon size is `pillToggleSize` instead                                                      |
-| `appearance.color`               | `--toggle-color`       | Hamburger bar/icon colour                                                                                                 |
-| `appearance.hoverColor`          | `--toggle-hover-color` | Colour on hover                                                                                                           |
-| `appearance.flip`                | —                      | Mirrors icon horizontally                                                                                                 |
-| `appearance.hamburgerIcon`       | —                      | Default / two-line-squeeze / two-line-spin / two-line-collapse / three-line-spin / three-line-collapse / three-line-arrow |
-| `appearance.toggleStyle`         | —                      | Default / Techno (Default icon only)                                                                                      |
-| `appearance.pillShape`           | —                      | Wraps toggle in pill/square background                                                                                    |
-| `appearance.pillBorder`          | `--toggle-border`      | Pill border                                                                                                               |
-| `appearance.pillBackgroundColor` | `--toggle-bg`          | Pill background. **Prop-driven → `!important`**                                                                           |
-| `appearance.pillPadding`         | `--toggle-padding`     | Internal pill padding                                                                                                     |
-| `appearance.pillRadius`          | `--toggle-radius`      | Pill border radius                                                                                                        |
-| `appearance.pillAspectRatio`     | `--pill-aspect-ratio`  | Pill aspect ratio                                                                                                         |
-| `appearance.pillToggleSize`      | `--pill-toggle-size`   | Icon size inside pill (pill + Default icon only)                                                                          |
-| `appearance.equalize`            | —                      | Equalises label width to prevent layout shift on state change                                                             |
-| `appearance.alwaysVisible`       | —                      | Keeps toggle visible when menu is open. **Required when Fullscreen Mobile Menu is enabled**                               |
-| `label.enable`                   | —                      | Show label alongside icon                                                                                                 |
-| `label.text`                     | —                      | Select: **Open/Close** (separate open/close texts) / **Menu** (single static text)                                        |
-| `label.openText`                 | —                      | Text when menu is closed (Open/Close mode)                                                                                |
-| `label.closeText`                | —                      | Text when menu is open (Open/Close mode only)                                                                             |
-| `label.fontSize`                 | `--label-font-size`    | Label font size                                                                                                           |
-| `label.color`                    | `--label-color`        | Label colour                                                                                                              |
-| `label.gap`                      | `--label-gap`          | Gap between icon and label                                                                                                |
-| `targetSelector`                 | —                      | CSS selector of element to receive `.dwc-open`. Defaults to nearest DWC Nav. Works on any custom element                  |
-| `ariaLabel`                      | —                      | Screen reader label. Default: `Open Menu`                                                                                 |
+| Prop | Path | Attribute | Default | Values / notes |
+| --- | --- | --- | --- | --- |
+| Dark Background Preview | `props.darkBackgroundPreview` | `dark-body-bg` | `false` | `true` / `false` |
+| Header Background Color | `props.headerBackgroundColor` | `style` | `var(--white, #fff)` | Property: --header-bg |
+| Header Blur | `props.headerBlur` | `style` | `10px` |  |
+| Sticky Header | `props.sticky.stickyHeader` | `data-sticky-header` | `false` | `true` / `false` |
+| Scroll Down Visibility | `props.sticky.scrollDownVisibility` | `data-sticky-visibility` | `Default` | `Default` / `Hide Row 1 : hide-row-1` / `Hide Row 2 : hide-row-2` / `Hide Row 3 : hide-row-3` / `Show only Row 1 : show-row-1` / `Show only Row 2 : show-row-2` / `Show only Row 3 : show-row-3` / `Hide All Rows : hide-all-rows`. Shown when `props.sticky.stickyHeader` |
+| Scroll Up Visibility | `props.sticky.scrollUpVisibility` | `data-headroom-visibility` | `Default` | `Default` / `Reverse : reverse` / `Show Row 1 : show-row-1` / `Show Row 2 : show-row-2` / `Show Row 3 : show-row-3`. Shown when `props.sticky.stickyHeader` |
+| Scroll Visibility Distance | `props.sticky.scrollVisibilityDistance` | `data-scroll-visibility-distance` | `200px` | Shown when `props.sticky.stickyHeader` |
+| Special Sticky/Overlay Styles | `props.sticky.specialStickyOverlayStyles` | `data-sticky-overlay-special-style` | `false` | `true` / `false`. Shown when `props.sticky.stickyHeader` |
+| Sticky Header Background | `props.sticky.stickyHeaderBackground` | `style` | `var(--header-bg)` | Background color after scrolling. Property: --header-bg-sticky. Shown when `props.sticky.stickyHeader` |
+| Scroll Margin | `props.sticky.scrollMargin` | `style` | `var(--dwc-header-div-height)` | Shown when `props.sticky.stickyHeader` |
+| Overlay Header | `props.overlay.overlayHeader` | `data-overlay-header` | `false` | `true` / `false` |
+| Overlay Header Mobile | `props.overlay.overlayHeaderMobile` | `data-overlay-header-mobile` | `false` | `true` / `false` |
+| Overlay Header Width | `props.overlay.overlayHeaderWidth` | `style` | `100%` | Shown when `props.overlay.overlayHeader` |
+| Overlay Header Background | `props.overlay.overlayHeaderBackground` | `style` | `var(--header-bg)` | For transparent overlay header, set background to transparent value. Property: --overlay-header-bg. Shown when `props.overlay.overlayHeader \|\| props.overlay.overlayHeaderMobile` |
+| Overlay Header Active Background | `props.overlay.overlayHeaderActiveBackground` | `style` | `var(--header-bg)` | Overlay header background when hovering on menu item. Property: --overlay-header-bg-active. Shown when `props.overlay.overlayHeader \|\| props.overlay.overlayHeaderMobile` |
+| Overlay Header Radius | `props.overlay.overlayHeaderRadius` | `style` | `0px` | Shown when `props.overlay.overlayHeader \|\| props.overlay.overlayHeaderMobile` |
+| Overlay Header Inset Inline | `props.overlay.overlayHeaderInsetInline` | `style` | `0px` | Use `var(--gutter)` unless you're using a full width header. Non ACSS users should use their section's inline padding value instead.. Shown when `props.overlay.overlayHeader \|\| props.overlay.overlayHeaderMobile` |
+| Overlay Header Inset Block | `props.overlay.overlayHeaderInsetBlock` | `style` | `0px` | Shown when `props.overlay.overlayHeader \|\| props.overlay.overlayHeaderMobile` |
+| Remove Top Radius | `props.overlay.removeTopRadius` | `data-overlay-header-no-top-radius` | `false` | `true` / `false`. Shown when `props.overlay.overlayHeader \|\| props.overlay.overlayHeaderMobile` |
+| Overlay Header Shadow | `props.overlay.overlayHeaderShadow` | `style` | `0px 2px 20px rgb(0 0 0 / 20%)` | Shown when `props.overlay.overlayHeader \|\| props.overlay.overlayHeaderMobile` |
+| Offset Section Padding | `props.overlay.offsetSectionPadding` | `data-offset-section-padding` | `false` | `true` / `false`. Shown when `props.overlay.overlayHeader \|\| props.overlay.overlayHeaderMobile` |
+| Section Offset Padding Value | `props.overlay.sectionOffsetPaddingValue` | `style` | `clamp(10.3125rem, 11.1277rem + -2.7174vw, 8.75rem)` | Shown when `props.overlay.offsetSectionPadding` |
+| Styling Classes | `props.classes.stylingClasses` | `class` | *(install-local style ids)* | Shown when `!props.classes` |
+| Skip Link | `props.accessibilty.skipLink` | style only | `true` | `Enable : true` / `Disable : false` |
+| Custom Skip Link Parameter | `props.accessibilty.customSkipLinkParameter` | `data-skip-link` | `main | Skip to Content` | You can type in a custom parameter to generate skip links. Multiple parameter separate by commas. Formats: #main \| Skip to content, #footer \| Skip to footer. If the target does not have an ID, use selector format: main \| Skip to content. Shown when `props.accessibilty.skipLink === "true"` |
+| MMPro AI Assistant | `props.mmProAiAssistant` | `data-mmpro-assist` | `true` | `true` / `false` |
+| Enable | `props.liquidGlass.enable` | `data-liquid-glass` | `false` | `true` / `false` |
+| Distortion | `props.liquidGlass.distortion` | style only | `50` | Default: 50 \| Range: 20–80 \| Controls warp strength. Higher = more distortion like thick glass, lower = subtle.. Shown when `props.liquidGlass.enable` |
+| Surface Depth | `props.liquidGlass.surfaceDepth` | `scale` | `5` | Default: 5 \| Range: 1–10 \| Creates color fringing (chromatic aberration). Higher = more rainbow separation at edges.. Shown when `props.liquidGlass.enable` |
+| Shininess | `props.liquidGlass.shininess` | `stdDeviation` | `7` | Default: 7 \| Range: 0–7 \| Controls reflection sharpness. Lower = crisper reflections, higher = softer, frosted glass, blurry.. Shown when `props.liquidGlass.enable` |
+| Saturate | `props.liquidGlass.saturate` | `style` | `1.4` | Default: 1.4. 0: Completely desaturates the background (grayscale). 1: Leaves the background unchanged with its original saturation. Above 1: Super-saturates the background, making colors much more vibrant. Shown when `props.liquidGlass.enable` |
+| Border | `props.liquidGlass.border` | `style` | `1px solid rgba(255, 255, 255, 0.3)` | Shown when `props.liquidGlass.enable` |
+| Box Shadow | `props.liquidGlass.boxShadow` | `style` | `var(--liquid-glass-shadow)` | Shadow is set in the .dwc-header-vars variables on DWC Header Component. Overrides overlay header shadow.. Shown when `props.liquidGlass.enable` |
+
+<!-- GENERATED:PROPS end -->
+
+> **Prose and examples:** for exhaustive descriptions, slot documentation and per-component examples,
+> read this repo's `components/` folder (`../../components/dwc-header.md`, `dwc-nav.md`,
+> `dwc-dropdown.md`, `dwc-menu-item.md`, `dwc-mobile-toggle.md`, relative to this file), or the
+> online docs at <https://design-with-cracka.gitbook.io/megamenupro>. Those pages document the
+> **settings panel**, so use them for what a setting means and this table for what to set.
 
 ***
 

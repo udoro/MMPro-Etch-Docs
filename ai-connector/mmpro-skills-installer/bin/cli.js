@@ -183,8 +183,9 @@ async function main() {
 
   console.log(`Installed Mega Menu Pro AI Connector skills to ${target}`);
   console.log(`  source: ${source}`);
-  console.log(`  ${OUT_SKILLS_DIR}/mega-menu-pro-skills.md`);
-  console.log(`  ${OUT_SKILLS_DIR}/mega-menu-pro-skills-reference.md`);
+  console.log(`  ${OUT_SKILLS_DIR}/mega-menu-pro-skills.md          (entry point, read this first)`);
+  console.log(`  ${OUT_SKILLS_DIR}/mega-menu-pro-skills-build.md    (full workflow)`);
+  console.log(`  ${OUT_SKILLS_DIR}/mega-menu-pro-skills-reference.md (lookup tables)`);
   console.log(`  ${OUT_COMPONENTS_DIR}/ (${countComponents(target)} component prop docs)`);
   console.log(`\nPoint your AI coding agent at ${OUT_SKILLS_DIR}/mega-menu-pro-skills.md to load it.`);
   console.log('Then tell the agent: "npx @digital-gravy/etch-connector serve"');
