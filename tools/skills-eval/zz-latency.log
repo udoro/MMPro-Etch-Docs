@@ -1,0 +1,2 @@
+connector round-trip latency (ms)
+2026-08-29T14:03:29.935Z  harness-check    n=2 ok=0 min=- median=-1 max=-  raw=[-1,-1]

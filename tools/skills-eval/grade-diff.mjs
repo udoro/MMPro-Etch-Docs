@@ -10,8 +10,12 @@
 // Usage: node grade-diff.mjs audit-baseline.json audit-<arm>.json
 
 import { readFileSync } from 'node:fs';
+import { latestExport } from './config.mjs';
 
-const EXPORT = '';
+// Prop metadata comes from the newest component export in the plugin repo, or
+// from a path given as the third argument. Set MMPRO_ROOT if that repo is not a
+// sibling of this one.
+const EXPORT = process.argv[4] || latestExport();
 const doc = JSON.parse(readFileSync(EXPORT, 'utf8'));
 
 function flatten(props, path = '', out = new Map()) {
