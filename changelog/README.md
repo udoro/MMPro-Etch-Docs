@@ -12,7 +12,7 @@ _Update path from v1.2.1: CSS & Component_
 
 ### Fixes
 
-* **Hover underline appeared on the last-item CTA in Safari and on iOS.** The button picked up an underline on hover that it should not have. Desktop Chrome, Edge and Firefox were unaffected.
+* **Hover underline appeared on the last-item CTA in Safari (macOS), and in Chrome and Edge on iOS/iPadOS, i.e. all WebKit builds.** The button picked up an underline on hover that it should not have. Chrome, Edge and Firefox on desktop were unaffected.
 * General bug fixes and refinements.
 
 ### AI Skills
