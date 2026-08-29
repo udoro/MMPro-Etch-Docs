@@ -50,6 +50,30 @@ copies each version into a throwaway folder, strips anything identifying it as a
 candidate, and refuses to stage a folder that would tell the agent it is being
 tested.
 
+### What to wrap around the task
+
+The task itself is yours: give the agent whatever you actually want built or
+corrected, in your own words. What the harness needs is only the scaffolding
+around it, and each line earns its place:
+
+* **Point at the entry file**, and say that it, the companions it names, and
+  `components/` are the only documentation the agent may read. Without this an
+  agent finds another version in the repo and you no longer know what you tested.
+* **Tell it to keep temp scripts in a subdirectory of its own** and not to delete
+  files from shared directories. One run deleted a grading script because its own
+  temp file had the same name.
+* **Ask for a metrics block**: connector eval calls, tool calls, lines read per
+  skills file and whether any was read in full, full schema dumps, and whether it
+  reached `configuration` or `rendered` verification. Ask for honesty over a
+  good-looking number; agents have reported their own wasted calls when asked
+  this way.
+* **For a destructive build**, pre-approve the scope and any naming decision, and
+  note that a timed-out eval usually still completes, so live state should be
+  re-read before re-running it.
+
+Keep the wording identical across arms except the skills path. Everything else is
+a variable you did not mean to introduce.
+
 **Why the latency probes.** Wall-clock differences under about 15% are noise:
 two versions swapped places by 10% in both directions across four runs on
 identical documents. `latency.mjs` logs connector round-trip time before and
