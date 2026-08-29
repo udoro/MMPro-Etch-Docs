@@ -76,12 +76,9 @@ npx mmpro-agentic-skills-etch --force
 **Prefer a manual download?** [Download this repository](https://github.com/udoro/MMPro-Etch-Docs/archive/refs/heads/main.zip)
 and point your agent at `ai-connector/mmpro-skills/mega-menu-pro-skills.md`.
 
-**Take all three files, not just the entry file:**
-[`mega-menu-pro-skills.md`](https://github.com/udoro/MMPro-Etch-Docs/blob/main/ai-connector/mmpro-skills/mega-menu-pro-skills.md),
-[`mega-menu-pro-skills-build.md`](https://github.com/udoro/MMPro-Etch-Docs/blob/main/ai-connector/mmpro-skills/mega-menu-pro-skills-build.md) and
-[`mega-menu-pro-skills-reference.md`](https://github.com/udoro/MMPro-Etch-Docs/blob/main/ai-connector/mmpro-skills/mega-menu-pro-skills-reference.md).
-On its own the entry file points at companions you would not have. The local `components/` folder is
-optional: without it the skills fall back to fetching the same docs from this GitBook site.
+Keep the `mmpro-skills` folder intact. The entry file is short on purpose and reads its two
+companions when it needs them. The `components/` folder is optional: without it the skills fall back
+to fetching the same docs from this site.
 
 ### Step 3 — Connect
 
