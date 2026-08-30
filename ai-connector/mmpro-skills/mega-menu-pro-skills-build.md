@@ -408,6 +408,23 @@ read-back is **configuration verification**: it proves a value persisted. Only l
 **rendered verification**: it proves the page is actually right. Every silent failure in Section 6
 passes a read-back. Always say which level you reached.
 
+**A check that finds nothing is a failed check, not a passing one.** A selector that matches
+nothing returns `0`, `null` or an empty list, and every one of those reads as "fine" in a result
+you skim. Prove the thing was found before you say anything about it, or you will report a working
+feature as broken and go and change code that was correct.
+
+* **Query by what the component actually renders**, not by what you built or by a name that looks
+  right. A wrong selector and a broken feature produce the identical empty result. Both breakout
+  gotchas below are this, from opposite directions: `[data-breakout]` is the wrong attribute for a
+  mega-menu Dropdown, while `li[data-breakout-mega='true']` is the right attribute on a tag that
+  stops existing once the item is relocated. The engine's own selectors never tag-qualify, for
+  exactly that reason.
+* **`[data-x]` matches the attribute whatever its value**, so a setting you just switched off
+  still counts as present. Write `[data-x="false"]` when the value is the point.
+* **A count that drops to zero still prints cleanly.** `checked 0 items` is the most dangerous
+  output a check can produce, because it is indistinguishable from the best one. Assert the count
+  is non-zero.
+
 **You can reach rendered verification on your own.** The Etch *builder* sits behind the user's
 WordPress session, but the *published page* does not. Anything that renders for a logged-out
 visitor — a header, a nav, a mega menu panel — you can check yourself, with no login, without
