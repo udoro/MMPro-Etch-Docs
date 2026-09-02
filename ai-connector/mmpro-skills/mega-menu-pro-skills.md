@@ -184,9 +184,11 @@ anything, say so first.
 only looking at the rendered page proves it is right. If you could not check something, name it as
 unverified rather than leaving it inside a list of things that sound checked.
 
-**Do not report tokens or cost.** You have no way to measure either, and a number you cannot
-measure is a number you invented. The real figures are in the `/cost` command, which reads the
-tool's own accounting.
+**Report tokens only when something else measured them.** You cannot measure your own usage across
+a task, so never estimate it: a number you guessed is worse than no number. There are two places a
+real figure exists. The harness reports a subagent's usage when it finishes, so pass that on and say
+where it came from. And `/cost` gives the user the authoritative session total. Relay either.
+Invent neither.
 
 Example:
 
