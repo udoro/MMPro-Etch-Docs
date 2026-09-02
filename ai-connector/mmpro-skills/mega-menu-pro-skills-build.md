@@ -1325,7 +1325,7 @@ Examples: `dropdown.globalMegaMenuWidth` (nav) vs `megaMenu.width` (per-dropdown
 > A DWC component block (`etch/component`) created with `children: []` has **no accessible slots in the same script**. Slot children only materialise after `saveAsync()` and a reload. If you need to access a slot immediately (to populate a mega menu panel, for example), you **must** include the `etch/slot-content` children in the `children` array at create time — with at least a placeholder element inside each slot you intend to populate. Then call `etch.blocks.getJson(newId)` to retrieve the slot, and `replace()` the placeholder with your styled content. The block type `etch/slot-content` is a valid authoring type (it is listed in the full `type` union in "Block node shape"). Passing `children: []` and then trying to find a slot child in the same script will always return `undefined`.
 
 * **DO NOT** set `dropdown.dropdownContentBorderSize` to `0` or any value below `1px` — use `1px` as the minimum; set `dropdownContentBorderColor` to `transparent` if you want an invisible border
-* **DO NOT** use `%` or `100vw` for `megaMenu.width` / `globalMegaMenuWidth`. `%` resolves relative to the parent dropdown item; `100vw` includes the scrollbar width and causes horizontal overflow. **For full-width headers, use `#dwc-header` (or the `header` tag)**. **For overlay headers with a constrained width, use `.dwc-nest-header`** — `.dwc-nest-header` is always the header inner wrap selector and is the element that actually carries the overlay-constrained width. Using `#dwc-header` with a constrained overlay header will make panels span the full viewport width instead of the header width.
+* **DO NOT** use `%` or `100vw` for `megaMenu.width` / `globalMegaMenuWidth`. `%` resolves relative to the parent dropdown item; `100vw` includes the scrollbar width and causes horizontal overflow. **This includes a `%` nested inside a `min()`/`max()`/`clamp()`** — a self-insetting value that is safe everywhere else, like `min(1024px, 100%)`, is not safe here: the `100%` resolves against the `<li>`, and the panel silently falls back to the `--dropdown-content-width` default (shipped `to-rem(1200px)`) instead of the width you asked for. A **plain length works fine** (`1024px` sets `--dropdown-content-width` to `1024px`), so reach for that rather than concluding the prop ignores lengths. **For full-width headers, use `#dwc-header` (or the `header` tag)**. **For overlay headers with a constrained width, use `.dwc-nest-header`** — `.dwc-nest-header` is always the header inner wrap selector and is the element that actually carries the overlay-constrained width. Using `#dwc-header` with a constrained overlay header will make panels span the full viewport width instead of the header width.
 * **DO NOT** guess select prop values from their UI label — the stored value is always the right-hand side of the ` : ` separator in `selectOptionsString` (e.g. `"Left : left"` stores `left`, not `Left`; `"Hover only : hover"` stores `hover`). When there is no ` : `, the stored value equals the label. **Always inspect `selectOptionsString` before setting any select prop.** Using a label instead of its stored value silently fails — the component ignores it and falls back to the default.
 
 * **`interactionUx.dropdownTriggerMode` on DWC Nav is inert. Set the trigger per Dropdown.** A DWC
@@ -1471,6 +1471,16 @@ Examples: `dropdown.globalMegaMenuWidth` (nav) vs `megaMenu.width` (per-dropdown
   relocated `<div>` to `nav.dwce-nav-nested`, so `.dwc-nest-header__container > [data-breakout-mega='true']`
   matches nothing and the rule silently never applies. Use `& .dwce-nav-nested > [data-breakout-mega='true']`,
   and give `.dwce-nav-nested` an explicit `display: flex` or `order` on its children does nothing at all.
+* **Your `@container` breakpoint must sit BELOW the panel's own width, or every "mobile" rule
+  fires on desktop.** Container queries measure `.dwc-dropdown-content`, not the viewport. The
+  habit of writing `@container (width < 1200px)` to mirror the nav's `1200px` mobile breakpoint is
+  wrong for any panel narrower than that: constrain the panel to a content column (e.g.
+  `--dropdown-content-width: to-rem(1024px)`) and `width < 1200px` is true at every viewport, so
+  the stacked-column layout, larger mobile type and mobile gaps all apply on a 1600px desktop.
+  Nothing errors, and the panel looks plausible until you compare it to the design. Pick a
+  breakpoint comfortably under the panel width (900px for a 1024px panel) and verify by reading
+  back computed `flex-direction`/`gap` on the panel's inner wrapper at desktop width — a value that
+  matches what you wrote inside the container query means the query is matching when it should not.
 * **`general.submenuReveal` on a DWC Dropdown is MOBILE-ONLY. It does not open desktop panels
   downward, and setting it to `expand` silently breaks a sliding mobile submenu.** The prop is
   described as "dropdown content opens downward" in the Section 2 table, which reads as a desktop
