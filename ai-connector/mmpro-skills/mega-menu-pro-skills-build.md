@@ -890,7 +890,7 @@ row below is a prop or a CSS-variable override — **none** of it needs hand-wri
 | dropdowns on hover; Shop + Search on click | `interactionUx.dropdownTriggerMode` (Nav) = Hover or Click; then per-item `dropdownTriggerMode: click` on the Shop + Search DWC Dropdowns (1299) |
 | search icon hidden on mobile | `general.visibility: hide-on-mobile` on the Search Dropdown (1299) |
 | search/bag outside mobile menu, by the toggle | icon-button dropdown with a panel → `megaMenu.enable {true}` then `megaMenu.breakout {true}`; plain icon link → DWC Menu Item + `relocation.mode: breakout` |
-| dropdown content opens downward | `general.submenuReveal: expand` (1299); mobile equivalent `mobile.submenuReveal: Expand` (Nav) |
+| dropdown content opens downward | Nothing to set for desktop — mega panels already open downward. Both reveal props are **mobile-only**: set `mobile.submenuReveal` (Nav) once for all items, and leave per-dropdown `general.submenuReveal` at `default` except on `megaMenu.breakout` items, which do not inherit it |
 | mobile menu expands down + fade | `mobile.slideInDirection: expand down` + `mobile.submenuSlideExtras.fadeItemsOnSlide` (Nav) |
 | desktop dropdown height transitions smoothly | `animation.adaptiveHeight {true}` (Nav) — mutually exclusive with `animation.stripeStyle` |
 | whitish blurred backdrop | `backdrop.navBackdropBackgroundColor` (colour/opacity) + `backdrop.navBackdropBlur` (blur intensity) on the DWC Nav. These props control the overlay that appears behind dropdown content when it opens — on both desktop and mobile. |
@@ -1452,6 +1452,54 @@ Examples: `dropdown.globalMegaMenuWidth` (nav) vs `megaMenu.width` (per-dropdown
 * **A sticky header's translucent/blurred-on-scroll look does NOT require `sticky.specialStickyOverlayStyles` or any `.dwc-header-vars` special-styles-block CSS.** `overlay.overlayHeader: {true}` + `overlay.overlayHeaderBackground` (translucent value) + `headerBlur` on the DWC Header, combined with `sticky.stickyHeader: {true}`, is sufficient on its own — the overlay background/blur only visually engages once the header is in its stuck/sticky state. This contradicts the literal reading of the "Unlock before/after scroll CSS hooks" row in Section 2's "I want to" table (which implies `specialStickyOverlayStyles` is required); that prop is only needed for *further* per-state fine-tuning (e.g. differentiating hover-open vs not), not for the basic translucent-on-scroll effect. Try the simple 3-prop combo first before reaching for the special-styles scaffold.
 * **To swap a logo for an inline vector, `replace()` the `etch/svg` node with an `etch/element` of `tag: 'svg'`.** An `etch/svg` block holds a URL in `attributes.src` and fetches it; it is not a container for markup. Build the vector as a normal element tree instead — `{ type:'etch/element', tag:'svg', attributes:{ viewBox, xmlns } }` with `tag:'path'` element children carrying `attributes.d` — and colour it from the parent's style entry via `& svg path { fill: ... }`.
 * **No prop distributes top-level nav items across the header width.** `menuMode.nonButtonItemsAlignment` only left/centre-aligns the group, and `--menu-items-gap` only changes the gap. For a nav whose items spread edge to edge inside a constrained header (Apple-style), set `max-width` on the `.dwc-nest-header__container` style entry and add `flex: 1 1 auto` to `.dwc-nav-wrapper` / `.dwce-nav-nested` plus `justify-content: space-between` on `.dwc-nav-nested-items`, each scoped with `html:not(.dwc-mobile) &` so mobile is untouched. **Also give the top-level `<li>` items `flex-grow: 1`.** Spreading the items alone leaves dead space between their hit areas, and with `animation.adaptiveHeight` enabled the pointer crossing that gap closes and reopens the panel, so the height morph visibly stutters on every move from one item to the next. Growing the items until their boxes touch keeps the hover continuous and the transition smooth. These are ordinary style entries, never the distributable stylesheet.
+  **Do not set that `max-width` on `.dwc-nest-header__container` when the panels are full-bleed
+  mega menus.** `dropdown.globalMegaMenuWidth: #dwc-header` measures that same element, so capping
+  it caps every mega panel to the same width and the full-width panel background silently becomes a
+  centred box. Keep the container full-bleed and pad it in instead —
+  `padding-inline: max(<gutter>, calc((100% - <column>) / 2))` — which puts the logo and nav items
+  on the content column while leaving the panel free to span. The inner content stays constrained by
+  `dropdown.globalInnerWidth`, which is a separate wrapper inside `.dwc-dropdown-content`.
+* **`.mega-menu-*` panel root is the INNER wrapper, not the panel background.** `.dwc-dropdown-content`
+  is the full-width element; your panel root sits inside it constrained by `globalInnerWidth`. Measuring
+  the panel root's width to check whether a panel is full-width therefore always returns the inner
+  width and looks like a bug that is not there. Measure `.dwc-dropdown-content` for the background box.
+* **`order` changes paint order, not DOM order — verify breakout ordering by geometry.** Reading
+  `querySelectorAll('[data-breakout-mega]')` back after applying `order` still returns the prepended
+  DOM sequence, so an ordering fix that worked reads as still broken. Sort the nodes by
+  `getBoundingClientRect().left` and compare that, or read the computed `order`.
+* **Breakout `order` rules must hang off the nav, not the header container.** The engine prepends the
+  relocated `<div>` to `nav.dwce-nav-nested`, so `.dwc-nest-header__container > [data-breakout-mega='true']`
+  matches nothing and the rule silently never applies. Use `& .dwce-nav-nested > [data-breakout-mega='true']`,
+  and give `.dwce-nav-nested` an explicit `display: flex` or `order` on its children does nothing at all.
+* **`general.submenuReveal` on a DWC Dropdown is MOBILE-ONLY. It does not open desktop panels
+  downward, and setting it to `expand` silently breaks a sliding mobile submenu.** The prop is
+  described as "dropdown content opens downward" in the Section 2 table, which reads as a desktop
+  direction control; it is not one. `components/dwc-dropdown.md` is explicit: "Per-dropdown override
+  for how submenus open on mobile: Default (inherits from DWC Nav), Expand, or Slide." Desktop mega
+  panels already open downward with no prop at all. So `expand` on a non-breakout Dropdown buys
+  nothing on desktop while overriding the Nav's `mobile.submenuReveal` on mobile — every submenu
+  pushes content down instead of sliding in, and the Nav-level setting looks broken while reading
+  back perfectly correct. **Leave `general.submenuReveal` at `default` on every ordinary Dropdown**
+  and set the direction once, globally, via the Nav's `mobile.submenuReveal`. The ONLY Dropdowns
+  that need an explicit value are `megaMenu.breakout` ones, which do not track the Nav (see the
+  breakout gotcha below) — mixing the two in one build is the trap: the breakout rule tells you to
+  set the prop explicitly, and it is easy to apply that to all items instead of just the relocated
+  ones. Symptom: `mobile.submenuReveal: 'slide'` plus `submenuSlideExtras` are all stored correctly
+  and every submenu still expands. Verify by geometry, not by looking: a slide gives the panel a
+  horizontal `transform` translation that resolves to 0 while the parent list keeps its `top`; an
+  expand leaves `transform: none` and pushes the parent list's `top` down.
+* **Select prop values are lowercased in the rendered attribute, so grep the published page
+  case-insensitively.** `dropdown.arrowVisibilty: 'Hide'` stores and reads back as `Hide`, but renders
+  as `arrow-visibility="hide"`. A case-sensitive `grep 'arrow-visibility="Hide"'` returns 0 and reads
+  exactly like a prop that failed to apply, sending you to re-set a value that was already correct.
+  This affects every select whose stored value is capitalised (`arrowVisibilty`, `scrollDownVisibility`,
+  `hamburgerIcon`, `menuItemHoverEffect`).
+* **Counting a `data-*` attribute on the published page also counts the plugin's own JS selector
+  strings.** `grep -c 'data-megamenu="true"'` over the page HTML returns markup hits plus every
+  occurrence inside the inline engine script's `querySelectorAll` arguments — on a 13-item nav that is
+  18 hits for 13 elements. The count is not wrong-in-your-favour noise you can round off: it hides a
+  genuinely missing element. Count the rendered class instead (`class="[^"]*dwce-dropdown`), or diff
+  the two numbers and confirm the surplus all sits inside `<script>`.
 
 
 ## Appendix A — Authoring payloads, temp-script lifecycle, and quick verification (required)
