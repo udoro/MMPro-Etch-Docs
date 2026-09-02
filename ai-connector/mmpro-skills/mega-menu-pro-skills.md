@@ -146,3 +146,41 @@ upward from this file's folder, and a **user** session otherwise.
 **If you cannot tell, treat it as a user session.** On a user install these files are released
 artifacts: the next update overwrites them, so an edit is lost and leaves that install silently
 diverged in the meantime.
+
+***
+
+## Before you say you are done
+
+End every task with a short report. Four lines, not a paragraph.
+
+**Time.** Take a timestamp before your first connector call and another at the end, and give
+the elapsed figure. Do not estimate it from memory afterwards.
+
+```bash
+date +%s        # before you start, and again at the end
+```
+
+**Round trips.** How many connector calls you made. This is the number that tracks what the
+task cost, because each one is a full request. A build that took twelve calls and one that took
+three are not the same task, whatever the clock says.
+
+**What changed.** Blocks, props and style entries you touched, by name. If you replaced or deleted
+anything, say so first.
+
+**What you verified, and how.** Say which level you reached. A read-back proves a value persisted;
+only looking at the rendered page proves it is right. If you could not check something, name it as
+unverified rather than leaving it inside a list of things that sound checked.
+
+**Do not report tokens or cost.** You have no way to measure either, and a number you cannot
+measure is a number you invented. The real figures are in the `/cost` command, which reads the
+tool's own accounting.
+
+Example:
+
+```
+7m 51s, 9 connector calls.
+Built: 1 wrapper, 1 slider, 7 slides, 11 style entries.
+Verified: rendered. Screenshot of the published page, dots measured at 10x10.
+Unverified: the builder view, which needs your session.
+```
+
