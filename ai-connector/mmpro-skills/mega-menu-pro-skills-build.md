@@ -225,9 +225,25 @@ context file's saved preference always wins. When this happens, explicitly tell 
 their saved preference instead of the skill file's default (e.g. "Using your saved naming preference from
 context instead of the default convention"), so they understand why behavior differs from what's documented.
 
-**Step 3 — Load API reference (both sessions).** Check for the cheatsheet at `../../ETCH-DEV-API/etch-connector-cheatsheet.md`. If not found locally, WebFetch the following before writing any scripts:
-- `https://docs.etchwp.com/public-api/types-reference.html` — block JSON shapes (`etch/svg`, `etch/element`, `etch/text`, etc.)
-- `https://docs.etchwp.com/public-api/components.html` — component property types, especially `ConditionComponentProperty` (has nested `properties` children that a shallow schema read will miss)
+**Step 3 — Load API reference (both sessions).** Get the block-JSON shapes before writing any scripts. In order of preference:
+
+1. **Ask the runtime.** Cheapest and always current, since it describes the build you are actually connected to:
+   ```js
+   etch.environment.blockTypes        // every block type this build can construct
+   etch.environment.capabilities      // which optional surfaces are backed
+   ```
+   Available from Etch 1.6.7; `etch.environment` is `undefined` on older builds, which means "assume everything is available", not "nothing is".
+2. **Read the local docs**, if an `ETCH-DEV-API` checkout sits alongside this repo (a sibling of the docs repo, not inside it). Search upward for `ETCH-DEV-API/docs/public-api/` rather than assuming a fixed depth, since it differs between this repo and an installed project:
+   - `types-reference.md` — block JSON shapes (`etch/svg`, `etch/element`, `etch/text`, etc.)
+   - `components.md` — component property types, especially `ConditionComponentProperty` (has nested `properties` children that a shallow schema read will miss)
+   - `etch-connector-cheatsheet.md` at that checkout's root
+3. **Fetch them live, with `curl` and a browser User-Agent.** `docs.etchwp.com` sits behind Cloudflare and returns **403 to WebFetch and to bare `curl`**. Do not use WebFetch on this host; it always fails. This works:
+   ```bash
+   UA="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0 Safari/537.36"
+   curl -sSL -A "$UA" https://docs.etchwp.com/public-api/types-reference -o types-reference.html
+   curl -sSL -A "$UA" https://docs.etchwp.com/public-api/components -o components.html
+   ```
+   Use the extensionless URLs; the old `.html` form is now a 308 redirect.
 - `https://design-with-cracka.gitbook.io/megamenupro` — complete DWC Mega Menu Pro prop reference per component. The repo's `components/` folder (`../../components/` from this file, if present) and Section 4 in the reference file cover the same ground locally — prefer those before fetching live, and only fetch per-component pages here for a prop not already in either, or if `components/` isn't present locally.
 
 Pay particular attention to: block JSON shapes (`etch/svg` stores `src` in `attributes`, not top-level), `ConditionComponentProperty` nested `properties`, the `{{...}}` group encoding rules, and the full prop list for each DWC component.
@@ -1447,7 +1463,7 @@ Examples: `dropdown.globalMegaMenuWidth` (nav) vs `megaMenu.width` (per-dropdown
     opacity: 1; /* desktop: never affected by open state */
   }
   ```
-* **`etch.stylesheets` has no `update()` — only `list()` and `appendAsync()`.** To fix CSS already appended to a stylesheet, append a corrective rule rather than trying to edit in place; the old dead rule is harmless if it never matched anything. (`etch.styles.update(id, {...})` exists but is a different namespace — style *entries*, not whole stylesheets.) *(Note: Etch's public API reference — `ETCH-DEV-API/docs/public-api/stylesheets.md` — documents `etch.stylesheets.updateAsync()`/`createAsync()`/`deleteAsync()` as real methods with working examples, which may reflect a connector-specific proxy limitation rather than a genuinely missing method. Re-verify live with a quick `typeof etch.stylesheets.updateAsync` check before trusting either claim.)*
+* **`etch.stylesheets` has no bare `update()`, but `updateAsync()` is real — use it to edit CSS in place.** Verified live against Etch 1.6.7 on 6 September 2026, the namespace exposes `list()`, `get()`, `createAsync()`, `updateAsync()`, `appendAsync()`, `deleteAsync()`, `listCustomMedia()` and `addCustomMediaAsync()`. Only `update()` (no `Async`) is undefined. So to fix CSS already appended to a stylesheet, call `updateAsync(id, { css })` rather than appending a corrective rule to override the old one. Prefer a dedicated stylesheet per feature via `createAsync()`, which keeps the CSS isolated and removable in one `deleteAsync()` call. (`etch.styles.update(id, {...})` exists but is a different namespace, style *entries*, not whole stylesheets.)
 * **`403 rest_cookie_invalid_nonce` on `saveAsync()` (or any `etch.*` write) means the user's WordPress session has logged out** — it is not a connector bug. Stop immediately, tell the user plainly, and ask them to log back into WordPress, refresh the Etch builder tab, then reconnect (re-run `serve` if the connection dropped). **Critically: any buffered call you assumed succeeded right before the failed `saveAsync()` (e.g. a `delete()` or `update()`) did NOT actually persist** — after reconnecting, re-read live state via `getTree()`/`getJson()` before trusting that a pre-error mutation took effect, rather than assuming it did.
 * **A sticky header's translucent/blurred-on-scroll look does NOT require `sticky.specialStickyOverlayStyles` or any `.dwc-header-vars` special-styles-block CSS.** `overlay.overlayHeader: {true}` + `overlay.overlayHeaderBackground` (translucent value) + `headerBlur` on the DWC Header, combined with `sticky.stickyHeader: {true}`, is sufficient on its own — the overlay background/blur only visually engages once the header is in its stuck/sticky state. This contradicts the literal reading of the "Unlock before/after scroll CSS hooks" row in Section 2's "I want to" table (which implies `specialStickyOverlayStyles` is required); that prop is only needed for *further* per-state fine-tuning (e.g. differentiating hover-open vs not), not for the basic translucent-on-scroll effect. Try the simple 3-prop combo first before reaching for the special-styles scaffold.
 * **To swap a logo for an inline vector, `replace()` the `etch/svg` node with an `etch/element` of `tag: 'svg'`.** An `etch/svg` block holds a URL in `attributes.src` and fetches it; it is not a container for markup. Build the vector as a normal element tree instead — `{ type:'etch/element', tag:'svg', attributes:{ viewBox, xmlns } }` with `tag:'path'` element children carrying `attributes.d` — and colour it from the parent's style entry via `& svg path { fill: ... }`.
