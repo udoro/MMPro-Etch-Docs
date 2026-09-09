@@ -437,9 +437,7 @@ feature as broken and go and change code that was correct.
   exactly that reason.
 * **`[data-x]` matches the attribute whatever its value**, so a setting you just switched off
   still counts as present. Write `[data-x="false"]` when the value is the point.
-* **A count that drops to zero still prints cleanly.** `checked 0 items` is the most dangerous
-  output a check can produce, because it is indistinguishable from the best one. Assert the count
-  is non-zero.
+* **A count that drops to zero still prints cleanly.** Assert the count is non-zero.
 
 **You can reach rendered verification on your own.** The Etch *builder* sits behind the user's
 WordPress session, but the *published page* does not. Anything that renders for a logged-out
@@ -1095,7 +1093,16 @@ await etch.saveAsync();
 
 > **Always use `replaceAll()` not `replace()`** — each CSS block has both a commented-out example AND an active declaration. `replace()` only hits the first (the comment), leaving the active declaration unchanged.
 
-### Add a prop to a component
+### Add a prop to a component (developer sessions only)
+
+This and the next recipe change the **component definition**, not an instance of it. They are for
+developer sessions. In a user session, do not run them on a DWC component: the next plugin update
+replaces the component and the change is lost.
+
+Setting props on an instance is a different operation and is always fine:
+`etch.blocks.setAttribute(instanceId, key, value)`.
+
+`updateAsync` takes a **replacement** `properties` array, not a merge. Any prop you omit is gone.
 
 ```js
 // 1. Get existing props
@@ -1115,7 +1122,7 @@ const updated = [...existing.slice(0, insertIdx), newProp, ...existing.slice(ins
 await etch.components.updateAsync(1302, { properties: updated });
 ```
 
-### Bind a prop to a CSS variable (component edit mode)
+### Bind a prop to a CSS variable, component edit mode (developer sessions only)
 
 ```js
 // After adding the prop via updateAsync:

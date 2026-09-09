@@ -151,11 +151,10 @@ diverged in the meantime.
 on your own initiative. Show the person the exact text you want to add or change, say which file
 and which section it belongs in, and wait for them to agree.
 
-This is not politeness. You are proposing a permanent rule from a single session, and you are the
-worst placed to judge whether it generalises: what looks like a discovery is often this install,
-this theme, or your own earlier mistake. The developer knows which it is and you do not. A wrong
-rule written into these files is worse than no rule, because every later session reads it as
-settled fact and works around a problem that was never real.
+You are proposing a permanent rule from a single session, and you are the worst placed to judge
+whether it generalises: what looks like a discovery is often this install, this theme, or your own
+earlier mistake. The developer knows which it is and you do not. Every later session reads a wrong
+rule as settled fact and works around a problem that was never real.
 
 Show the diff, name the file, wait. If the answer is no, drop it rather than recording it
 somewhere else.
