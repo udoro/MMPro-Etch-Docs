@@ -53,7 +53,7 @@ session that preamble is most of what the user pays for.
 * **Select values are the right-hand side of ` : ` in the prop table**, never the UI label.
   `Expand Down (from Header) : expand down` stores `expand down`. A label silently falls back.
 * **A classed node needs both `attributes.class` and a `styles[]` entry.** One without the other
-  renders unstyled and reads back as fine.
+  renders unstyled. A `getJson` read-back catches it.
 * **Compare a default against what the block currently HOLDS, not against what you want.** A
   Dropdown sitting on `click` does not become `both` because `both` is the default.
 * **Component IDs are install-local.** Resolve by name every session. Never paste an ID from any
