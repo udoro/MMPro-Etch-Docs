@@ -6,6 +6,22 @@ icon: arrows-retweet
 
 > Update Mega Menu Pro + Header Builder using the [Updater](https://etch.designwithcracka.com/mmpro-updater/).
 
+## Version 1.2.3 - September 16, 2026
+
+_Update path from v1.2.2: CSS & Component_
+
+### Improved
+
+* **Submenus stay on screen when they open near the bottom of the window.** A submenu that would run past the bottom now shifts up, so you can see all of it. It works at every level, including submenus inside submenus. A submenu that's taller than the window sits at the top of the screen and scrolls.
+
+### Fixes
+
+* **Switching the Offcanvas Mode prop on or off now applies straight away in the builder.** Before, the canvas kept the old layout until you refreshed the page.
+* **Turning Offcanvas Mode off no longer leaves the back button and its "Main Menu" text behind.**
+* General bug fixes and refinements.
+
+***
+
 ## Version 1.2.2 - August 29, 2026
 
 _Update path from v1.2.1: CSS & Component_
