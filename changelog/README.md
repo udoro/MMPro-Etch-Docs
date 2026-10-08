@@ -6,6 +6,16 @@ icon: arrows-retweet
 
 > Update Mega Menu Pro + Header Builder using the [Updater](https://etch.designwithcracka.com/mmpro-updater/).
 
+## Version 1.2.4 - October 8, 2026
+
+_Update path from v1.2.3: Component_
+
+### Fixes
+
+* **Tabbing through the mobile menu now stays inside the menu.** If you opened the menu by tapping or clicking it, the first press of Tab went to the page behind it. Opening the menu from the keyboard was already fine.
+
+***
+
 ## Version 1.2.3 - September 16, 2026
 
 _Update path from v1.2.2: CSS & Component_
