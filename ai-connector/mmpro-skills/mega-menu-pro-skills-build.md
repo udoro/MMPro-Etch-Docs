@@ -844,8 +844,7 @@ const postLoop = etch.loops.add({ key: 'categoryPosts', name: 'Category Posts', 
 
 * `loopParams` keys keep the `$`. The value is an expression on the parent item, without braces.
 * WooCommerce: `taxonomy: 'product_cat'`, and for a category's products `post_type: 'product'`
-  with `tax_query: [{ taxonomy: 'product_cat', field: 'term_id', terms: '$cat' }]`. This variant
-  is untested: check the published page.
+  with `tax_query: [{ taxonomy: 'product_cat', field: 'term_id', terms: '$cat' }]`.
 
 ### Renaming classes on existing blocks (no duplication)
 
