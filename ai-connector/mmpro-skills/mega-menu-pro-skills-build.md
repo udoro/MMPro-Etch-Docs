@@ -91,6 +91,15 @@ Before invoking any file editing or code generation tools, you must present the 
   - **(a) Restyle / adjust existing items** (retain nav items, alter look/behavior).
   - **(b) Full destructive rebuild from scratch** (wipe active items, build fresh).
 * If a visual asset or screenshot is provided, you must explicitly state how you intend to match it and ask if existing layout content must be cleared first.
+* **Reading a screenshot of an open mega menu:** find where the panel's own background, border,
+  shadow or rounded corners stop. Anything beyond them, such as a hero image or the page itself,
+  is the site behind the header and not part of the mega menu.
+  - Its background reaches both screen edges: the panel is full width. Use the "full-width panel"
+    row in the table below.
+  - Page shows on either side: the panel is a box. Set `megaMenu.width` in px. The screenshot may be
+    scaled, so measure the box against the header's content width, not in raw screenshot pixels.
+    For its position, see `general.contentAlignment` in Rules & gotchas.
+  - You can't tell which: ask, in the same batch as the questions above.
 * **Base class name approval (mandatory):** If the task requires choosing a new base CSS class name — building a new mega menu from scratch, or renaming an existing panel's class family without the user specifying the target name — you must ask the user what they want it called before writing any code. You may suggest 2–3 reasonable options, but the user must explicitly approve a suggestion or provide their own name. Never invent and apply a base class name unilaterally.
 * **Ambiguous-phrase resolution (mandatory when building from a free-form design/behavior brief):** Before writing any code, read the brief once specifically looking for phrases with more than one plausible technical reading — not just the (a)/(b) structural choice above. A vague sizing/width phrase, an unstated default/initial state, or two similarly-worded requirements that may or may not map to the same underlying control are all common shapes this takes. **Do not silently pick an interpretation and move on** — resolving that translation is the agent's job, not something a natural-language brief can be expected to spell out. List every such phrase you find and resolve them in the **same single `AskUserQuestion` batch** as the (a)/(b) structural choice and base-class-name approval above — one combined ask, not a drip of follow-ups.
 * **The Backup Invariant (Strictly Mandatory for Option B):** If option (b) is selected, you are strictly forbidden from running any destructive code until you generate a temporary script, execute the snippet below via the connector, and save the returned JSON payload to a backup file.
@@ -547,6 +556,8 @@ const NAV      = compId('DWC Nav');
 const TOGGLE   = compId('DWC Mobile Toggle');
 const DROPDOWN = compId('DWC Dropdown');
 const ITEM     = compId('DWC Menu Item');
+const TABBED   = compId('DWC Tabbed Nav');
+const TAB      = compId('DWC Tab');
 
 // Then locate block instances with the RESOLVED ids:
 const headerBlock = findBlock(etch.blocks.getTree(), HEADER);
@@ -561,7 +572,7 @@ const navBlock    = findBlock(etch.blocks.getTree(), NAV);
 ```js
 const styleId = (sel) => etch.styles.list().find(s => s.selector === sel)?.id;
 const headerVars = styleId('.dwc-header-vars');
-// also: .dwc-nav-vars, .dwc-top-level-items-vars, .dwc-dropdown-items-vars, .dwc-toggle-vars
+// also: .dwc-nav-vars, .dwc-top-level-items-vars, .dwc-dropdown-items-vars, .dwc-toggle-vars, .dwc-tabbed-nav-vars
 ```
 
 ```
@@ -673,6 +684,20 @@ etch.blocks.replace(phId, buildPanel(columns)); // replace() persists styles[] c
 > ```
 >
 > **DWC Mobile Toggle** — no slots. Self-contained.
+>
+> **DWC Tabbed Nav** — two slots:
+>
+> ```js
+> const tabbed = findBlock(etch.blocks.getTree(), TABBED);
+> const tabs = tabbed.children.find(c => c.slotName === 'Tabs'); // a <ul>: DWC Tab components only, or an etch/loop of them
+> const hero = tabbed.children.find(c => c.slotName === 'Hero'); // exists only while tabbedHero.enable is true
+> ```
+>
+> **DWC Tab** — one slot:
+>
+> ```js
+> const panel = tab.children.find(c => c.slotName === 'Tab_Content'); // the tab's panel; any layout
+> ```
 
 3. **Do NOT use `etch.blocks.create()` for class/styles** — classes set via `attributes.class` in `create()` JSON are NOT persisted (they're stripped on save/reload because the class attribute is coupled to `styles[]`). Use the workflow below instead.
 
@@ -740,6 +765,87 @@ await etch.saveAsync();
 * **Never put mega menu CSS in a custom stylesheet** — use style entries only.
 
 Only duplicate an existing mega menu if you need to copy content (not structure/styles), and plan to keep the same class names as the source.
+
+### Building a tabbed mega menu (DWC Tabbed Nav)
+
+Use this when the brief asks for tabs, categories down the side, or a list that swaps the panel
+next to it. The structure is fixed:
+
+```
+DWC Dropdown (megaMenu.enable {true})
+└─ Mega_Menu_Content: DWC Tabbed Nav, optionally followed by other blocks (a promo bar after it spans the full width under the tabs)
+   └─ Tabs: one DWC Tab per tab, or one etch/loop that repeats a DWC Tab
+      └─ Tab_Content: the tab's panel
+```
+
+* Place DWC Tabbed Nav in the `Mega_Menu_Content` slot of a DWC Dropdown with
+  `megaMenu.enable` on. On a page, use it only as a Tabbed Hero.
+* Create the dropdown with its slots and a placeholder (recipe above), then `replace()` the
+  placeholder with the whole DWC Tabbed Nav tree in one call, every `etch/slot-content` and every
+  classed panel node included. Every block in the JSON needs `children: []`, text and slot
+  blocks too.
+* Build panels like any mega menu content (rules above). Inside a tab's panel, `@container`
+  queries that panel's own width (the tab content is a container). A block after the Tabbed Nav,
+  such as a promo bar, queries the mega menu content.
+* Never set a height on a panel. On desktop the engine sizes the panel area to the open tab.
+* A tab whose label is a link: `linkTab: '{true}'` and `url`. The arrow then opens the tab.
+* An icon before a tab's name: set `icon.type` to `svg` (a Media Library SVG, an SVG URL or a
+  `data:image/svg+xml` URI; it takes the text colour unless `icon.textColour` is off) or `image`.
+  `useCustomSvg` replaces the arrow at the end of the tab, not this icon.
+* Tabbed Hero: set `tabbedHero` `enable` and include an `etch/slot-content` with
+  `slotName: 'Hero'` in the same JSON.
+  - Hero section on a page: put it in a block with `inline-size: 100%`. The hero content sets the
+    height; make it at least as tall as the longest tab.
+  - Compact dropdown in the header: leave the `Hero` slot empty, set the dropdown's
+    `general.contentAlignment` to `'left'` and a `megaMenu.width` that fits the list and an open tab.
+    To make the menu item as wide as the tab list, set `tabbedHero.matchDropdownWidth: '{true}'`.
+    Off (default): the item keeps its own width.
+* Nested tabs: a DWC Tabbed Nav inside a DWC Tab's `Tab_Content`. `layout.fitContent: 'true-all'`
+  applies Fit Content to every level.
+* Leave the BEHAVIOUR and MOBILE props on their defaults unless the brief asks. Tabs open the way
+  the parent DWC Dropdown opens, and on mobile they slide in with a back button.
+
+```js
+const slot = (slotName, children) => ({ type: 'etch/slot-content', version: 1, context: {}, options: {}, slotName, children });
+const tab = (label, panel) => ({
+  type: 'etch/component', version: 1, context: { name: 'Tab: ' + label }, options: {},
+  componentId: TAB, attributes: { text: label }, children: [slot('Tab_Content', [panel])],
+});
+const tabbedNav = {
+  type: 'etch/component', version: 1, context: { name: 'Shop Tabs' }, options: {},
+  componentId: TABBED, attributes: {},
+  children: [slot('Tabs', [tab('Men', menPanel), tab('Women', womenPanel)])],
+};
+etch.blocks.replace(placeholderId, tabbedNav); // menPanel, womenPanel: built with el()
+await etch.saveAsync();
+```
+
+#### Tabs from a taxonomy (loops)
+
+Put one `etch/loop` in the `Tabs` slot to repeat a DWC Tab per term. To list each term's posts,
+nest a second loop in the tab's panel and pass it the term id. Loops are buffered:
+`saveAsync()` after adding them.
+
+```js
+const termLoop = etch.loops.add({ key: 'shopCategories', name: 'Shop Categories', global: false,
+  config: { type: 'wp-terms', args: { taxonomy: 'category', hide_empty: true, orderby: 'name', order: 'ASC' } } });
+const postLoop = etch.loops.add({ key: 'categoryPosts', name: 'Category Posts', global: false,
+  config: { type: 'wp-query', args: { post_type: 'post', posts_per_page: 5, post_status: 'publish', cat: '$cat' } } });
+
+// In the Tabs slot. The DWC Tab inside it gets attributes { text: '{category.name}' }.
+{ type: 'etch/loop', version: 1, context: { name: 'Categories' }, options: {},
+  loopId: termLoop, itemId: 'category', children: [ /* one DWC Tab */ ] }
+
+// In that DWC Tab's panel:
+{ type: 'etch/loop', version: 1, context: { name: 'Category Posts' }, options: {},
+  loopId: postLoop, itemId: 'post', loopParams: { $cat: 'category.id' },
+  children: [ /* li > a: href '{post.permalink.relative}', text '{post.title}' */ ] }
+```
+
+* `loopParams` keys keep the `$`. The value is an expression on the parent item, without braces.
+* WooCommerce: `taxonomy: 'product_cat'`, and for a category's products `post_type: 'product'`
+  with `tax_query: [{ taxonomy: 'product_cat', field: 'term_id', terms: '$cat' }]`. This variant
+  is untested: check the published page.
 
 ### Renaming classes on existing blocks (no duplication)
 
@@ -909,6 +1015,7 @@ row below is a prop or a CSS-variable override — **none** of it needs hand-wri
 | desktop dropdown height transitions smoothly | `animation.adaptiveHeight {true}` (Nav) — mutually exclusive with `animation.stripeStyle` |
 | whitish blurred backdrop | `backdrop.navBackdropBackgroundColor` (colour/opacity) + `backdrop.navBackdropBlur` (blur intensity) on the DWC Nav. These props control the overlay that appears behind dropdown content when it opens — on both desktop and mobile. |
 | full-width panel, inner = content width | `megaMenu.enable {true}`, width via `dropdown.globalMegaMenuWidth: #dwc-header` for full-width headers — or **`.dwc-nest-header`** when using overlay header with a constrained width (the inner wrap is what carries the constrained width, not `#dwc-header`). **Never `100vw`/`%`**. Inner content width via `megaMenu.innerWidth` / `dropdown.globalInnerWidth` |
+| links on the right next to the CTA (e.g. Contact, Login, button) | `menuMode.lastItemIsButton: true-3` + `menuMode.nonButtonItemsAlignment: left` (Nav); the last 3 items are those links + the button; style CTA 2 and 3 as plain links with the `--menu-cta-2-*` / `--menu-cta-3-*` vars in `.dwc-top-level-items-vars` |
 | no item hover background | already default; if present, `--dropdown-item-hover-bg: transparent` in `.dwc-dropdown-items-vars` |
 | hover colour = darker black | `--menu-item-hover-clr` in `.dwc-top-level-items-vars` (no `!important`) |
 | use the Apple logo | locate the logo block and set its image `src` / inline SVG |
@@ -1342,6 +1449,24 @@ Examples: `dropdown.globalMegaMenuWidth` (nav) vs `megaMenu.width` (per-dropdown
 | `etch.stylesheets.*` | No        | Persists immediately     |
 | `etch.fields.*`      | No        | Persists immediately (all methods are async, no saveAsync) |
 
+* **`saveAsync()` never reports failure.** A failed save shows "Error saving" in the builder only,
+  and the promise still resolves. Check the published page after every save.
+* **A `saveAsync()` that returns in under a second wrote nothing.** Etch skips a save while another
+  is still running and for 1 second after one ends; on a slow network a save can run for minutes.
+  Save again in a new connector call a few seconds later, until one takes several seconds, then
+  check the page. Each real save writes the whole page, so nothing pending is lost.
+* **`setTimeout` never fires in a connector script, and the call hangs.** Wait between connector
+  calls, not inside one.
+
+### DWC Tabbed Nav in the builder
+
+* The canvas shows one panel per tabbed nav: the tab holding the selected block, else the tab the
+  user clicked last, else the DWC Tab with `inBuilder.showContent` on, else the first tab (a Tabbed
+  Hero shows its hero instead). Tell the
+  user to click a tab to see its panel.
+* The canvas shows a mega menu only while its DWC Dropdown has `inBuilder.keepOpen` on, or while
+  a block inside it is selected.
+
 ### DO NOT
 
 > ⚠ **CRITICAL — READ BEFORE WRITING ANY `create()` CALL FOR A COMPONENT BLOCK**
@@ -1349,6 +1474,12 @@ Examples: `dropdown.globalMegaMenuWidth` (nav) vs `megaMenu.width` (per-dropdown
 
 * **DO NOT** set `dropdown.dropdownContentBorderSize` to `0` or any value below `1px` — use `1px` as the minimum; set `dropdownContentBorderColor` to `transparent` if you want an invisible border
 * **DO NOT** use `%` or `100vw` for `megaMenu.width` / `globalMegaMenuWidth`. `%` resolves relative to the parent dropdown item; `100vw` includes the scrollbar width and causes horizontal overflow. **This includes a `%` nested inside a `min()`/`max()`/`clamp()`** — a self-insetting value that is safe everywhere else, like `min(1024px, 100%)`, is not safe here: the `100%` resolves against the `<li>`, and the panel silently falls back to the `--dropdown-content-width` default (shipped `to-rem(1200px)`) instead of the width you asked for. A **plain length works fine** (`1024px` sets `--dropdown-content-width` to `1024px`), so reach for that rather than concluding the prop ignores lengths. **For full-width headers, use `#dwc-header` (or the `header` tag)**. **For overlay headers with a constrained width, use `.dwc-nest-header`** — `.dwc-nest-header` is always the header inner wrap selector and is the element that actually carries the overlay-constrained width. Using `#dwc-header` with a constrained overlay header will make panels span the full viewport width instead of the header width.
+* **`general.contentAlignment` on a mega menu: `default` centres the panel on the header; `left`,
+  `center` and `right` line it up with its own nav item.** Panels that share a centre but differ in
+  width need only `megaMenu.width` per dropdown. No prop lines several panels up on one left edge.
+* **Leave `mobile.transparentMobileTop` on unless `mobile.fullscreenMobileMenu` is on.** The close
+  (X) is the header's own toggle seen through the transparent top bar. An opaque top bar hides it,
+  and the open menu has no visible way to close.
 * **DO NOT** guess select prop values from their UI label — the stored value is always the right-hand side of the ` : ` separator in `selectOptionsString` (e.g. `"Left : left"` stores `left`, not `Left`; `"Hover only : hover"` stores `hover`). When there is no ` : `, the stored value equals the label. **Always inspect `selectOptionsString` before setting any select prop.** Using a label instead of its stored value silently fails — the component ignores it and falls back to the default.
 
 * **`interactionUx.dropdownTriggerMode` on DWC Nav is inert. Set the trigger per Dropdown.** A DWC

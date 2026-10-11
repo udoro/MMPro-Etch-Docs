@@ -61,6 +61,22 @@ window.DwcConfig.MegaMenu = {
 | `allowOddItems`     | `0\|1`              | `1`       | Allow centering when the menu has an odd number of items.                                                      |
 | `roundOffFactor`    | `'before'\|'after'` | `'after'` | For odd item counts, place the extra item before or after the logo.                                            |
 
+### `window.DwcConfig.TabbedNav`
+
+Options for [Tabbed Navigation](tabbed-navigation.md).
+
+```js
+window.DwcConfig = window.DwcConfig || {};
+window.DwcConfig.TabbedNav = {
+  prewarmTimeout: 3000,
+};
+```
+
+| Key              | Type     | Default | Description                                                                                       |
+| ---------------- | -------- | ------- | ------------------------------------------------------------------------------------------------- |
+| `debounceDelay`  | `number` | `250`   | How long to wait after the window is resized before tabbed navs switch between desktop and mobile, in milliseconds. |
+| `prewarmTimeout` | `number` | `1500`  | The longest wait for fonts and images before the tab area is sized to fit the tallest tab, in milliseconds. |
+
 ***
 
 ## Public Instance Methods
@@ -213,6 +229,17 @@ Recalculates position for a single dropdown panel. `contentEl` is the dropdown c
 ```js
 const panel = document.querySelector('.dwc-dropdown-content');
 window.dwcMegaMenu.updateDropdownPosition(panel);
+```
+
+### Tabbed Navigation
+
+#### `TabbedNavSystem.recalculateHeights()`
+
+Resizes the tab area of every tabbed nav to fit its tallest tab. Call it after you add or change tab content with JavaScript, for example content that loads later.
+
+```js
+// After loading extra content into a tab
+window.DWCMegaMenuUtils.TabbedNavSystem.recalculateHeights();
 ```
 
 ***

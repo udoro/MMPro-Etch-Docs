@@ -6,6 +6,32 @@ icon: arrows-retweet
 
 > Update Mega Menu Pro + Header Builder using the [Updater](https://etch.designwithcracka.com/mmpro-updater/).
 
+## Version 1.3.0 - October 11, 2026
+
+_Update path from v1.2.4: CSS & Component_
+
+### New
+
+* **Tabbed Navigation.** Put tabs down the side of a mega menu. Hover or click a tab and its content shows next to it. On mobile, a tab's content slides in with a back button, or opens like an accordion. It comes as two new components, DWC Tabbed Nav and DWC Tab. See [Tabbed Navigation](../tabbed-navigation.md).
+* **Tabbed Hero.** Put your own hero content next to the tabs. Use it as a hero section on a page, or as a compact dropdown in your header that shows only the tab list until you hover a tab.
+* Build tabs from your categories with an Etch loop, including WooCommerce product categories. New categories get their own tab automatically.
+* Add an icon before a tab's name with the LABEL ICON group on DWC Tab.
+* Click a tab in the builder to see its content while you edit.
+* The header template has a new "Shop" mega menu that uses tabs.
+
+### Fixes
+
+* General bug fixes and refinements.
+
+### AI Skills
+
+* Agents can build tabbed mega menus, including tabs made from your categories.
+* Agents read reference screenshots better, so each mega menu's width and position match your reference more closely.
+* Agents can build headers with plain links next to the main button, such as Contact and Login.
+* Agents no longer report a change as saved when it didn't save. This happened most on a slow connection.
+
+***
+
 ## Version 1.2.4 - October 8, 2026
 
 _Update path from v1.2.3: Component_

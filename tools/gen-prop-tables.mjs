@@ -125,7 +125,7 @@ function renderDefault(p) {
   // A `class` prop stores STYLE-ENTRY IDs, and those are minted per install. The
   // export's ids are the export's. Printing them would invite exactly the mistake
   // that printing component ids invites, so say what the field holds instead.
-  if (p.specialized === 'class') return '*(install-local style ids)*';
+  if (p.specialized === 'class') return Array.isArray(p.def) && p.def.length === 0 ? '' : '*(install-local style ids)*';
   if (p.def === undefined || p.def === null || p.def === '') return '';
   const d = String(p.def);
   // Booleans arrive as "{true}" / "{false}"; strip the Etch brace wrapper.
@@ -134,6 +134,11 @@ function renderDefault(p) {
 }
 
 function renderValues(p) {
+  // setAttribute stores a class prop's value as given: only style ids render
+  if (p.specialized === 'class') {
+    const note = 'Style ids, space-separated (`styleId(\'.my-class\')`). Class names are stored as text and render nothing.';
+    return p.description ? esc(p.description) + ' ' + note : note;
+  }
   if (p.options) return p.options.map((o) => '`' + o + '`').join(' / ');
   if (p.primitive === 'boolean') return '`true` / `false`';
   return p.description ? esc(p.description) : '';
@@ -197,7 +202,7 @@ for (const comp of Object.values(doc.components)) {
   for (const p of props) {
     const attr = map.get(p.path);
     if (attr) { report.bound++; boundAttrs.add(attr); } else { report.unbound.push(`${comp.name}: ${p.path}`); }
-    const note = [renderValues(p), p.when ? 'Shown when `' + esc(p.when) + '`' : '']
+    const note = [p.when ? renderValues(p).replace(/\.$/, '') : renderValues(p), p.when ? 'Shown when `' + esc(p.when) + '`' : '']
       .filter(Boolean).join('. ');
     lines.push(
       `| ${esc(p.name)} | \`props.${p.path}\` | ${attr ? '`' + attr + '`' : 'style only'} | ${renderDefault(p)} | ${note} |`

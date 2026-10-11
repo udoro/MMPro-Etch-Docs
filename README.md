@@ -10,7 +10,7 @@ icon: pen-to-square
 
 ## What's included
 
-**Etch Mega Menu Pro + Header Builder** ships five builder components. Each component handles a distinct part of the header and navigation system:
+**Etch Mega Menu Pro + Header Builder** ships seven builder components. Each component handles a distinct part of the header and navigation system:
 
 | Component                                            | Purpose                                                                                                                               |
 | ---------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------- |
@@ -19,6 +19,8 @@ icon: pen-to-square
 | [DWC Dropdown](components/dwc-dropdown.md)           | A single top-level nav item with a dropdown or mega menu panel                                                                        |
 | [DWC Menu Item](components/dwc-menu-item.md)         | A plain nav link — supports badges, visibility rules, and responsive relocation                                                       |
 | [DWC Mobile Toggle](components/dwc-mobile-toggle.md) | The hamburger button that opens and closes the mobile menu                                                                            |
+| [DWC Tabbed Nav](components/dwc-tabbed-nav.md)       | A mega menu panel with tabs down the side. See [Tabbed Navigation](tabbed-navigation.md)                                              |
+| [DWC Tab](components/dwc-tab.md)                     | One tab inside a DWC Tabbed Nav: its name and its content                                                                            |
 | [AI Connector](https://design-with-cracka.gitbook.io/megamenupro/ai-connector) | Control MMPro through a conversational AI agent — setup guide, requirements, and the Skills File your agent needs to load |
 
 ***

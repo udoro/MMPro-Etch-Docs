@@ -13,7 +13,7 @@ is unchanged from the main file except where noted.
 
 ## 4. Prop reference
 
-Every settable prop on all five components. Generated from the Etch component export, so it matches
+Every settable prop on all seven components. Generated from the Etch component export, so it matches
 the components the plugin ships. Do not hand-edit the generated block.
 
 **Reading the tables**
@@ -35,7 +35,7 @@ the components the plugin ships. Do not hand-edit the generated block.
 
 <!-- GENERATED:PROPS start -->
 
-*Generated from Mega Menu Pro **1.2.2**. Paths, defaults and select values are properties of
+*Generated from Mega Menu Pro **v1.3.0**. Paths, defaults and select values are properties of
 the plugin version, identical on every install of it. Component IDs are install-local and are
 deliberately absent: always resolve them by name.*
 
@@ -50,9 +50,11 @@ disagree**, and treat the live schema as authoritative for those. Do not dump th
 | --- | --- |
 | DWC Menu Item | `16:ewqg76` |
 | DWC Dropdown | `22:1y5oqyo` |
-| DWC Nav | `56:1jaftl0` |
+| DWC Nav | `55:1ikc13o` |
 | DWC Mobile Toggle | `26:quzir` |
 | DWC Header | `33:vskoe2` |
+| DWC Tabbed Nav | `16:pal5xu` |
+| DWC Tab | `11:6qpa2e` |
 
 ### DWC Menu Item
 
@@ -69,11 +71,11 @@ disagree**, and treat the live schema as authoritative for those. Do not dump th
 | Padding | `props.badge.padding` | `style` | `0.1em 0.5em;` | Shown when `props.badge.text !== "none"` |
 | Gap | `props.badge.gap` | `style` | `1em` | Shown when `props.badge.text !== "none"` |
 | Mode | `props.relocation.mode` | style only | `none` | `none` / `Move to header on mobile : breakout` / `Move to a specific container on mobile : breakinto` / `Move to mobile menu footer : breakin` |
-| Return Breakpoint | `props.relocation.returnBreakpoint` | `data-breakout` |  | Item will move to the header at the Mobile Breakpoint. Set a lower breakpoint where the item returns to the mobile menu, for example, 480. Leave empty to keep the item in the header.. Shown when `props.relocation.mode === "breakout"` |
-| Container Selector \| Breakpoint | `props.relocation.containerSelectorBreakpoint` | `data-breakinto` |  | E.g. #my-div \| 767. NOTE: You can also move any element to any container - add the attribute 'data-breakinto = .container-selector \| breakpoint' to the target element.. Shown when `props.relocation.mode === "breakinto"` |
+| Return Breakpoint | `props.relocation.returnBreakpoint` | `data-breakout` |  | Item will move to the header at the Mobile Breakpoint. Set a lower breakpoint where the item returns to the mobile menu, for example, 480. Leave empty to keep the item in the header. Shown when `props.relocation.mode === "breakout"` |
+| Container Selector \| Breakpoint | `props.relocation.containerSelectorBreakpoint` | `data-breakinto` |  | E.g. #my-div \| 767. NOTE: You can also move any element to any container - add the attribute 'data-breakinto = .container-selector \| breakpoint' to the target element. Shown when `props.relocation.mode === "breakinto"` |
 | Visibility | `props.general.visibility` | `data-breakpoint-visibility` | `Default` | `Default` / `Hide on Desktop : hide-on-desktop` / `Hide on Mobile : hide-on-mobile` / `Hide on Both (not rendered) : hide-on-both` |
 | Link class | `props.classes.linkClass` | `class` | `dwce-text-link` |  |
-| Styling Classes | `props.classes.stylingClasses` | `class` | *(install-local style ids)* | Shown when `!props.classes` |
+| Styling Classes | `props.classes.stylingClasses` | `class` | *(install-local style ids)* | Style ids, space-separated (`styleId('.my-class')`). Class names are stored as text and render nothing. Shown when `!props.classes` |
 
 ### DWC Dropdown
 
@@ -89,8 +91,8 @@ disagree**, and treat the live schema as authoritative for those. Do not dump th
 | Exclude Equal Height | `props.nestedDropdown.excludeEqualHeight` | `data-exclude-from-equal-height` | `false` | `true` / `false`. Shown when `!props.megaMenu.enable` |
 | Parent Relative | `props.nestedDropdown.parentRelative` | `data-parent-relative-dropdown` | `false` | `true` / `false`. Shown when `!props.megaMenu.enable` |
 | Enable | `props.megaMenu.enable` | `data-megamenu` | `false` | `true` / `false` |
-| Width | `props.megaMenu.width` | `data-content-width` |  | E.g. 1200px, 100vw, var(--content-width), .class, #ID.. Shown when `props.megaMenu.enable` |
-| Inner Width | `props.megaMenu.innerWidth` | `style` | `inherit` | Mega Menu Content Width. Default is 100%.. Shown when `props.megaMenu.enable` |
+| Width | `props.megaMenu.width` | `data-content-width` |  | E.g. 1200px, 100vw, var(--content-width), .class, #ID. Shown when `props.megaMenu.enable` |
+| Inner Width | `props.megaMenu.innerWidth` | `style` | `inherit` | Mega Menu Content Width. Default is 100%. Shown when `props.megaMenu.enable` |
 | Breakout | `props.megaMenu.breakout` | `data-breakout-mega` | `false` | `true` / `false`. Shown when `props.megaMenu.enable` |
 | Content Alignment | `props.general.contentAlignment` | `data-content-align` | `default` | `default` / `center` / `left` / `right` |
 | Visibility | `props.general.visibility` | `data-breakpoint-visibility` | `Default` | `Default` / `Hide on Desktop : hide-on-desktop` / `Hide on Mobile : hide-on-mobile` / `Hide on Both (not rendered) : hide-on-both` |
@@ -100,7 +102,7 @@ disagree**, and treat the live schema as authoritative for those. Do not dump th
 | Custom SVG | `props.general.customSvg` | style only |  | Paste SVG code here. Shown when `props.general.useCustomSvg` |
 | Submenu  Reveal | `props.general.submenuReveal` | `data-submenu-reveal` | `default` | `Default : default` / `Expand : expand` / `Slide : slide` |
 | List item class | `props.classes.listItemClass` | `class` | `dwce-dropdown` |  |
-| Styling Classes | `props.classes.stylingClasses` | `class` | *(install-local style ids)* | Shown when `!props.classes` |
+| Styling Classes | `props.classes.stylingClasses` | `class` | *(install-local style ids)* | Style ids, space-separated (`styleId('.my-class')`). Class names are stored as text and render nothing. Shown when `!props.classes` |
 
 ### DWC Nav
 
@@ -121,12 +123,12 @@ disagree**, and treat the live schema as authoritative for those. Do not dump th
 | Mobile Menu Background | `props.mobile.mobileMenuBackground` | `style` | `var(--header-bg)` |  |
 | Slide in direction | `props.mobile.slideInDirection` | `data-slide-in-direction` | `right` | `Right : right` / `Left : left` / `Top : top` / `Expand Down (from Header) : expand down` / `Bottom : bottom` / `Right Top : right top` / `Right Bottom : right bottom` |
 | Submenu reveal | `props.mobile.submenuReveal` | `data-submenu-reveal` | `slide` | `Slide in : slide` / `Expand : expand` |
-| Submenu Slideout Distance | `props.mobile.submenuSlideExtras.submenuSlideoutDistance` | `style` | `100%` | Controls how far the submenu slides out of view. Opacity must be set to 0 if this value is less than 100%.. Shown when `props.mobile.submenuReveal !== "expand"` |
-| Submenu Slideout Opacity | `props.mobile.submenuSlideExtras.submenuSlideoutOpacity` | `style` | `1` | Set whether the submenu fades out while sliding away.. Shown when `props.mobile.submenuReveal !== "expand"` |
+| Submenu Slideout Distance | `props.mobile.submenuSlideExtras.submenuSlideoutDistance` | `style` | `100%` | Controls how far the submenu slides out of view. Opacity must be set to 0 if this value is less than 100%. Shown when `props.mobile.submenuReveal !== "expand"` |
+| Submenu Slideout Opacity | `props.mobile.submenuSlideExtras.submenuSlideoutOpacity` | `style` | `1` | Set whether the submenu fades out while sliding away. Shown when `props.mobile.submenuReveal !== "expand"` |
 | Fade Items on Slide | `props.mobile.submenuSlideExtras.fadeItemsOnSlide` | `data-fade-items-on-slide` | `false` | `true` / `false`. Shown when `props.mobile.submenuReveal !== "expand"` |
 | Mobile/Offcanvas Menu Speed | `props.mobile.mobileOffcanvasMenuSpeed` | `style` | `1.2` |  |
 | Fullscreen Mobile Menu | `props.mobile.fullscreenMobileMenu` | `data-fullscreen-mobile-menu` | `false` | `true` / `false` |
-| Mobile Top background | `props.mobile.mobileTopBackground` | `style` | `var(--header-bg)` | Topbar Background only applied when Fullscreen Mobile Menu is enabled or Transparent Mobile Top is disabled.. Shown when `props.mobile.fullscreenMobileMenu \|\| !props.mobile.transparentMobileTop` |
+| Mobile Top background | `props.mobile.mobileTopBackground` | `style` | `var(--header-bg)` | Topbar Background only applied when Fullscreen Mobile Menu is enabled or Transparent Mobile Top is disabled. Shown when `props.mobile.fullscreenMobileMenu \|\| !props.mobile.transparentMobileTop` |
 | Transparent Mobile Top | `props.mobile.transparentMobileTop` | `data-mobile-top-transparent` | `true` | `true` / `false`. Shown when `!props.mobile.fullscreenMobileMenu` |
 | Hide Back Text | `props.mobile.hideBackText` | `data-hide-back-text` | `false` | `true` / `false` |
 | Back Text Mode | `props.mobile.backTextMode` | `data-back-text-mode` | `back-to` | `Back to : back-to` / `Title : title`. Shown when `!props.mobile.hideBackText` |
@@ -145,7 +147,6 @@ disagree**, and treat the live schema as authoritative for those. Do not dump th
 | Nested Dropdown Offset Gap | `props.dropdown.nestedDropdownOffsetGap` | `style` | `0px` | Gap between nestable parent dropdown item and flyout content |
 | Caret | `props.dropdown.caret` | `data-caret` | `false` | `true` / `false` |
 | Arrow  Visibilty | `props.dropdown.arrowVisibilty` | `arrow-visibility` | `Default` | `Default` / `Hide` / `Hide on Mobile` / `Hide on Desktop` |
-| DROPDOWN Trigger Mode | `props.interactionUx.dropdownTriggerMode` | `data-toggle` | `both` | `Hover or Click : both` / `Hover only : hover` / `Click only : click` |
 | Nested Dropdown Active Overlay | `props.interactionUx.nestedDropdownActiveOverlay` | `nested-dropdown-active-overlay` | `true` | `true` / `false` |
 | - Nested Dropdown Active Overlay Color | `props.interactionUx.nestedDropdownActiveOverlayColor` | `style` | `rgb(30 50 100 / 10%)` | Shown when `props.interactionUx.nestedDropdownActiveOverlay` |
 | - Nested Dropdown Inactive Blur | `props.interactionUx.nestedDropdownInactiveBlur` | `style` | `0px` | Shown when `props.interactionUx.nestedDropdownActiveOverlay` |
@@ -161,7 +162,7 @@ disagree**, and treat the live schema as authoritative for those. Do not dump th
 | Dropdown Buffer Height | `props.buffer.dropdownBufferHeight` | `style` | `inherit` |  |
 | Nested Dropdown Buffer Width | `props.buffer.nestedDropdownBufferWidth` | `style` | `50px` |  |
 | Preview Buffer Zone | `props.buffer.previewBufferZone` | `preview-buffer` | `false` | `true` / `false` |
-| Styling Classes | `props.classes.stylingClasses` | `class` | *(install-local style ids)* | Shown when `!props.classes` |
+| Styling Classes | `props.classes.stylingClasses` | `class` | *(install-local style ids)* | Style ids, space-separated (`styleId('.my-class')`). Class names are stored as text and render nothing. Shown when `!props.classes` |
 
 ### DWC Mobile Toggle
 
@@ -192,7 +193,7 @@ disagree**, and treat the live schema as authoritative for those. Do not dump th
 | Target Selector | `props.targetSelector` | `data-target-selector` |  | Adds the class .dwc-open to the specified selector. Useful for triggering custom elements. |
 | Aria Label | `props.ariaLabel` | `aria-label` | `Open Menu` |  |
 | Class | `props.class` | `class` | `dwce-toggle` |  |
-| Styling Class | `props.stylingClass` | `class` | *(install-local style ids)* | Shown when `!props.stylingClass` |
+| Styling Class | `props.stylingClass` | `class` | *(install-local style ids)* | Style ids, space-separated (`styleId('.my-class')`). Class names are stored as text and render nothing. Shown when `!props.stylingClass` |
 
 ### DWC Header
 
@@ -214,29 +215,67 @@ disagree**, and treat the live schema as authoritative for those. Do not dump th
 | Overlay Header Background | `props.overlay.overlayHeaderBackground` | `style` | `var(--header-bg)` | For transparent overlay header, set background to transparent value. Property: --overlay-header-bg. Shown when `props.overlay.overlayHeader \|\| props.overlay.overlayHeaderMobile` |
 | Overlay Header Active Background | `props.overlay.overlayHeaderActiveBackground` | `style` | `var(--header-bg)` | Overlay header background when hovering on menu item. Property: --overlay-header-bg-active. Shown when `props.overlay.overlayHeader \|\| props.overlay.overlayHeaderMobile` |
 | Overlay Header Radius | `props.overlay.overlayHeaderRadius` | `style` | `0px` | Shown when `props.overlay.overlayHeader \|\| props.overlay.overlayHeaderMobile` |
-| Overlay Header Inset Inline | `props.overlay.overlayHeaderInsetInline` | `style` | `0px` | Use `var(--gutter)` unless you're using a full width header. Non ACSS users should use their section's inline padding value instead.. Shown when `props.overlay.overlayHeader \|\| props.overlay.overlayHeaderMobile` |
+| Overlay Header Inset Inline | `props.overlay.overlayHeaderInsetInline` | `style` | `0px` | Use `var(--gutter)` unless you're using a full width header. Non ACSS users should use their section's inline padding value instead. Shown when `props.overlay.overlayHeader \|\| props.overlay.overlayHeaderMobile` |
 | Overlay Header Inset Block | `props.overlay.overlayHeaderInsetBlock` | `style` | `0px` | Shown when `props.overlay.overlayHeader \|\| props.overlay.overlayHeaderMobile` |
 | Remove Top Radius | `props.overlay.removeTopRadius` | `data-overlay-header-no-top-radius` | `false` | `true` / `false`. Shown when `props.overlay.overlayHeader \|\| props.overlay.overlayHeaderMobile` |
 | Overlay Header Shadow | `props.overlay.overlayHeaderShadow` | `style` | `0px 2px 20px rgb(0 0 0 / 20%)` | Shown when `props.overlay.overlayHeader \|\| props.overlay.overlayHeaderMobile` |
 | Offset Section Padding | `props.overlay.offsetSectionPadding` | `data-offset-section-padding` | `false` | `true` / `false`. Shown when `props.overlay.overlayHeader \|\| props.overlay.overlayHeaderMobile` |
 | Section Offset Padding Value | `props.overlay.sectionOffsetPaddingValue` | `style` | `clamp(10.3125rem, 11.1277rem + -2.7174vw, 8.75rem)` | Shown when `props.overlay.offsetSectionPadding` |
-| Styling Classes | `props.classes.stylingClasses` | `class` | *(install-local style ids)* | Shown when `!props.classes` |
+| Styling Classes | `props.classes.stylingClasses` | `class` | *(install-local style ids)* | Style ids, space-separated (`styleId('.my-class')`). Class names are stored as text and render nothing. Shown when `!props.classes` |
 | Skip Link | `props.accessibilty.skipLink` | style only | `true` | `Enable : true` / `Disable : false` |
 | Custom Skip Link Parameter | `props.accessibilty.customSkipLinkParameter` | `data-skip-link` | `main | Skip to Content` | You can type in a custom parameter to generate skip links. Multiple parameter separate by commas. Formats: #main \| Skip to content, #footer \| Skip to footer. If the target does not have an ID, use selector format: main \| Skip to content. Shown when `props.accessibilty.skipLink === "true"` |
 | MMPro AI Assistant | `props.mmProAiAssistant` | `data-mmpro-assist` | `true` | `true` / `false` |
 | Enable | `props.liquidGlass.enable` | `data-liquid-glass` | `false` | `true` / `false` |
-| Distortion | `props.liquidGlass.distortion` | style only | `50` | Default: 50 \| Range: 20–80 \| Controls warp strength. Higher = more distortion like thick glass, lower = subtle.. Shown when `props.liquidGlass.enable` |
-| Surface Depth | `props.liquidGlass.surfaceDepth` | `scale` | `5` | Default: 5 \| Range: 1–10 \| Creates color fringing (chromatic aberration). Higher = more rainbow separation at edges.. Shown when `props.liquidGlass.enable` |
-| Shininess | `props.liquidGlass.shininess` | `stdDeviation` | `7` | Default: 7 \| Range: 0–7 \| Controls reflection sharpness. Lower = crisper reflections, higher = softer, frosted glass, blurry.. Shown when `props.liquidGlass.enable` |
+| Distortion | `props.liquidGlass.distortion` | style only | `50` | Default: 50 \| Range: 20–80 \| Controls warp strength. Higher = more distortion like thick glass, lower = subtle. Shown when `props.liquidGlass.enable` |
+| Surface Depth | `props.liquidGlass.surfaceDepth` | `scale` | `5` | Default: 5 \| Range: 1–10 \| Creates color fringing (chromatic aberration). Higher = more rainbow separation at edges. Shown when `props.liquidGlass.enable` |
+| Shininess | `props.liquidGlass.shininess` | `stdDeviation` | `7` | Default: 7 \| Range: 0–7 \| Controls reflection sharpness. Lower = crisper reflections, higher = softer, frosted glass, blurry. Shown when `props.liquidGlass.enable` |
 | Saturate | `props.liquidGlass.saturate` | `style` | `1.4` | Default: 1.4. 0: Completely desaturates the background (grayscale). 1: Leaves the background unchanged with its original saturation. Above 1: Super-saturates the background, making colors much more vibrant. Shown when `props.liquidGlass.enable` |
 | Border | `props.liquidGlass.border` | `style` | `1px solid rgba(255, 255, 255, 0.3)` | Shown when `props.liquidGlass.enable` |
-| Box Shadow | `props.liquidGlass.boxShadow` | `style` | `var(--liquid-glass-shadow)` | Shadow is set in the .dwc-header-vars variables on DWC Header Component. Overrides overlay header shadow.. Shown when `props.liquidGlass.enable` |
+| Box Shadow | `props.liquidGlass.boxShadow` | `style` | `var(--liquid-glass-shadow)` | Shadow is set in the .dwc-header-vars variables on DWC Header Component. Overrides overlay header shadow. Shown when `props.liquidGlass.enable` |
+
+### DWC Tabbed Nav
+
+| Prop | Path | Attribute | Default | Values / notes |
+| --- | --- | --- | --- | --- |
+| Tab List Align | `props.layout.tabListAlign` | `data-nav-list-align` | `default` | `Default : default` / `Top : top` / `Center : center` / `Bottom : bottom` |
+| Fit Content | `props.layout.fitContent` | `data-nav-list-fit-content` | `false` | `Off : false` / `First level : true` / `All levels : true-all` |
+| Divider | `props.layout.divider` | `data-divider` | `false` | `true` / `false` |
+| Bleed | `props.layout.bleed` | `data-bleed` | `true` | `true` / `false` |
+| Content Reveal | `props.layout.contentReveal` | `data-content-reveal` | `none` | `None : none` / `Fade in : fade-in` / `Wipe : wipe` |
+| Tab List Width | `props.layout.tabListWidth` | `style` | `inherit` | E.g. 250px. inherit uses the --tab-list-width value of the styling class. |
+| Enable | `props.tabbedHero.enable` | `data-tabbed-hero` | `false` | `true` / `false` |
+| Match Dropdown Width | `props.tabbedHero.matchDropdownWidth` | `data-match-dropdown-width` | `false` | `true` / `false`. Shown when `props.tabbedHero.enable` |
+| Open Tabs On | `props.behaviour.openTabsOn` | `data-trigger` | `inherit` | `Same as dropdown : inherit` / `Hover : hover` / `Click : click` |
+| Open First Tab | `props.behaviour.openFirstTab` | `data-open-first-tab` | `default` | `Default : default` / `Yes : true` / `No : false` |
+| Close On Mouse Out | `props.behaviour.closeOnMouseOut` | `data-close-on-mouseout` | `default` | `Default : default` / `Yes : true` / `No : false` |
+| Slide In | `props.mobile.slideIn` | `data-slide-in` | `true` | `true` / `false` |
+| Back Text | `props.mobile.backTextMode` | `data-back-text-mode` | `inherit` | `Same as DWC Nav : inherit` / `Tab name : title` / `Custom : custom` |
+| Custom Back Text | `props.mobile.customBackText` | `data-back-text` | `Back` | Shown when `props.mobile.backTextMode === "custom"` |
+| Container Class | `props.classes.containerClass` | `class` |  | Style ids, space-separated (`styleId('.my-class')`). Class names are stored as text and render nothing. |
+| Styling Classes | `props.classes.stylingClasses` | `class` | *(install-local style ids)* | Style ids, space-separated (`styleId('.my-class')`). Class names are stored as text and render nothing. Shown when `!props.classes` |
+
+### DWC Tab
+
+| Prop | Path | Attribute | Default | Values / notes |
+| --- | --- | --- | --- | --- |
+| Text | `props.text` | `aria-label` | `Tab` |  |
+| Link Tab | `props.linkTab` | style only | `false` | `true` / `false` |
+| URL | `props.url` | `href` | `#` | Shown when `props.linkTab` |
+| Use Custom Arrow SVG | `props.useCustomSvg` | style only | `false` | `true` / `false` |
+| Custom Arrow SVG | `props.customSvg` | style only |  | Paste the arrow's SVG code here. Shown when `props.useCustomSvg` |
+| Icon | `props.icon.type` | style only | `none` | `None : none` / `SVG : svg` / `Image : image` |
+| SVG | `props.icon.svg` | `src` |  | An SVG from the Media Library, an SVG URL, or a data:image/svg+xml URI. Etch cleans it, so Allow "unsafe" HTML is not needed. Shown when `props.icon.type === "svg"` |
+| Use Text Colour | `props.icon.textColour` | `stripColors` | `true` | `true` / `false`. Shown when `props.icon.type === "svg"` |
+| Image | `props.icon.image` | `src` |  | Any image. It keeps its own colours. Shown when `props.icon.type === "image"` |
+| Show Content | `props.inBuilder.showContent` | `data-builder-show` | `false` | `true` / `false` |
+| List Item Class | `props.classes.listItemClass` | `class` |  | Style ids, space-separated (`styleId('.my-class')`). Class names are stored as text and render nothing. |
 
 <!-- GENERATED:PROPS end -->
 
 > **Prose and examples:** for exhaustive descriptions, slot documentation and per-component examples,
 > read this repo's `components/` folder (`../../components/dwc-header.md`, `dwc-nav.md`,
-> `dwc-dropdown.md`, `dwc-menu-item.md`, `dwc-mobile-toggle.md`, relative to this file), or the
+> `dwc-dropdown.md`, `dwc-menu-item.md`, `dwc-mobile-toggle.md`, `dwc-tabbed-nav.md`, `dwc-tab.md`,
+> relative to this file), or the
 > online docs at <https://design-with-cracka.gitbook.io/megamenupro>. Those pages document the
 > **settings panel**, so use them for what a setting means and this table for what to set.
 
@@ -407,7 +446,7 @@ etch.styles.removeVariable('--var', collection?)
 
 ## 7. JavaScript config (last resort)
 
-The DWC Nav exposes `window.DwcConfig.MegaMenu` and `window.DwcConfig.CenteredLogo`. Set these BEFORE the component initialises to override JS-level defaults. Only use when props and CSS cannot achieve the result.
+The DWC Nav exposes `window.DwcConfig.MegaMenu`, `window.DwcConfig.CenteredLogo` and `window.DwcConfig.TabbedNav`. Set these BEFORE the component initialises to override JS-level defaults. Only use when props and CSS cannot achieve the result.
 
 Key `DwcConfig.MegaMenu` options:
 
@@ -424,6 +463,13 @@ Key `DwcConfig.MegaMenu` options:
 `DwcConfig.CenteredLogo`:
 
 * `enable`, `forceCenteredLogo`, `centerNudge`, `roundOffFactor`, `allowOddItems`
+
+`DwcConfig.TabbedNav`:
+
+* `debounceDelay` — ms after a resize before tabbed navs re-check desktop or mobile (default 250)
+* `prewarmTimeout` — longest wait in ms for fonts and images before tab panels are measured (default 1500)
+
+After adding tab content with JavaScript, call `DWCMegaMenuUtils.TabbedNavSystem.recalculateHeights()`.
 
 ***
 
