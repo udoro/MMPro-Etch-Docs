@@ -4,6 +4,8 @@ icon: folder-tree
 
 # Tabbed Navigation
 
+**Full only.** Lite doesn't have Tabbed Navigation.
+
 Tabbed Navigation is a mega menu with tabs down the side. Hover or click a tab and its content shows next to it. It fits a lot of links into a small space.
 
 Good for:

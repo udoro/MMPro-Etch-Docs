@@ -15,8 +15,8 @@ The outermost wrapper of the entire header. It controls sticky behaviour, overla
 | Setting                           | Description                                                                                                                                                                                                                                                                                                                                                      |
 | --------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | **Sticky Header**                 | Makes the header stick to the top of the viewport as the user scrolls. To disable sticky on a specific page without removing the setting, add the attribute `data-no-sticky` to any section on that page.                                                                                                                                                        |
-| **Scroll Down Visibility**        | Which row(s) to show or hide when the user scrolls down. Options: `Default` (all rows stay), `hide-row-1/2/3` (slide that row off-screen), `show-row-1/2/3` (keep only that row visible), `hide-all-rows` (collapse the entire header).                                                                                                                          |
-| **Scroll Up Visibility**          | Which row(s) to restore when the user scrolls back up. Options: `Default`, `show-row-1/2/3`, `show-all-rows`, `reverse`.                                                                                                                                                                                                                                         |
+| **Scroll Down Visibility**        | Which row(s) to show or hide when the user scrolls down. Options: `Default` (all rows stay), `hide-row-1/2/3` (slide that row off-screen), `show-row-1/2/3` (keep only that row visible), `hide-all-rows` (collapse the entire header). Lite has `Default` and `hide-all-rows`.                                                                                                                          |
+| **Scroll Up Visibility**          | Which row(s) to restore when the user scrolls back up. Options: `Default`, `show-row-1/2/3`, `show-all-rows`, `reverse`. Lite has `Default` and `reverse`.                                                                                                                                                                                                                                         |
 | **Scroll Visibility Distance**    | How far the user must scroll before the hide/show triggers. Accepts `px` values (`200px`), `rem` values (`12rem`), or a plain number (`200`). Default: `200px`.                                                                                                                                                                                                  |
 | **Sticky Header Background**      | Background colour applied to the header once the user has scrolled. Controls the CSS property `--header-bg-sticky`.                                                                                                                                                                                                                                              |
 | **Scroll Margin**                 | Sets the `--dwc-scroll-margin` variable so in-page anchor links scroll to the correct position below the sticky header.                                                                                                                                                                                                                                          |
@@ -39,7 +39,7 @@ The outermost wrapper of the entire header. It controls sticky behaviour, overla
 
 ### Liquid Glass
 
-Creates an immersive, glass-like digital backdrop where on-screen elements dynamically bend, refract, and morph in response to motion. Mutually exclusive with **Header Blur** — enabling Liquid Glass suppresses the header's `backdrop-filter` blur rule on both desktop and mobile.
+**Full only.** Creates an immersive, glass-like digital backdrop where on-screen elements dynamically bend, refract, and morph in response to motion. Mutually exclusive with **Header Blur** — enabling Liquid Glass suppresses the header's `backdrop-filter` blur rule on both desktop and mobile.
 
 | Setting            | Description                                                                                                                                                                              |
 | ------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
@@ -177,6 +177,8 @@ The `.dwc-header-vars` class is already applied to the **DWC Header** component 
 
 ### Adaptive Height / Stripe animation
 
+**Full only.**
+
 ```css
 .dwc-header-vars {
   --adaptive-height-bg: var(--dropdown-content-bg); /* background of the animated stripe or adaptive zone */
@@ -187,6 +189,8 @@ The `.dwc-header-vars` class is already applied to the **DWC Header** component 
 ```
 
 ### Liquid Glass
+
+**Full only.**
 
 ```css
 .dwc-header-vars {

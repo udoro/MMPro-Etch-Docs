@@ -10,6 +10,8 @@ The Updater lets you move to a newer version while keeping all your existing cus
 
 **Access the updater:** [etch.designwithcracka.com/mmpro-updater](https://etch.designwithcracka.com/mmpro-updater/)
 
+**Lite** is new in 1.3.1. To start using it, install it fresh: see [Installation & Getting Started](getting-started.md).
+
 ***
 
 ## Step 1: Load your current version

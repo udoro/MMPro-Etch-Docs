@@ -4,6 +4,8 @@ icon: square-list
 
 # DWC Tab
 
+**Full only.** Lite doesn't have this component.
+
 One tab inside a **DWC Tabbed Nav**. It holds the tab's name and the content that shows when the tab is open. Put it in the tabbed nav's `Tabs` slot.
 
 ***
@@ -15,6 +17,7 @@ One tab inside a **DWC Tabbed Nav**. It holds the tab's name and the content tha
 | Prop | What it does |
 | --- | --- |
 | **Text** | The tab's name. |
+| **Menu ID** | A fixed name for [Open in Menu](../open-in-menu.md) links, such as `phones`. Links keep working when you change the **Text**. Leave it empty to use the **Text**. |
 | **Link Tab** | Turns the tab's name into a link to the **URL** prop. The arrow next to it still opens the tab. |
 | **URL** | Where the name links to. Only shows when **Link Tab** is on. |
 | **Use Custom Arrow SVG** | Replaces the arrow at the end of the tab with your own SVG. For an icon before the tab's name, use the LABEL ICON group instead. This one needs **Allow "unsafe" HTML** turned on in Etch's settings. |

@@ -4,7 +4,7 @@ icon: diamonds-4
 
 # DWC Menu Item
 
-A top-level navigation link with no dropdown panel. Use this for simple links in the nav. It supports badges, visibility control, and responsive relocation (moving the item in or out of the nav at different breakpoints).
+A top-level navigation link with no dropdown panel. Use this for simple links in the nav. It supports badges, visibility control, and, in Full, responsive relocation (moving the item in or out of the nav at different breakpoints).
 
 ***
 
@@ -48,7 +48,7 @@ A small label overlaid on or beside the menu item — useful for "New", "Sale", 
 
 ### Relocation
 
-Relocation moves a nav item to a different location in the DOM when the viewport crosses a breakpoint. This is useful for CTA buttons or other elements that should appear in the page header on desktop but move inside the mobile menu on smaller screens.
+**Full only.** Relocation moves a nav item to a different location in the DOM when the viewport crosses a breakpoint. This is useful for CTA buttons or other elements that should appear in the page header on desktop but move inside the mobile menu on smaller screens.
 
 > **Note:** Relocation moves items _out of_ the nav. To move an element from elsewhere in the page _into_ the mobile menu, use the `data-breakin` attribute directly on that element instead (e.g. `data-breakin="480"`). Items moved this way are placed inside the `.breakin-container` in the mobile menu.
 
@@ -113,7 +113,7 @@ The `.dwc-top-level-items-vars` class is already applied to the **DWC Nav** comp
 .dwc-top-level-items-vars {
   --menu-item-inline-padding: clamp(0.75rem, 0.61rem + 0.56vw, 1.1rem); /* left/right padding */
   --menu-item-block-padding: 1rem;   /* top/bottom padding */
-  --roll-padding: 1rem;              /* padding when Text Roll hover effect is active */
+  --roll-padding: 1rem;              /* padding when Text Roll hover effect is active (Full only) */
   --menu-item-border: initial;       /* border on each item */
   --menu-item-radius: 50vw;          /* border radius on items */
 }
@@ -173,6 +173,6 @@ When **Last Item is Button** is enabled in DWC Nav, the last one, two, or three 
 .dwc-top-level-items-vars {
   --cta-width: 100%;           /* max width of CTA buttons on mobile */
   --cta-gap-offset: 0;         /* gap offset between 2–3 CTA buttons on mobile */
-  --cta-breakout-gap: 1.25rem; /* gap between a breakout CTA and the mobile toggle */
+  --cta-breakout-gap: 1.25rem; /* gap between a breakout CTA and the mobile toggle (Full only) */
 }
 ```

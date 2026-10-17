@@ -12,6 +12,8 @@ The core navigation component. It controls everything about the menu — how it 
 
 ### Animation
 
+**Full only.**
+
 | Setting                      | Description                                                                                                                                                                                                                                                                                                                                                                                                                          |
 | ---------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | **Stripe Style**             | As the user moves between mega menu items, the dropdown panel smoothly morphs — sliding to the new item's position and transitioning its width and height to match the new dropdown's content. Instead of one dropdown closing and another opening, the panel flows seamlessly from one to the next. Only visible on the live site — there is no builder preview for this feature. **Cannot be used together with Adaptive Height.** |
@@ -22,9 +24,9 @@ The core navigation component. It controls everything about the menu — how it 
 
 | Setting                        | Description                                                                                                              |
 | ------------------------------ | ------------------------------------------------------------------------------------------------------------------------ |
-| **Offcanvas Mode**             | The nav behaves as a sidebar even on desktop viewports. All mobile menu styles apply regardless of screen width.         |
-| **Flyout Offcanvas**           | In offcanvas mode, submenus fly out as overlapping panels (desktop-like behaviour) instead of expanding inline.          |
-| **Flyout on Hover**            | In offcanvas mode on a desktop-sized screen, dropdowns open on hover rather than requiring a click.                      |
+| **Offcanvas Mode**             | **Full only.** The nav behaves as a sidebar even on desktop viewports. All mobile menu styles apply regardless of screen width.         |
+| **Flyout Offcanvas**           | **Full only.** In offcanvas mode, submenus fly out as overlapping panels (desktop-like behaviour) instead of expanding inline.          |
+| **Flyout on Hover**            | **Full only.** In offcanvas mode on a desktop-sized screen, dropdowns open on hover rather than requiring a click.                      |
 | **Last Item is Button**        | Styles the last one, two, or three nav items as CTA buttons. Options: None, Last Button, Last 2 Buttons, Last 3 Buttons. **CTA-button styling (the `--menu-cta-*` variables) applies only to DWC _Menu Item_ last items — DWC _Dropdown_ items are not turned into CTA buttons, even when their Appearance is set to `button` or `icon`.** To make a dropdown look like a button/icon, use the dropdown's own **Appearance** setting instead. For trailing dropdowns, this setting only serves to enable **Non-Button Items Alignment**. |
 | **Non-Button Items Alignment** | Controls how the remaining items align (Left or Center) when Last Item is Button is active. **Note:** trailing icon/button-appearance DWC Dropdowns (e.g. a search or cart icon) are **right-aligned by default** — you do not need Last Item is Button to right-align them.                                                                                                                                                                                                                                |
 
@@ -41,7 +43,7 @@ The core navigation component. It controls everything about the menu — how it 
 | **Submenu Slideout Distance**     | Controls how far the parent level slides out of view when a submenu opens. If this value is less than 100%, the opacity must also be set to `0` to fully hide the parent.                 |
 | **Submenu Slideout Opacity**      | Sets whether the parent level fades out as it slides away when a submenu opens.                                                                                                           |
 | **Fade Items on Slide**           | Fades the menu items in or out as the submenu slides into or out of view.                                                                                                                 |
-| **Mobile / Offcanvas Menu Speed** | Controls the animation speed of the menu opening and closing.                                                                                                                             |
+| **Mobile / Offcanvas Menu Speed** | Controls the animation speed of the menu opening and closing. In Lite, this prop is called **Mobile Menu Speed**.                                                                                                                             |
 | **Fullscreen Mobile Menu**        | The mobile menu opens above the header, covering the entire screen.                                                                                                                       |
 | **Mobile Top Background**         | Background colour of the top bar area inside the mobile menu. Only applied when **Fullscreen Mobile Menu** is enabled, or when **Transparent Mobile Top** is disabled.                    |
 | **Transparent Mobile Top**        | Makes the mobile top bar area transparent.                                                                                                                                                |
@@ -77,7 +79,7 @@ The core navigation component. It controls everything about the menu — how it 
 | **Nested Dropdown Active Overlay Color** | The colour and opacity of that overlay.                                                                                                                                            |
 | **Nested Dropdown Inactive Blur**        | Blurs the inactive content in the parent dropdown while a nested one is open.                                                                                                      |
 | **Parent-Relative Nested Dropdown**      | Positions nested dropdown panels relative to their parent item instead of the full nav bar width.                                                                                  |
-| **Menu Item Hover Effect**               | Animation on top-level nav items when hovered. **Text Roll** makes the text roll up on hover (desktop only).                                                                       |
+| **Menu Item Hover Effect**               | **Full only.** Animation on top-level nav items when hovered. **Text Roll** makes the text roll up on hover (desktop only).                                                                       |
 
 ### Backdrop
 
@@ -91,8 +93,8 @@ The core navigation component. It controls everything about the menu — how it 
 
 | Setting                                 | Description                                                                                      |
 | --------------------------------------- | ------------------------------------------------------------------------------------------------ |
-| **Centered Logo**                       | Moves the site logo into the centre of the nav list on desktop, with menu items on both sides.   |
-| **Center Guide**                        | Shows a visual debug overlay to help align the centered logo (only visible to logged-in admins). |
+| **Centered Logo**                       | **Full only.** Moves the site logo into the centre of the nav list on desktop, with menu items on both sides.   |
+| **Center Guide**                        | **Full only.** Shows a visual debug overlay to help align the centered logo (only visible to logged-in admins). |
 | **Mobile Logo Size**                    | Controls the size of the logo displayed inside the mobile menu.                                  |
 | **Hide Mobile Logo in Fullscreen Mode** | Hides the logo when the fullscreen mobile menu is active.                                        |
 
@@ -156,7 +158,7 @@ The `.dwc-nav-vars` class is already applied to the **DWC Nav** component by def
 
 ### Breakin container
 
-When items are moved into the nav using the **Breakin** relocation mode, they land inside a `.breakin-container`. You can style it here:
+**Full only.** When items are moved into the nav using the **Breakin** relocation mode, they land inside a `.breakin-container`. You can style it here:
 
 ```css
 .dwc-nav-vars .breakin-container {

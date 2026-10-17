@@ -95,6 +95,14 @@ return JSON.stringify(out);
 All match → the table is exact, read your row and write. A component disagrees → dump **only that
 component** and treat live as authoritative for it.
 
+**Lite.** Mega Menu Pro Lite 1.3.1 has these fingerprints: DWC Menu Item `13:vrlg9q`, DWC Dropdown
+`22:1tcww9z`, DWC Nav `46:bm1quc`, DWC Header `26:ndotsr`, DWC Mobile Toggle `26:quzir` (same as
+Full), and no DWC Tabbed Nav or DWC Tab. On Lite, a prop in the reference that the live schema lacks is
+a Full-only feature: tell the user it needs Mega Menu Pro Full, and don't build it with custom code
+unless they ask. Full-only: offcanvas and flyout, Stripe Style, Adaptive Height, swipe to close, auto
+menu expansion, Tabbed Navigation, Liquid Glass, row-by-row scroll visibility, roll-text hover,
+centered logo, breakout and breakin. Lite's mobile menu speed is `props.mobile.mobileMenuSpeed`.
+
 ### Running a script
 
 **Make yourself a working subdirectory** and keep every temporary script in it, then delete the
@@ -115,6 +123,11 @@ Delete the script when it has run.
 **Use `node` for any scripting or parsing. Never `python` or `jq`.** Node is guaranteed, because the
 connector runs on it; nothing else is installed on every machine. Do not check whether an
 alternative exists either, since a probe costs the same round trip as the failure it avoids.
+
+### A link or button that opens a header menu
+
+Set the link's `href` to `#menu=<path>` (Open in Menu, v1.3.1+). Grep the reference for "Open in Menu"
+for the path format. Never add a script for it.
 
 ### When the page disagrees with the editor
 

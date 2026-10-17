@@ -15,6 +15,7 @@ A top-level navigation item that contains a dropdown panel. The panel can be a s
 | Setting                   | Description                                                                                                                                            |
 | ------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | **Text**                  | The label shown on the toggle button in the nav.                                                                                                       |
+| **Menu ID**               | A fixed name for [Open in Menu](../open-in-menu.md) links, such as `features`. Links keep working when you change the **Text**. Leave it empty to use the **Text**. |
 | **Link Parent Item**      | Makes the parent item itself a link, for a section that has its own landing page as well as a submenu (e.g. a **Models** item that both links to the models archive and drops down the individual models). The label renders as an `<a class="dwc-dropdown-parent-link">` instead of a `<span>`: clicking the text goes to the linked page, while the chevron opens the dropdown. |
 | **URL**                   | Destination for the parent item. Only shown when **Link Parent Item** is enabled. Left at the default `#`, the item keeps ordinary toggle behaviour, so set a real URL for the link to do anything. |
 | **Dropdown Trigger Mode** | Per-item override for how this dropdown opens: **Hover**, **Click**, or **Both**. Overrides the global setting on DWC Nav.                             |
@@ -48,7 +49,7 @@ Settings that apply when this item is configured as a mega menu.
 | **Enable**      | Switches this dropdown from a standard panel to a full-width mega menu layout.                                                                                                                                        |
 | **Width**       | Width of the mega menu panel (overrides the global setting from DWC Nav).                                                                                                                                             |
 | **Inner Width** | Maximum inner content width inside the mega menu panel. Defaults to `100%` of the panel width. Useful when the panel spans the full header width but you want the content to remain constrained to a narrower column. |
-| **Breakout**    | Moves this mega menu item into the header area on mobile (uses the global mobile breakpoint from DWC Nav). Useful for mega menus that should be accessible on mobile without opening the full mobile sidebar.        |
+| **Breakout**    | **Full only.** Moves this mega menu item into the header area on mobile (uses the global mobile breakpoint from DWC Nav). Useful for mega menus that should be accessible on mobile without opening the full mobile sidebar.        |
 
 ### Content
 

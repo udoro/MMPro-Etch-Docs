@@ -4,6 +4,8 @@ icon: folder-tree
 
 # DWC Tabbed Nav
 
+**Full only.** Lite doesn't have this component.
+
 A mega menu panel with tabs down the side. Hover or click a tab and its content shows next to it. It's a good fit for shop categories, services, or any menu with a lot of links.
 
 Put it in the `Mega_Menu_Content` slot of a **DWC Dropdown** that has the **Enable** prop (MEGA MENU group) turned on. Then add one **DWC Tab** to its `Tabs` slot for each tab. The [Tabbed Navigation](../tabbed-navigation.md) guide walks you through it.

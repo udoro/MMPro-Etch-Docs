@@ -23,6 +23,32 @@ icon: pen-to-square
 | [DWC Tab](components/dwc-tab.md)                     | One tab inside a DWC Tabbed Nav: its name and its content                                                                            |
 | [AI Connector](https://design-with-cracka.gitbook.io/megamenupro/ai-connector) | Control MMPro through a conversational AI agent — setup guide, requirements, and the Skills File your agent needs to load |
 
+Lite ships five of these. It doesn't have DWC Tabbed Nav or DWC Tab.
+
+***
+
+## Full or Lite
+
+Both versions share the same components, menu, mega menus, mobile menu and styling. Lite leaves out some features to keep the code smaller. The components have the same names in both, so use one version per site.
+
+| Feature | Full | Lite |
+| --- | --- | --- |
+| Mega menus, dropdowns, nested dropdowns, mobile menu | Yes | Yes |
+| Sticky and overlay header, [Special Sticky / Overlay Styles](special-styles.md) | Yes | Yes |
+| [Open in Menu](open-in-menu.md) | Yes | Yes |
+| Offcanvas mode: the mobile menu on desktop ([DWC Nav](components/dwc-nav.md#menu-mode)) | Yes | No |
+| Stripe Style and Adaptive Height (animated mega menu panel) | Yes | No |
+| Swipe to close and its tooltip | Yes | No |
+| Auto menu expansion (opens the current page's submenu on mobile) | Yes | No |
+| [Tabbed Navigation](tabbed-navigation.md) | Yes | No |
+| Liquid Glass header | Yes | No |
+| Hiding or showing one header row on scroll (Lite keeps **Hide All Rows** and **Reverse**) | Yes | No |
+| Text Roll hover effect | Yes | No |
+| Centered logo | Yes | No |
+| Moving items in and out of the mobile menu (Breakout, Breakin, Breakinto) | Yes | No |
+
+In these docs, props, variables and options marked **Full only** aren't in Lite.
+
 ***
 
 ## How props and CSS variables work together

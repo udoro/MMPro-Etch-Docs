@@ -5,6 +5,7 @@
 * [Updating](updating.md)
 * [Special Sticky / Overlay Styles](special-styles.md)
 * [Tabbed Navigation](tabbed-navigation.md)
+* [Open in Menu](open-in-menu.md)
 * [JavaScript API](javascript-api.md)
 
 ## Components

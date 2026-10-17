@@ -8,13 +8,13 @@ icon: desktop-arrow-down
 
 ### JSON file
 
-1. Download the JSON file.
+1. Download the JSON file. Pick **Full** or **Lite** (see [Full or Lite](README.md#full-or-lite)).
 2. Open it and copy the entire contents.
 3. In Etch Builder, go to the **Index Template** and paste the content into the **Structure Panel**.
 
 ### CSS file
 
-1. Download the CSS file.
+1. Download the CSS file for the same version. The Lite one has `Lite` in its name.
 2. Open it and copy the entire contents.
 3. In Etch Builder, create a new **Stylesheet**.
 4. **Important:** Name the stylesheet exactly `DWC Mega Menu`.
@@ -85,4 +85,4 @@ The mobile breakpoint defaults to `1201px` (desktop at ≥ 1201 px). To change i
 
 ## Offcanvas mode
 
-Offcanvas mode makes the nav behave like a sidebar on desktop viewports. Enable it via **DWC Nav → Menu Mode → Offcanvas Mode**. When active, the mobile menu styles apply at all screen sizes — not just below the breakpoint — so the hamburger menu and mobile panel are shown regardless of viewport width. The class `.dwc-offcanvas-active` is also added to `<body>`, which you can use for custom CSS targeting.
+**Full only.** Offcanvas mode makes the nav behave like a sidebar on desktop viewports. Enable it via **DWC Nav → Menu Mode → Offcanvas Mode**. When active, the mobile menu styles apply at all screen sizes — not just below the breakpoint — so the hamburger menu and mobile panel are shown regardless of viewport width. The class `.dwc-offcanvas-active` is also added to `<body>`, which you can use for custom CSS targeting.

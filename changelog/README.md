@@ -6,6 +6,30 @@ icon: arrows-retweet
 
 > Update Mega Menu Pro + Header Builder using the [Updater](https://etch.designwithcracka.com/mmpro-updater/).
 
+## Version 1.3.1 - October 18, 2026
+
+_Update path from v1.3.0: CSS & Component_
+
+### New
+
+* **Mega Menu Pro Lite.** A smaller version with the same mega menus, dropdowns and mobile menu, and less code. See [Full or Lite](../README.md#full-or-lite) for what it leaves out.
+
+* **Open in Menu.** A link or button anywhere on your site can open a menu in your header, or a tab inside it. Set the link's `href` to `#menu=` and the menu item's name, for example `#menu=features`. On mobile, it opens the mobile menu too. See [Open in Menu](../open-in-menu.md).
+
+* **Menu ID** prop on DWC Dropdown and DWC Tab. It gives a menu item a fixed name for Open in Menu links, so they keep working when you rename the item.
+
+### Improved
+
+* In the builder, a mega menu with Tabbed Navigation is labelled **MT** instead of **M**.
+* In the builder, a Tabbed Hero inside a dropdown no longer shows the "Insert your hero content" hint. A mega menu has no hero.
+
+### AI Skills
+
+* Agents can add links and buttons that open a menu in your header.
+* Agents can tell Lite from Full, and tell you when a feature needs Full.
+
+***
+
 ## Version 1.3.0 - October 11, 2026
 
 _Update path from v1.2.4: CSS & Component_

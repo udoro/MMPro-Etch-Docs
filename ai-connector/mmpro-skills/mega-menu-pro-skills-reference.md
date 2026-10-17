@@ -35,7 +35,7 @@ the components the plugin ships. Do not hand-edit the generated block.
 
 <!-- GENERATED:PROPS start -->
 
-*Generated from Mega Menu Pro **v1.3.0**. Paths, defaults and select values are properties of
+*Generated from Mega Menu Pro **1.3.1**. Paths, defaults and select values are properties of
 the plugin version, identical on every install of it. Component IDs are install-local and are
 deliberately absent: always resolve them by name.*
 
@@ -49,12 +49,12 @@ disagree**, and treat the live schema as authoritative for those. Do not dump th
 | Component | Fingerprint |
 | --- | --- |
 | DWC Menu Item | `16:ewqg76` |
-| DWC Dropdown | `22:1y5oqyo` |
+| DWC Dropdown | `23:7ze686` |
 | DWC Nav | `55:1ikc13o` |
 | DWC Mobile Toggle | `26:quzir` |
 | DWC Header | `33:vskoe2` |
 | DWC Tabbed Nav | `16:pal5xu` |
-| DWC Tab | `11:6qpa2e` |
+| DWC Tab | `12:k94c7k` |
 
 ### DWC Menu Item
 
@@ -82,6 +82,7 @@ disagree**, and treat the live schema as authoritative for those. Do not dump th
 | Prop | Path | Attribute | Default | Values / notes |
 | --- | --- | --- | --- | --- |
 | Text | `props.text` | style only | `Dropdown` |  |
+| Menu ID | `props.menuId` | `data-menu-id` |  |  |
 | Link Parent Item | `props.linkParentItem` | style only | `false` | `true` / `false` |
 | URL | `props.url` | `href` | `#` | Shown when `props.linkParentItem` |
 | Dropdown Trigger Mode | `props.dropdownTriggerMode` | `data-toggle` | `both` | `both` / `hover` / `click` |
@@ -259,6 +260,7 @@ disagree**, and treat the live schema as authoritative for those. Do not dump th
 | Prop | Path | Attribute | Default | Values / notes |
 | --- | --- | --- | --- | --- |
 | Text | `props.text` | `aria-label` | `Tab` |  |
+| Menu ID | `props.menuId` | `data-menu-id` |  |  |
 | Link Tab | `props.linkTab` | style only | `false` | `true` / `false` |
 | URL | `props.url` | `href` | `#` | Shown when `props.linkTab` |
 | Use Custom Arrow SVG | `props.useCustomSvg` | style only | `false` | `true` / `false` |
@@ -507,5 +509,25 @@ Mirror the same table with a ✓ Status column and the exact value that was set.
 ***
 
 _No templates defined yet._
+
+***
+
+## 9. Open in Menu (v1.3.1+)
+
+Built into the DWC Nav script. Nothing to set on any component.
+
+| Trigger | Where | Effect |
+| --- | --- | --- |
+| `href="#menu=<path>"` | Any link on any page, inside a mega menu too | Opens the path on click. `/page/#menu=<path>` opens it after that page loads. |
+| `data-open-in-menu="<path>"` | Any element | Opens the path on click. Prefer a link or a button: a div is not keyboard-reachable. |
+| `dwcMegaMenu.openInMenu(path)` | Page JS | Promise of `true` (opened) or `false` (no match). |
+
+`<path>`: parts separated by `/`, outermost first: a top-level DWC Dropdown, then a nested DWC Dropdown
+or a DWC Tab. Each part matches the component's **Menu ID** prop (`props.menuId`, written as
+`data-menu-id`) when it is set, else its **Text** in lowercase with every run of other characters as one
+`-`: "Use cases" is `use-cases`, a tab is `features/mobile-menu`. A path can start at any level:
+`#menu=<id>` alone opens the item with that Menu ID and every dropdown and tab around it. Prefer one
+Menu ID on the target over a full path. Never write `#menu:`; WordPress rejects it in menu links. Never
+add a script for this. On v1.3.0 or older the link does nothing: tell the user to update.
 
 ***
