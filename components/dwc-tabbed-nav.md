@@ -8,9 +8,9 @@ icon: folder-tree
 
 A mega menu panel with tabs down the side. Hover or click a tab and its content shows next to it. It's a good fit for shop categories, services, or any menu with a lot of links.
 
-Put it in the `Mega_Menu_Content` slot of a **DWC Dropdown** that has the **Enable** prop (MEGA MENU group) turned on. Then add one **DWC Tab** to its `Tabs` slot for each tab. The [Tabbed Navigation](../tabbed-navigation.md) guide walks you through it.
+Put it in the `Mega_Menu_Content` slot of a **DWC Dropdown** that has the **Enable** prop (MEGA MENU group) turned on. Then add one **DWC Tab** to its `Tabs` slot for each tab. The [Tabbed Navigation](https://design-with-cracka.gitbook.io/etchmegamenupro/tabbed-navigation) guide walks you through it.
 
-With the **Enable** prop (TABBED HERO group) on, it can also be a hero section on a page, or a compact dropdown in your header. See [Tabbed Hero](../tabbed-navigation.md#tabbed-hero).
+With the **Enable** prop (TABBED HERO group) on, it can also be a hero section on a page, or a compact dropdown in your header. See [Tabbed Hero](https://design-with-cracka.gitbook.io/etchmegamenupro/tabbed-navigation#tabbed-hero).
 
 ***
 
@@ -33,7 +33,7 @@ These apply on desktop. The mobile menu has its own layout (see [Mobile](#mobile
 
 | Prop | What it does |
 | --- | --- |
-| **Enable** | Adds a `Hero` slot next to the tabs for your own hero content. No tab is open at first, so the hero shows. A tab closes when the mouse leaves. See [Tabbed Hero](../tabbed-navigation.md#tabbed-hero). |
+| **Enable** | Adds a `Hero` slot next to the tabs for your own hero content. No tab is open at first, so the hero shows. A tab closes when the mouse leaves. See [Tabbed Hero](https://design-with-cracka.gitbook.io/etchmegamenupro/tabbed-navigation#tabbed-hero). |
 | **Match Dropdown Width** | In your header, makes the menu item that opens this dropdown as wide as the tab list. Off: the item is as wide as its text, like your other items. Off by default. Only shows when **Enable** is on. |
 
 ### Behaviour
@@ -129,7 +129,7 @@ Every DWC Tabbed Nav has the `.dwc-tabbed-nav-vars` class. Change the variables 
 }
 ```
 
-The tab area resizes to fit the open tab, so you don't need to set a height. A Tabbed Hero works differently: see [Tabbed Hero](../tabbed-navigation.md#tabbed-hero).
+The tab area resizes to fit the open tab, so you don't need to set a height. A Tabbed Hero works differently: see [Tabbed Hero](https://design-with-cracka.gitbook.io/etchmegamenupro/tabbed-navigation#tabbed-hero).
 
 To change the 70% of a Tabbed Hero, set `--tab-content-width` for that tabbed nav only. See [Style one tabbed nav](#style-one-tabbed-nav).
 
