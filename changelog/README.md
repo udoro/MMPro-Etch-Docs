@@ -6,6 +6,16 @@ icon: arrows-retweet
 
 > Update Mega Menu Pro + Header Builder using the [Updater](https://etch.designwithcracka.com/mmpro-updater/).
 
+## Version 1.3.2 - November 1, 2026
+
+_Update path from v1.3.1: Component_
+
+### Fixes
+
+* **Your header now shows again at the top of the page.** If your header hides as visitors scroll down, it could stay hidden when the page jumped straight back to the top, for example with the Home key or a back-to-top link.
+
+***
+
 ## Version 1.3.1 - October 18, 2026
 
 _Update path from v1.3.0: CSS & Component_
