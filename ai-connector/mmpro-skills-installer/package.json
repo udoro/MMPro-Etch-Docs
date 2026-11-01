@@ -1,6 +1,6 @@
 {
   "name": "mmpro-agentic-skills-etch",
-  "version": "0.2.1",
+  "version": "0.3.0",
   "description": "Installs the Mega Menu Pro AI Connector skills files and component docs into any project",
   "type": "module",
   "bin": {
@@ -8,8 +8,7 @@
   },
   "files": [
     "bin",
-    "lib",
-    "skills-package"
+    "lib"
   ],
   "scripts": {
     "build": "node scripts/build.js",
