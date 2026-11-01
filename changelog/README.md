@@ -22,9 +22,9 @@ _Update path from v1.3.0: CSS & Component_
 
 ### New
 
-* **Mega Menu Pro Lite.** A smaller version with the same mega menus, dropdowns and mobile menu, and less code. See [Full or Lite](../README.md#full-or-lite) for what it leaves out.
+* **Mega Menu Pro Lite.** A smaller version with the same mega menus, dropdowns and mobile menu, and less code. See [Full or Lite](https://design-with-cracka.gitbook.io/etchmegamenupro/#full-or-lite) for what it leaves out.
 
-* **Open in Menu.** A link or button anywhere on your site can open a menu in your header, or a tab inside it. Set the link's `href` to `#menu=` and the menu item's name, for example `#menu=features`. On mobile, it opens the mobile menu too. See [Open in Menu](../open-in-menu.md).
+* **Open in Menu.** A link or button anywhere on your site can open a menu in your header, or a tab inside it. Set the link's `href` to `#menu=` and the menu item's name, for example `#menu=features`. On mobile, it opens the mobile menu too. See [Open in Menu](https://design-with-cracka.gitbook.io/etchmegamenupro/open-in-menu).
 
 * **Menu ID** prop on DWC Dropdown and DWC Tab. It gives a menu item a fixed name for Open in Menu links, so they keep working when you rename the item.
 
@@ -46,7 +46,7 @@ _Update path from v1.2.4: CSS & Component_
 
 ### New
 
-* **Tabbed Navigation.** Put tabs down the side of a mega menu. Hover or click a tab and its content shows next to it. On mobile, a tab's content slides in with a back button, or opens like an accordion. It comes as two new components, DWC Tabbed Nav and DWC Tab. See [Tabbed Navigation](../tabbed-navigation.md).
+* **Tabbed Navigation.** Put tabs down the side of a mega menu. Hover or click a tab and its content shows next to it. On mobile, a tab's content slides in with a back button, or opens like an accordion. It comes as two new components, DWC Tabbed Nav and DWC Tab. See [Tabbed Navigation](https://design-with-cracka.gitbook.io/etchmegamenupro/tabbed-navigation).
 * **Tabbed Hero.** Put your own hero content next to the tabs. Use it as a hero section on a page, or as a compact dropdown in your header that shows only the tab list until you hover a tab.
 * Build tabs from your categories with an Etch loop, including WooCommerce product categories. New categories get their own tab automatically.
 * Add an icon before a tab's name with the LABEL ICON group on DWC Tab.
